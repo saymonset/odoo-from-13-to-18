@@ -20,3 +20,5 @@
 **/__pycache__/
 /**/*.pyc
 
+/arquitectura/odoo*/clientes/*/extra-addons/*/*/*.py
+/arquitectura/odoo*/clientes/*/extra-addons/*/*/*/*.py
