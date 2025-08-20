@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="bi_pos_closed_session_reports.bireceipt" owl="1">
+        <div class="receipt-screen screen h-100 bg-100">
+            <div class="screen-content d-flex flex-column h-100">
+                <div class="top-content d-flex align-items-center py-3 border-bottom text-center">
+                    <div class="top-content-center flex-grow-1">
+                    </div>
+                </div>
+                <div class="default-view d-flex flex-lg-row flex-column overflow-hidden flex-grow-1">
+                    <div class="actions d-flex flex-column justify-content-between flex-lg-grow-1 flex-grow-0 flex-shrink-1 flex-basis-0">
+                        <div class="d-flex flex-column m-4">
+                        <h1>How would you like to receive your Session receipt ?</h1>
+                        <div class="buttons">
+                            <div class="button print btn btn-lg btn-secondary w-100 py-3" t-on-click="printReceipt">
+                                <i class="fa fa-print"/> Print Session Receipt
+                            </div>
+                        </div>
+                        <form class="send-email">
+                            <div class="input-email">
+                                <input type="email" placeholder="Email Receipt" id="email"/>
+                                <button type="submit" t-on-click="onSendEmailToCustomer"
+                                    style="padding: 1rem 40px; margin: 2px; border: none; cursor: pointer;
+                                            background: #E0E2E6;color: #017e84;">
+                                    <i class="fa fa-paper-plane"/>
+                                </button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    <div class="pos-receipt-container d-flex flex-grow-1 flex-lg-grow-0 user-select-none justify-content-center bg-200 text-center overflow-hidden w-50" t-ref="order-receipt">
+                        <div t-att-class="{ 'w-50': !ui.isSmall }" class="d-inline-block m-2 m-lg-3 p-3 border rounded bg-view text-start overflow-y-auto">
+                            <BiOrderReceipt order="currentOrder"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="button next validation" t-att-class="{ highlight: !locked }"
+                    t-on-click="orderDone">
+                     <button class="button next validation btn btn-primary w-100 py-5 rounded-0 fs-2" t-att-class="{ highlight: !locked }" t-if="!splittedOrder" t-on-click="orderDone" name="done">
+                        <i class="oi oi-chevron-right" role="img" aria-label="Pay" title="Pay" />
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

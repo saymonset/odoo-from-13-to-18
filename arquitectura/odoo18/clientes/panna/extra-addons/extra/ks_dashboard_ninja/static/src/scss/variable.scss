@@ -1,0 +1,147 @@
+// Base colors
+$color-black: #241c1d;
+$color-white: #ffffff;
+$color-dark-black: #000000;
+$color-nav-bg: #e2e9f0;
+
+// Primary colors
+$color-primary-main: #e84a5f;
+$color-bg-main: #f5f8fb;
+
+// Secondary colors
+$color-secondary-main: #04a9cc;
+$color-secondary-bg: #f4faff;
+
+// State colors
+$color-danger: #ec2d30;
+$color-warning: #ffc62b;
+$color-success: #0c9d61;
+$color-info: #3a70e2;
+
+// Element colors
+$color-paragraph: #4b5563;
+$color-placeholders: #9ca3af;
+
+$color-E6FCF5: #e6fcf5;
+$color-D9F1FD: #d9f1fd;
+$color-737791: #737791;
+$color-E5E7EB: #e5e7eb;
+$color-btn-hover: #ff2341;
+$color-FFE2E5: #ffe2e5;
+$color-FFF4DE: #fff4de;
+$color-DCFCE7: #dcfce7;
+$color-F3E8FF: #f3e8ff;
+$color-E7495E: #e7495e;
+$color-292D32: #292d32;
+$color-05004E: #05004e;
+$color-D1D5DB: #d1d5db;
+$btn-hover: #de1d37;
+$color-1E1E1E: #1e1e1e;
+$color-EAECF0: #eaecf0;
+$color-CDAAAA: #cdaaaa;
+$color-6789C6: #6789c6;
+$color-FFF5F5: #fff5f5;
+$color-7B91B0: #7b91b0;
+$color-F5F8FB: #f5f8fb;
+$color-F5F8FB: #f5f8fb;
+$color-2C2D35: #2c2d35;
+$color-EDEDED: #ededed;
+$color-FFFCFC: #fffcfc;
+$color-727378: #727378;
+$color-4B5563: #4b5563;
+$color-fff4f4: #fff4f4;
+$color-ABC8E7: #abc8e7;
+$color-E95266: #e95266;
+$color-597ebe: #597ebe;
+
+// font-weights
+
+$f-w-400: 400;
+$f-w-500: 500;
+$f-w-600: 600;
+$f-w-700: 700;
+
+// font-size
+$font-8: 8px;
+$font-10: 10px;
+$font-12: 12px;
+$font-14: 14px;
+$font-15: 15px;
+$font-16: 16px;
+$font-18: 18px;
+$font-20: 20px;
+$font-22: 22px;
+$font-24: 24px;
+$font-26: 26px;
+$font-28: 28px;
+$font-30: 30px;
+$font-32: 32px;
+$font-34: 34px;
+$font-36: 36px;
+$font-40: 40px;
+
+// media queris:
+@mixin minmax1260 {
+  @media screen and (min-width: 1200px) and (max-width: 1300px) {
+    @content;
+  }
+}
+
+@mixin min768 {
+  @media screen and (min-width: 768px) {
+    @content;
+  }
+}
+
+@mixin max-1500 {
+  @media screen and (max-width: 1500px) {
+    @content;
+  }
+}
+
+@mixin max-1260 {
+  @media screen and (max-width: 1260px) {
+    @content;
+  }
+}
+
+@mixin max-992 {
+  @media screen and (max-width: 992px) {
+    @content;
+  }
+}
+
+@mixin max-768 {
+  @media screen and (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin max-575 {
+  @media screen and (max-width: 575.8px) {
+    @content;
+  }
+}
+
+@mixin min-1600 {
+  @media screen and (min-width: 1600px) {
+    @content;
+  }
+}
+
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--color-transparent) !important;
+    border-radius: 12px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color-D1D5DB !important;
+    border-radius: 12px;
+  }
+}

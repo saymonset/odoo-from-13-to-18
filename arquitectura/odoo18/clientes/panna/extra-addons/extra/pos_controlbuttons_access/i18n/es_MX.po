@@ -1,0 +1,134 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pos_controlbuttons_access
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250415\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-21 16:32+0000\n"
+"PO-Revision-Date: 2025-05-21 11:58-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_actions
+msgid "Hide Actions Button "
+msgstr "Ocultar Botones de Acción"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_actions
+msgid "Hide Actions Button in POS"
+msgstr "Ocultar Botones de Acción en Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_cancel_order
+msgid "Hide Cancel Order Button"
+msgstr "Ocultar Boton Cancelar Orden"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_cancel_order
+msgid "Hide Cancel Order Button in POS"
+msgstr "Ocultar Boton Cancelar Orden en Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_customer_note
+msgid "Hide Custom Note in POS"
+msgstr "Ocultar Botón Notas del Cliente en Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_customer
+msgid "Hide Customer Button "
+msgstr "Ocultar Botón Cliente"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_customer
+msgid "Hide Customer Button in POS"
+msgstr "Ocultar Botón Cliente en Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_customer_note
+msgid "Hide Customer Note"
+msgstr "Ocultar Nota del Cliente"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_general_note
+msgid "Hide General Note"
+msgstr "Ocultar Nota General"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_general_note
+msgid "Hide General Note in POS"
+msgstr "Ocultar Nota General en Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_internal_note
+msgid "Hide Internal Note Button "
+msgstr "Ocultar Botón Nota Interna"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_internal_note
+msgid "Hide Internal Note Button in POS"
+msgstr "Ocultar Botón Nota Interna"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_pricelist
+msgid "Hide Pricelist Button"
+msgstr "Ocultar Botón Lista de Precios"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_pricelist
+msgid "Hide Pricelist Button in POS"
+msgstr "Ocultar Botón Lista de Precios en Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_quot
+msgid "Hide Quotation/Order Button "
+msgstr "Ocultar Botón/Orden Venta"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_quot
+msgid "Hide Quotation/Order Button in POS"
+msgstr "Ocultar Botón/Orden Venta Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_pos_session__pos_hide_refund
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_refund
+msgid "Hide Refund Button"
+msgstr "Ocultar Botón Reembolso"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_refund
+msgid "Hide Refund Button in POS"
+msgstr "Ocultar Botón Reembolso en Pos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,field_description:pos_controlbuttons_access.field_res_users__pos_hide_tax
+msgid "Hide Tax Button "
+msgstr "Ocultar Botón Impuestos"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model.fields,help:pos_controlbuttons_access.field_res_users__pos_hide_tax
+msgid "Hide Tax Button in POS"
+msgstr "Ocultar Botón Impuestos en Pos"
+
+#. module: pos_controlbuttons_access
+#: model_terms:ir.ui.view,arch_db:pos_controlbuttons_access.view_users_form_inherit_pos
+msgid "POS Control Buttons Access"
+msgstr "Acceso a Botones de Control"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model,name:pos_controlbuttons_access.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Sesión del punto de venta"
+
+#. module: pos_controlbuttons_access
+#: model:ir.model,name:pos_controlbuttons_access.model_res_users
+msgid "User"
+msgstr "Usuario"

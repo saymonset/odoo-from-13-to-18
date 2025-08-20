@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.SaverScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('login-overlay')]" position="attributes">
+            <attribute t-if="props.config.enable_saver_background" name="t-attf-style">{{ props.config.enable_saver_background ? "background-image: url(/web/binary/pos_sceen_saver)" : ""}}</attribute>
+        </xpath>
+
+        <xpath expr="//img" position="attributes">
+            <attribute name="t-attf-style">{{ props.config.enable_pos_logo and props.config.logo_option == 'none' ? "display:none" : "display:flex"}}</attribute>
+            <attribute i-if="props.config.enable_pos_logo" name="t-attf-src">{{ props.config.enable_pos_logo ? "/web/binary/pos_logo" : "/web/static/img/odoo_logo.svg"}}</attribute>
+        </xpath>
+
+        <xpath expr="//div[hasclass('timer-hours')]" position="attributes">
+            <attribute name="t-attf-style">{{ props.config.enable_saver_background ? "color:" + props.config.timer_color : ""}}</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('timer-date-container')]" position="attributes">
+            <attribute name="t-attf-style">{{ props.config.enable_saver_background ? "color:" + props.config.timer_color : ""}}</attribute>
+        </xpath>
+    </t>
+</templates>

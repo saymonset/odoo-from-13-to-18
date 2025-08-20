@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_template_delivery_order">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t
+                    t-set="docsTable"
+                    t-value="o.sql_result and json.loads(o.sql_result) or []"
+                />
+                <t t-set="titlehead" t-value="docsTable['titlehead']" />
+                <t t-set="almacenhead" t-value="docsTable['almacenhead']" />
+                <t
+                    t-set="fechaprogramadaheaad"
+                    t-value="docsTable['fechaprogramadaheaad']"
+                />
+                <t t-set="docs_list" t-value="docsTable['docs_list'] or []" />
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 10pt !important;">
+                        <div class="row">
+                            <div class="col-6 text-start">
+                                <div class="mb-1">
+                                    <strong />
+                                    <span t-esc="titlehead" />
+                                </div>
+                                <div class="mb-1">
+                                    <span t-esc="almacenhead" />
+                                </div>
+                                <div class="mb-1">
+                                    <span>Fecha programada</span>
+                                </div>
+                            </div>
+                            <div class="col-6 text-end">
+                                <div class="mb-1">
+                                    <span style="display: none;">Contenido oculto</span>
+                                </div>
+                                <div class="mb-1">
+                                    <span
+                                        style="display: none;"
+                                    >Otro contenido oculto</span>
+                                </div>
+                                <div class="mb-1">
+                                    <span t-esc="fechaprogramadaheaad" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <hr class="my-2" />
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="page mb-4">
+                                <t t-if="docsTable">
+                                    <!-- Verifica si docsTable tiene datos -->
+
+                                    <table
+                                        class="o_has_total_table table o_main_table table-borderless"
+                                    >
+                                        <thead class="bg-light text-white">
+                                            <tr>
+                                                <th
+                                                    name="th_description"
+                                                    class="text-start"
+                                                >
+                                                    <span>Lugar de Entrega</span>
+                                                </th>
+                                                <th name="th_quantity" class="text-end">
+                                                    <span>Folio</span>
+                                                </th>
+                                                <th
+                                                    name="th_priceunit"
+                                                    t-attf-class="text-end"
+                                                >
+                                                    <span>C</span>
+                                                </th>
+                                                <th
+                                                    name="th_discount"
+                                                    class="text-end "
+                                                >
+                                                    <span>Nombre del Producto</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="docs_list" t-as="producto">
+                                                <!-- Asegúrate de usar docsTable -->
+                                                <tr>
+                                                    <td class="text-start">
+                                                        <span
+                                                            t-esc="producto['lugar_entrega']"
+                                                        />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span
+                                                            t-esc="producto['folio']"
+                                                        />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span
+                                                            t-esc="producto['cantidad']"
+                                                        />
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span
+                                                            t-esc="producto['nombre_producto']"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <!-- Si docsTable está vacío -->
+                                    <div class="alert alert-warning">
+                                    No hay datos disponibles para mostrar en el reporte.
+                                </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_wizard_delivery_order_report" model="ir.actions.report">
+        <field name="name">Delivery Orders Report</field>
+        <field name="model">wizard.delivery.order.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field
+            name="report_name"
+        >delivery_orders_report.report_template_delivery_order</field>
+        <field
+            name="report_file"
+        >delivery_orders_report.report_template_delivery_order</field>
+        <field name="print_report_name">'Informe de Órdenes de Entrega'</field>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

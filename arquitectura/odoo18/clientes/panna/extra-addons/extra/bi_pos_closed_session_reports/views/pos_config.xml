@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_interface_section']" position='after'>
+                <br/>
+                <h2>POS Session Report Configuration</h2>
+                <div class="row mt16 o_settings_container" name="pos_z_report">
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos_enable_session_report"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pos_enable_session_report"/>
+                            <div class="text-muted">
+                                This will allow to print Session Report directly from POS screen.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt16 o_settings_container" name="pos_z_report_second">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos_allow_posted_session_report"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pos_allow_posted_session_report"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <label for="pos_z_report_selection"/>
+                            <br/>
+                            <field name="pos_z_report_selection"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos1_display_product_wise_detail"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pos1_display_product_wise_detail"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos1_display_payment_detail"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pos1_display_payment_detail"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos1_category_wise_detail"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pos1_category_wise_detail"/>
+                        </div>
+                    </div>
+
+                     <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos1_customer_wise_detail"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pos1_customer_wise_detail"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pos1_pricelist_wise_detail"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pos1_pricelist_wise_detail"/>
+                        </div>
+                    </div>
+                </div>
+
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_pos_session_form_report_button" model="ir.ui.view">
+        <field name="name">pos.session.form.view.session.button</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form"></field>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_pos_session_closing_control']" position='after'>
+                <button name="view_session_report" type="object" string="View Session Report" class="oe_highlight"/>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position='after'>
+                <field name="pos_display_product_wise_detail" invisible="1"/>
+                <field name="pos_display_payment_detail" invisible="1"/>
+                <field name="pos_category_wise_detail" invisible="1"/>
+                <field name="pos_customer_wise_detail" invisible="1"/>
+                <field name="pos_pricelist_wise_detail" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

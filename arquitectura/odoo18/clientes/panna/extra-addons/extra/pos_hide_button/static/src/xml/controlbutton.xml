@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ControlButtonCustome" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//button[@t-on-click='() => this.clickRefund()']" position="replace">
+            <t t-if="has_refund">
+                <button class="btn btn-secondary btn-lg py-5" t-on-click="() => this.clickRefund()">
+                    <i class="fa fa-undo me-1" role="img" aria-label="Refund" title="Refund" />
+                    Refunds
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//OrderlineNoteButton[@label='internalNoteLabel(this.pos.get_order())']" position="replace">
+            <t t-if="has_general_note">
+                <OrderlineNoteButton class="buttonClass" label="internalNoteLabel(this.pos.get_order())"/>
+            </t>
+        </xpath>
+        <xpath expr="//div[@class='control-buttons control-buttons-modal d-grid gap-2 mt-2']/OrderlineNoteButton[last()]" position="replace">
+            <t t-if="has_customer_note">
+                <OrderlineNoteButton class="buttonClass" icon="'fa fa-sticky-note'"/>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.clickPricelist()']" position="replace">
+            <t t-if="has_pricelist">
+                <button class="o_pricelist_button btn btn-secondary btn-lg py-5" t-on-click="() => this.clickPricelist()">
+                    <i class="fa fa-th-list me-2" role="img" aria-label="Price list" title="Price list" />
+                    <t t-if="currentOrder?.pricelist_id" t-esc="currentOrder.pricelist_id.display_name" />
+                    <t t-else="">Pricelist</t>
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.pos.onDeleteOrder(this.pos.get_order())']" position="replace">
+            <t t-if="has_cancel">
+                <button class="btn btn-secondary btn-lg py-5" t-on-click="() => this.pos.onDeleteOrder(this.pos.get_order())">
+                    <i class="fa fa-trash me-1" role="img" /> Cancel Order
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.onClickQuotation()']" position="replace">
+            <t t-if="has_quotations">
+                <button t-att-class="buttonClass" t-on-click="() => this.onClickQuotation()">
+                    <i class="fa fa-link me-1" role="img" aria-label="Set Sale Order" title="Set Sale Order" /> Quotation/Order
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='props.onClickMore']" position="replace">
+            <t t-if="has_actions">
+                <button class="btn btn-light btn-lg flex-shrink-0 ms-auto" t-if="!props.showRemainingButtons and !ui.isSmall and props.onClickMore" t-on-click="props.onClickMore">
+                    Actions
+                </button>
+            </t>
+        </xpath>
+    </t>
+
+</templates>

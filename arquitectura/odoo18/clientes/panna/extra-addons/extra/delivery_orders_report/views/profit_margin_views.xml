@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+
+
+
+
+         <!-- Action profit_margin -->
+    <record id="action_profit_margin_owl" model="ir.actions.client">
+        <field name="name">Owl Service</field>
+        <field name="tag">delivery_orders_report.profit_margin_owl</field>
+        <field name="target">main</field>
+    </record>
+     <menuitem id="hostel_type_menu" name="Margen de Ganancia"
+            parent="stock.menu_warehouse_report"
+            action="delivery_orders_report.action_profit_margin_owl"
+            sequence="50"/>
+
+</odoo>

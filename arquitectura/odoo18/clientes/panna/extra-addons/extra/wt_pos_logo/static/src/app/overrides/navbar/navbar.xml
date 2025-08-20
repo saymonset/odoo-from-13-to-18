@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+        <xpath expr="//img[hasclass('pos-logo')]" position="attributes">
+            <attribute name="t-attf-style">{{ pos.config.enable_pos_logo and pos.config.logo_option == 'none' ? "display:none" : "display:block"}}</attribute>
+            <attribute i-if="pos.config.enable_pos_logo" name="t-attf-src">{{ pos.config.enable_pos_logo ? "/web/binary/pos_logo" : "/web/static/img/logo.png"}}</attribute>
+        </xpath>
+    </t>
+</templates>

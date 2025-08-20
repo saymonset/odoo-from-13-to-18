@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="RefundCustome" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//button[@t-on-click='() => this.clickRefund()']" position="replace">
+            <t t-if="has_refund">
+                <button class="btn btn-secondary btn-lg py-5" t-on-click="() => this.clickRefund()">
+                    <i class="fa fa-undo me-1" role="img" aria-label="Refund" title="Refund" />
+                    Refunds
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//OrderlineNoteButton[@label='internalNoteLabel(this.pos.get_order())']" position="replace">
+            <t t-if="has_general_note">
+                <OrderlineNoteButton class="buttonClass" label="internalNoteLabel(this.pos.get_order())"/>
+            </t>
+        </xpath>
+        <xpath expr="//div[@class='control-buttons control-buttons-modal d-grid gap-2 mt-2']/OrderlineNoteButton[last()]" position="replace">
+            <t t-if="has_customer_note">
+                <OrderlineNoteButton class="buttonClass" icon="'fa fa-sticky-note'"/>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.clickPricelist()']" position="replace">
+            <t t-if="has_pricelist">
+                <button class="o_pricelist_button btn btn-secondary btn-lg py-5" t-on-click="() => this.clickPricelist()">
+                    <i class="fa fa-th-list me-2" role="img" aria-label="Price list" title="Price list" />
+                    <t t-if="currentOrder?.pricelist_id" t-esc="currentOrder.pricelist_id.display_name" />
+                    <t t-else="">Pricelist</t>
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.pos.onDeleteOrder(this.pos.get_order())']" position="replace">
+            <t t-if="has_cancel">
+                <button class="btn btn-secondary btn-lg py-5" t-on-click="() => this.pos.onDeleteOrder(this.pos.get_order())">
+                    <i class="fa fa-trash me-1" role="img" /> Cancel Order
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.onClickQuotation()']" position="replace">
+            <t t-if="has_quote">
+                <button t-att-class="buttonClass" t-on-click="() => this.onClickQuotation()">
+                    <i class="fa fa-link me-1" role="img" aria-label="Set Sale Order" title="Set Sale Order" /> Quotation/Order
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.clickFiscalPosition()']" position="replace">
+            <t t-if="has_tax">
+                <button class="control-button o_fiscal_position_button" t-att-class="buttonClass" t-on-click="() => this.clickFiscalPosition()">
+                    <i class="fa fa-book me-1" role="img" aria-label="Set fiscal position"
+                    title="Set fiscal position" />
+                </button>
+            </t>
+        </xpath>
+        <xpath expr="//button[@t-on-click='props.onClickMore']" position="replace">
+            <t t-if="has_actions">
+                <button class="btn btn-light btn-lg flex-shrink-0 ms-auto" t-on-click="props.onClickMore">
+                    Actions
+                </button>
+            </t>
+        </xpath>
+    </t>
+    <t t-name="CustomerSelectPop" t-inherit="point_of_sale.SelectPartnerButton" t-inherit-mode="extension">
+        <xpath expr="//button[@t-on-click='() => this.pos.selectPartner()']" position="replace">
+            <t t-if="has_customer">
+                <button class="set-partner btn btn-light btn-lg lh-lg text-truncate w-auto" t-on-click="() => this.pos.selectPartner()">
+                    Customer
+                </button>
+            </t>
+        </xpath>
+    </t>
+    <t t-name="OLNotePop" t-inherit="point_of_sale.OrderlineNoteButton" t-inherit-mode="extension">
+        <xpath expr="//button" position="attributes">
+            <attribute name="t-if">has_note</attribute>
+        </xpath>
+    </t>
+</templates>

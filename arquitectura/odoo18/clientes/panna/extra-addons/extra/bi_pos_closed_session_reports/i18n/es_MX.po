@@ -1,0 +1,478 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bi_pos_closed_session_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250415\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-17 17:04+0000\n"
+"PO-Revision-Date: 2025-05-19 13:33-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: bi_pos_closed_session_reports
+#: model:mail.template,body_html:bi_pos_closed_session_reports.pos_receipt_email_template
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                     <b> Hello,<br/>\n"
+"                        Your Session Receipt Report Is Here :\n"
+"                     </b>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                     <b> Hola,,<br/>\n"
+"                        Su corte de caja esta disponible :\n"
+"                     </b>\n"
+"                </div>\n"
+"            "
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "<strong>  Pricelist details</strong>"
+msgstr "<strong> Detalles de la lista de precios</strong>"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "<strong> Payment details </strong>"
+msgstr "<strong> Detalles de pago </strong>"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "<strong>Categories Wise Sales</strong>"
+msgstr "<strong>Categoría venta inteligente</strong>"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "<strong>Customer Wise Detail</strong>"
+msgstr "<strong>Detalle del cliente</strong>"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "<strong>Product Wise Detail</strong>"
+msgstr "<strong>Detalle del producto</strong>"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "<strong>Session Report</strong>"
+msgstr "<strong>Reporte de sesion</strong>"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__allow_posted_session_report
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos_allow_posted_session_report
+msgid "Allow Posted Session Report"
+msgstr "Permitir reporte de sesión publicada"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__category_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_session__pos_category_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_company__res_category_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos1_category_wise_detail
+msgid "Allow To Display Category Wise Detail"
+msgstr "Permitir mostrar detalles por categoría"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__customer_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_session__pos_customer_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_company__res_customer_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos1_customer_wise_detail
+msgid "Allow To Display Customer Wise Detail"
+msgstr "Permitir mostrar detalles del cliente"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__display_payment_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_session__pos_display_payment_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_company__res_display_payment_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos1_display_payment_detail
+msgid "Allow To Display Payment Detail"
+msgstr "Permitir mostrar detalles de pago"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__pricelist_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_session__pos_pricelist_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_company__res_pricelist_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos1_pricelist_wise_detail
+msgid "Allow To Display Pricelist Wise Detail"
+msgstr "Permitir mostrar la lista de precios con detalles"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__display_product_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_session__pos_display_product_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_company__res_display_product_wise_detail
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos1_display_product_wise_detail
+msgid "Allow To Display Product Wise Detail"
+msgstr "Permitir mostrar detalles del producto"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Amount"
+msgstr "Monto"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields.selection,name:bi_pos_closed_session_reports.selection__pos_config__z_report_selection__both
+msgid "Both"
+msgstr "Ambos"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.view_pos_close_session_report_wizard
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Category"
+msgstr "Categoria"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Close Bal:"
+msgstr "Bal Cierre:"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model,name:bi_pos_closed_session_reports.model_close_session_report_wiz
+msgid "Close Session report"
+msgstr "Reporte de cierre de sesión"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Closed"
+msgstr "Cerrado"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Closed Date"
+msgstr "Fecha de cierre"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model,name:bi_pos_closed_session_reports.model_report_bi_pos_closed_session_reports_report_closed_session
+msgid "Closed Session Point of Sale Details"
+msgstr "Detalles de sesión cerrada punto de venta"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Closing Balance"
+msgstr "Saldo final"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model,name:bi_pos_closed_session_reports.model_res_company
+msgid "Companies"
+msgstr "Empresas"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__company_id
+msgid "Company"
+msgstr "Empresa"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model,name:bi_pos_closed_session_reports.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__create_date
+msgid "Created on"
+msgstr "Elaborado en"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Customer Name"
+msgstr "Nombre el cliente"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Department Sales"
+msgstr "Departamento de ventas"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Difference"
+msgstr "Diferencia"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Difference:"
+msgstr "Diferencia:"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Discount :"
+msgstr "Descuento :"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Discount Amount"
+msgstr "Monto del descuento"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Email:"
+msgstr "Email:"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__enable_session_report
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos_enable_session_report
+msgid "Enable Session  Report"
+msgstr "Habilitar informe de sesión"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Gross Sales"
+msgstr "Ventas brutas"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Gross Total:"
+msgstr "Gross Total:"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__id
+msgid "ID"
+msgstr "ID"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__write_uid
+msgid "Last Updated by"
+msgstr "Ultima actualización por"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__write_date
+msgid "Last Updated on"
+msgstr "Ultima Actualización En"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Logo"
+msgstr "Logo"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Method"
+msgstr "Metodo"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Open Bal:"
+msgstr "Saldo Inicial:"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Opened Date"
+msgstr "Fecha de apertura"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Opening Balance"
+msgstr "Saldo de apertura"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Others"
+msgstr "Otros"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields.selection,name:bi_pos_closed_session_reports.selection__pos_config__z_report_selection__pdf
+msgid "PDF"
+msgstr "PDF"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.res_config_settings_view_form
+msgid "POS Session Report Configuration"
+msgstr "Configuración del reporte de sesión de POS"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__pos_session_ids
+msgid "POS Session(s)"
+msgstr "Sesión Pos"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Payments"
+msgstr "Pagos"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model,name:bi_pos_closed_session_reports.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Configuración del punto de venta"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model,name:bi_pos_closed_session_reports.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Sesión del punto de venta"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.actions.act_window,name:bi_pos_closed_session_reports.action_close_session_report
+#: model:ir.actions.report,name:bi_pos_closed_session_reports.action_close_session_report_print
+#: model:ir.ui.menu,name:bi_pos_closed_session_reports.close_session_report_1
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.view_pos_close_session_report_wizard
+msgid "Posted Session Report"
+msgstr "Reporte de sesión publicada"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Price"
+msgstr "Precio"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Pricelist"
+msgstr "Lista de precios"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.view_pos_close_session_report_wizard
+msgid "Print"
+msgstr "Imprimir"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Product"
+msgstr "Producto"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Quantities"
+msgstr "Cantidades"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Quantity"
+msgstr "Cantidad"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "REPORT ON"
+msgstr "Reporte sobre"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields.selection,name:bi_pos_closed_session_reports.selection__pos_config__z_report_selection__receipt
+msgid "Receipt"
+msgstr "Recibo"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Report Date:"
+msgstr "Fecha del reporte:"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Report Time :"
+msgstr "Hora del reporte:"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_close_session_report_wiz__report_type
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_pos_config__z_report_selection
+#: model:ir.model.fields,field_description:bi_pos_closed_session_reports.field_res_config_settings__pos_z_report_selection
+msgid "Report Type"
+msgstr "Tipo del reporte"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Returns :"
+msgstr "Devoluciones :"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Rising"
+msgstr "Creciente"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Sales Person"
+msgstr "Vendedor"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Sales:"
+msgstr "Ventas:"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Session"
+msgstr "Sesiones"
+
+#. module: bi_pos_closed_session_reports
+#: model:mail.template,subject:bi_pos_closed_session_reports.pos_receipt_email_template
+msgid "Session Receipt Mail"
+msgstr "Correo de recibo de cierre"
+
+#. module: bi_pos_closed_session_reports
+#: model:mail.template,name:bi_pos_closed_session_reports.pos_receipt_email_template
+msgid "Session Receipt Report"
+msgstr "Reporte recibos de sesión"
+
+#. module: bi_pos_closed_session_reports
+#: model:ir.actions.report,name:bi_pos_closed_session_reports.action_report_session_z
+msgid "Session Report"
+msgstr "Reporte de sesiones"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Session Status"
+msgstr "Estado de sesión"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Session(s) :"
+msgstr "Sesión(es):"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Status:"
+msgstr "Estatus:"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.report_closed_session
+msgid "Tax :"
+msgstr "Impuesto:"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Tel:"
+msgstr "Tel:"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.res_config_settings_view_form
+msgid "This will allow to print Session Report directly from POS screen."
+msgstr "Esto permitirá imprimir el informe de sesión directamente desde la pantalla del POS."
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Total"
+msgstr "Total"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Total Amount"
+msgstr "Cantidad Total"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Total Items"
+msgstr "Total de articulos"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.pos_z_report_pdf
+msgid "Total Price"
+msgstr "Precio Total"
+
+#. module: bi_pos_closed_session_reports
+#: model_terms:ir.ui.view,arch_db:bi_pos_closed_session_reports.view_pos_session_form_report_button
+msgid "View Session Report"
+msgstr "Ver Reporte de Sesión"

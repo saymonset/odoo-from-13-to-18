@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="bi_pos_closed_session_reports.ReportButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//t[@t-if='props.showRemainingButtons']/div" position="inside">
+           <button t-att-class="buttonClass" t-on-click="() => this.clickPrintSessionReport()">
+              <i class="fa fa-print me-1" role="img" aria-label="Print Session Report" title="Print Session Report" />
+               Print Session Report
+           </button>
+           <button t-att-class="buttonClass" t-on-click="() => this.clickPostedSessionReport()" t-if="pos.config.allow_posted_session_report">
+              <i class="fa fa-print me-1" role="img" aria-label="Posted Session Report" title="Posted Session Report"/>
+               Posted Session Report
+           </button>
+         </xpath>
+    </t>
+
+</templates>

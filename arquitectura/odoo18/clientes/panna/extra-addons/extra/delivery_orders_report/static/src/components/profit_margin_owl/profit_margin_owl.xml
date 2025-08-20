@@ -1,0 +1,93 @@
+<t t-name="delivery_orders_report.profit_margin_owl">
+
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Lista de Precios</span>
+        </div>
+    </nav>
+    <div class="card text-center">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+               <t t-if="state.pricelist" t-foreach="state.pricelist" t-as="pricelist" t-key="pricelist.productPricelistId">
+                    <li class="nav-item" t-on-click="() => this.setSearchContext(pricelist.productPricelistId)">
+                        <a t-att-class="pricelist.isActive ? 'nav-link active' : 'nav-link'" aria-current="true" href="#">
+                            <t t-esc="pricelist.productPricelistName['es_MX']"/>
+                        </a>
+                    </li>
+                </t>
+            </ul>
+        </div>
+
+       <div t-if="this.state.showCategories">
+            <nav class="navbar bg-body-tertiary">
+                <div class="container-fluid">
+                    <span class="navbar-brand mb-0 h1">Categorías</span>
+                </div>
+            </nav>
+            <div class="row">
+              <t t-foreach="this.state.categories" t-as="category" t-key="category.productCategoryId">
+                <div class="col-sm-2 mb-3 mb-sm-0">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"> <t t-esc="category.productCategoryName"/></h5>
+                                <a href="#"  t-on-click="() => this.searchProductByCategory(category.productCategoryId)"
+                                   class="btn btn-primary">Info</a>
+                            </div>
+                        </div>
+                    </div>
+              </t>
+                <t t-if="this.state.products.length > 0">
+                   <div class="g-col-12" style="display: flex; flex-direction: column; align-items: center;"> <!-- Usando Flexbox para centrar -->
+                       <h3 class="text-center">Lista de Productos</h3>
+
+                       <!-- Botón de Imprimir centrado -->
+                       <div class="text-center mt-2">
+                           <button
+                               class="btn btn-success"
+                               t-on-click="this._onPrintReport">
+                               Imprimir
+                           </button>
+                       </div>
+
+                       <div class="g-col-12 grid gap-2 mt-2" style="width: 100%; display: flex; justify-content: center;"> <!-- Centrar el contenedor de la tabla -->
+                           <div style="max-height: 400px; width: 100%; overflow: auto;">
+                               <table class="table table-hover" style="width: 100%;"> <!-- Cambiado a 100% -->
+                                   <thead class="table-light">
+                                       <tr>
+                                           <th scope="col">PRODUCTO</th>
+                                           <th scope="col">COSTO</th>
+                                           <th scope="col">PRECIO</th>
+                                           <!-- <th scope="col">MARGEN (%)</th> -->
+                                       </tr>
+                                   </thead>
+                                   <tbody>
+                                       <t t-foreach="this.state.products" t-as="product" t-key="product.id">
+                                           <tr>
+                                               <td><t t-esc="product.productName"/></td>
+                                               <td><t t-esc="product.cost ? product.cost : 'N/A'"/></td>
+                                               <td><t t-esc="product.price ? product.price : 'N/A'"/></td>
+                                               <td>
+
+
+                                                   <!-- <t t-raw="this.getProductById(product.productId)"/>  -->
+                                                  <!-- <t t-component="ColumnProgress"
+                                                        t-props="{
+                                                            group: this.state.groupData,
+                                                            progressBar: this.state.progressValue,
+                                                            aggregate: this.state.aggregateValue,
+                                                            onBarClicked: handleClick
+                                                        }"/> -->
+                                               </td>
+                                           </tr>
+                                       </t>
+                                   </tbody>
+                               </table>
+                           </div>
+                       </div>
+                   </div>
+                </t>
+            </div>
+       </div>
+    </div>
+
+</t>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="header_template">
+    <div class="row">
+        <div class="col-6 text-start">
+            <div class="mb-1">
+                <h3 style="margin: 0; font-weight: bold; font-size: 1.5rem;">
+                    <span t-esc="user_company_info['company']['company_name']"/>
+                </h3>
+            </div>
+            <div class="mb-1">
+                <h4 style="margin: 0; font-weight: normal; font-size: 0.8rem;">
+                    <span t-esc="user_company_info['company']['company_address']"/>
+                </h4>
+            </div>
+            <div class="mb-1">
+                RFC:<span t-esc="user_company_info['company']['vat']"/>
+            </div>
+            <!-- Condicional para mostrar el encabezado correcto -->
+            <t t-if="report_header == 'categoria'">
+                <t t-call="delivery_orders_report.header_delivery_category"/>
+            </t>
+            <t t-if="report_header == 'orden_entrega'">
+                <t t-call="delivery_orders_report.header_delivery_order"/>
+            </t>
+        </div>
+        <div class="col-6 text-end">
+            <div class="mb-1">
+                <span style="display: block;">
+                    <img loading="lazy" class="img img-fluid"
+                         alt="Logo de la Compañía"
+                         t-att-src="user_company_info['company']['logo']"/>
+                </span>
+            </div>
+        </div>
+    </div>
+</template>
+</odoo>

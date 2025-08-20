@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <template id="average_sales_report">
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="o">
+       <t t-set="user_company_info" t-value="o.user_company_info or {}"/>  <!-- Asignar directamente -->
+       <t t-set="docsTable" t-value="o.sql_result or {}"/>  <!-- Asignar directamente -->
+
+       <t t-set="date" t-value="docsTable.get('date', '')"/>  <!-- Usar get para evitar KeyError -->
+       <t t-set="expense_percentage" t-value="docsTable.get('expense_percentage', 0)"/>  <!-- Usar get para evitar KeyError -->
+       <t t-set="averageSales" t-value="docsTable.get('averageSales', [])"/>  <!-- Usar get para evitar KeyError -->
+
+       <t t-call="web.external_layout">
+           <div class="page" style="font-size: 10pt !important;">
+
+                  <t t-call="delivery_orders_report.header_template"/>
+
+               <div class="clearfix">
+                   <div class="page mb-0">
+                       <t t-if="docsTable">  <!-- Verifica si docsTable tiene datos -->
+                           <table class="o_has_total_table table o_main_table table-borderless">
+                               <thead class="bg-light text-white">
+                                   <tr>
+
+                                       <th name="th_name_article" class="text-center"><span>Nombre </span></th>
+                                       <th name="th_name_article" class="text-center"><span>RI</span></th>
+                                       <th name="th_check" class="text-center ">Costo</th>
+                                       <th name="th_check" class="text-center ">Gasto (<span t-esc="expense_percentage"/>%)</th>
+                                       <th name="th_check" class="text-center ">Costo Neto</th>
+                                       <th name="th_unit" class="text-center"><span>Lista de precio</span></th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                 <t t-foreach="averageSales" t-as="obj">
+                                     <tr>
+                                        <td class="text-end">
+                                            <span t-esc="obj['nombre']['es_MX']"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-esc="obj['referencia']"/>
+                                        </td>
+                                        <td class="text-end">
+                                              <span t-esc="obj['costo']"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-esc="obj['gasto']"/>
+                                        </td>
+                                        <td class="text-end">
+                                              <span t-esc="obj['costo_neto']"/>
+                                        </td>
+                                         <td class="text-end">
+                                            <span t-esc="obj['priceListName']['es_MX']"/>
+                                        </td>
+                                    </tr>
+                                 </t>
+                               </tbody>
+                           </table>
+                       </t>
+                       <t t-else="">  <!-- Si docsTable está vacío -->
+                           <div class="alert alert-warning">
+                               No hay datos disponibles para mostrar en el reporte.
+                           </div>
+                       </t>
+                   </div>
+               </div>
+           </div>
+       </t>
+    </t>
+  </t>
+</template>
+
+
+    <record id="action_average_sales_report" model="ir.actions.report">
+        <field name="name">Average Sales Report</field>
+        <field name="model">wizard.average.sales</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">delivery_orders_report.average_sales_report</field>
+        <field name="report_file">delivery_orders_report.average_sales_report</field>
+        <field name="print_report_name">'Informe por promedio de ventas'</field>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

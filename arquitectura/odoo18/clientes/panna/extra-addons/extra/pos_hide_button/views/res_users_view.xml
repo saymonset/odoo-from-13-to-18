@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_users_form_inherit_pos" model="ir.ui.view">
+            <field name="name">view.users.form.inherit.user.bahtera.pos</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[1]/group" position="after">
+                    <group>
+                        <group string="Pos Interface">
+                            <group string="General Hide">
+                                <field name="pos_hide_actions"/>
+                            </group>
+                            <group string="Component" invisible="pos_hide_actions">
+                                <field name="pos_hide_quotations_order"/>
+                                <field name="pos_hide_general_note"/>
+                                <field name="pos_hide_customer_note"/>
+                                <field name="pos_hide_pricelist"/>
+                                <field name="pos_hide_refund"/>
+                                <field name="pos_hide_cancel_order"/>
+                            </group>
+
+                        </group>
+                    </group>
+
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

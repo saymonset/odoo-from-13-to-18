@@ -1,0 +1,42 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "LaunchChrome panna",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://192.168.4.109:8018/",
+      "webRoot": "./arquitectura/odoo18/clientes/panna/extra-addons/*"
+    },
+
+    {
+      "name": "Python Debugger: panna",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "./arquitectura/odoo18/odoo/odoo-bin",
+      "console": "integratedTerminal",
+      "args": ["--config=./arquitectura/odoo18/clientes/panna/conf/odoo.cfg"]
+    },
+    {
+      "name": "LaunchChrome testClient",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://192.168.4.109:8018/",
+      "webRoot": "./arquitectura/odoo18/clientes/testclient/extra-addons/*"
+    },
+
+    {
+      "name": "Python Debugger: testclient",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "./arquitectura/odoo18/odoo/odoo-bin",
+      "console": "integratedTerminal",
+      "args": [
+        "--config=./arquitectura/odoo18/clientes/testclient/conf/odoo.cfg"
+      ]
+    }
+  ]
+}

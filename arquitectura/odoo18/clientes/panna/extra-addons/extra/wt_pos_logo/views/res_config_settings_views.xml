@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit_pos_logo" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pos.log</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_interface_section']" position="inside">
+                <setting id="pos_logo">
+                    <field name="enable_pos_logo"/>
+                    <div class="logo_option" invisible="not enable_pos_logo">
+                        <field name="logo_option" widget="radio" />
+                        <div invisible="logo_option != 'custom'">
+                            <field name="custom_logo" class="w-25" widget='image'/>
+                        </div>
+                    </div>
+                </setting>
+                <setting id="pos_screen_saver">
+                    <field name="enable_saver_background"/>
+                    <div invisible="not enable_saver_background">
+                        <field name="saver_background" class="w-50" widget='image' required="enable_saver_background"/>
+                    </div>
+                    <div class="content-group mt16 d-flex gap-2 align-items-center" invisible="not enable_saver_background">
+                        <label for="timer_color"/>
+                        <field name="timer_color" widget="color"/>
+
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

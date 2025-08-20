@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="header_delivery_order">
+
+        <div class="col-6 text-start">
+            <div class="mb-1"><span t-esc="tipo_transferencia"/></div>
+            <div class="mb-1"><span t-esc="almacenOriginName"/></div>
+            <div class="mb-1"><span>Fecha programada: <span t-esc="scheduled_date"/></span></div>
+        </div>
+</template>
+</odoo>

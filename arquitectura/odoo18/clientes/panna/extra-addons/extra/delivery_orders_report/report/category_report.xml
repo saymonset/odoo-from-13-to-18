@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_template_delivery_category">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+           <t t-set="report_header" t-value="o['report_header']"/>
+           <t t-set="user_company_info" t-value="o.user_company_info or {}"/>  <!-- Asignar directamente -->
+           <t t-set="docsTable" t-value="o.sql_result and json.loads(o.sql_result) or []"/>
+            <t t-set="date" t-value="docsTable.get('date', '')"/>  <!-- Usar get para evitar KeyError -->
+            <t t-set="tipo_transferencia" t-value="docsTable['tipo_transferencia']"/>
+            <t t-set="almacenOriginName" t-value="docsTable['almacenOriginName']"/>
+            <t t-set="scheduled_date" t-value="docsTable['scheduled_date']"/>
+            <t t-set="categorias" t-value="docsTable['categorias'] or []"/>
+            <t t-call="web.external_layout">
+                <div class="page" style="font-size: 10pt !important;">
+
+                        <t t-call="delivery_orders_report.header_template"/>
+
+                <div class="row">
+
+
+                    </div>
+                    <div class="clearfix">
+                        <div class="page mb-4">
+                               <t t-if="docsTable">  <!-- Verifica si docsTable tiene datos -->
+
+                                <table class="o_has_total_table table o_main_table table-borderless">
+                                    <thead class="bg-light text-white">
+                                        <tr>
+                                            <th name="th_name_article" class="text-center"><span>Nombre Articulo</span></th>
+
+                                            <th name="th_unit" class="text-center"><span>Unidades</span></th>
+                                            <th name="th_check" class="text-center "></th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                      <t t-foreach="categorias" t-as="categoria_obj">
+                                            <tr>
+                                                <td class="text-start" colspan="3"
+                                                    style="background-color: #f0f8ff;
+                                                    color: #333; padding: 10px; border-radius: 5px;">
+                                                    <span t-esc="categoria_obj['categoria']"/>
+                                                </td>
+
+                                            </tr>
+                                            <t t-foreach="categoria_obj['items']" t-as="producto">  <!-- Iterar sobre los productos de la categoría -->
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <span t-esc="producto['nombre_producto']"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                       <!-- <div class="progress">
+                                                            <div class="progress-bar" role="progressbar"
+                                                             style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                                                        </div> -->
+                                                        <span t-esc="producto['cantidad']"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="checkbox_{{ producto['idProductoid'] }}" />
+                                                            <label class="form-check-label" for="checkbox_{{ producto['idProducto'] }}"/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                    </tbody>
+                                </table>
+                                </t>
+                                <t t-else="">  <!-- Si docsTable está vacío -->
+                                    <div class="alert alert-warning">
+                                        No hay datos disponibles para mostrar en el reporte.
+                                    </div>
+                                </t>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+      </t>
+    </template>
+
+    <record id="action_report_wizard_category_report" model="ir.actions.report">
+        <field name="name">Delivery Orders Report</field>
+        <field name="model">wizard.delivery.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">delivery_orders_report.report_template_delivery_category</field>
+        <field name="report_file">delivery_orders_report.report_template_delivery_category</field>
+        <field name="print_report_name">'Informe por Categoria'</field>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

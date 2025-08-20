@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="point_of_sale.ProductCard2" t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension" owl="1">
+        <xpath expr="//article" position="replace">
+            <article tabindex="0"
+                t-attf-class="{{props.class}} {{props.color ? `o_colorlist_item_color_transparent_${props.color}` : ''}} product position-relative btn btn-light d-flex align-items-stretch p-0 m-0 rounded-3 text-start cursor-pointer transition-base"
+                t-on-keypress="(event) => event.code === 'Space' ? props.onClick(event) : ()=>{}"
+                t-on-click="props.onClick"
+                t-att-data-product-id="props.productId"
+                t-attf-aria-labelledby="article_product_{{props.productId}}">
+                <div t-if="props.productInfo" class="product-information-tag" t-on-click.stop="props.onProductInfoClick" t-att-class="{'red-tag' : props.showWarning}">
+                    <i class="product-information-tag-logo fa fa-info" role="img" aria-label="Product Information" title="Product Information" />
+                </div>
+                <div t-if="props.imageUrl" class="product-img rounded-top rounded-3">
+                    <img class="w-100 bg-100" t-att-src="props.imageUrl" t-att-alt="props.name" />
+                </div>
+            <t t-if="props.imageUrl">
+                <div class="product-content d-flex flex-row px-2 justify-content-between rounded-bottom rounded-3 flex-shrink-1" t-att-class="{'h-100' : !props.imageUrl}">
+                        <div class="overflow-hidden lh-sm product-name my-2"
+                            t-att-class="{'no-image d-flex justify-content-center align-items-center text-center fs-4': !props.imageUrl}"
+                            t-attf-id="article_product_{{props.productId}}"
+                            t-esc="props.name"/>
+                        <h1 t-if="props.productCartQty"
+                            t-out="props.productCartQty"
+                            class="product-cart-qty text-muted display-6 fw-bolder m-0 mt-auto" />
+                    </div>
+                </t>
+            <t t-if="!props.imageUrl">
+                    <div class="product-content d-flex flex-row px-2 justify-content-between rounded-bottom rounded-3 flex-shrink-1" t-att-class="{'h-100' : !props.imageUrl}">
+                        <div class="overflow-hidden lh-sm product-name my-2"
+                            t-att-class="{'no-image d-flex justify-content-center align-items-center text-center fs-4': !props.imageUrl}"
+                            t-attf-id="article_product_{{props.productId}}"
+                            t-esc="props.name" t-attf-style="font-size: {{props.text_font_size}}px !important;line-height:  27px !important;"/>
+                        <h1 t-if="props.productCartQty"
+                            t-out="props.productCartQty"
+                            class="product-cart-qty text-muted display-6 fw-bolder m-0 mt-auto" />
+                    </div>
+            </t>
+            </article>
+        </xpath>
+    </t>
+
+    <t t-name="ProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@t-elif='productsToDisplay.length != 0 and pos.session._has_available_products']" position="attributes">
+            <attribute name="t-attf-style">grid-template-columns: repeat(auto-fill, minmax({{pos.config.product_block_width}}px, 1fr));</attribute>
+
+        </xpath>
+        <xpath expr="//ProductCard" position="attributes">
+            <attribute name="text_font_size">pos.config.text_font_size</attribute>
+        </xpath>
+    </t>
+</templates>

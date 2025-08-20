@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="wizard_delivery_order_view_form" model="ir.ui.view">
+        <field name="name">wizard.delivery.order.view.form</field>
+        <field name="model">wizard.delivery.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="group_category" />
+                        <field name="stock_picking_type_ids" widget="many2many_tags"/>
+                        <field name="stock_locations_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                         <field name="place_of_delivery_ids" widget="many2many_tags"/>
+                         <field name="scheduled_date" />
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="print_report" string="Imprimir" type="object" default_focus="1" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="wizard_delivery_order_action" model="ir.actions.act_window">
+        <field name="name">Informe Tipo de Transferencia</field>
+        <field name="res_model">wizard.delivery.order</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="wizard_delivery_order_menu"
+        action="wizard_delivery_order_action"
+        parent="stock.menu_warehouse_report"
+        sequence="48"/>
+
+</odoo>

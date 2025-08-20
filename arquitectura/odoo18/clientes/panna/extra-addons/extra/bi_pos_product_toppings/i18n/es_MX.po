@@ -1,0 +1,198 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bi_pos_product_toppings
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250415\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-17 17:15+0000\n"
+"PO-Revision-Date: 2025-05-19 13:36-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_pos_config__add_topping_default
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_res_config_settings__add_topping_default
+msgid "Add toppings on product add"
+msgstr "Añadir ingredientes al producto"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: bi_pos_product_toppings
+#: model_terms:ir.ui.view,arch_db:bi_pos_product_toppings.product_topping_add_layout_form
+msgid "Confirm"
+msgstr "Confirmar"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__create_uid
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__create_date
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: bi_pos_product_toppings
+#: model_terms:ir.ui.view,arch_db:bi_pos_product_toppings.product_topping_add_layout_form
+msgid "Discard"
+msgstr "Desechar"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__display_name
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__display_name
+msgid "Display Name"
+msgstr "Nombre para Mostrar"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_pos_config__activate_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_res_config_settings__activate_toppings
+msgid "Enable Product Toppings"
+msgstr "Permitir Ingredientes al Producto"
+
+#. module: bi_pos_product_toppings
+#: model_terms:ir.ui.view,arch_db:bi_pos_product_toppings.pos_config_settings_item_count
+msgid "Enable Toppings"
+msgstr "Permitir Ingredientes"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__id
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__id
+msgid "ID"
+msgstr "ID"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_product__is_topping
+msgid "Is Topping"
+msgstr "Es ingrediente"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__write_uid
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__write_uid
+msgid "Last Updated by"
+msgstr "Ultima Actualización de"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__write_date
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__write_date
+msgid "Last Updated on"
+msgstr "Ultima actualización el"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: bi_pos_product_toppings
+#: model_terms:ir.ui.view,arch_db:bi_pos_product_toppings.pos_config_settings_item_count
+msgid "POS Toppings Configuration"
+msgstr "POS Configuración de ingredientes"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_category
+msgid "Point of Sale Category"
+msgstr "Categoría de Punto de venta"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Configuración del punto de venta"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Líneas de orden del Punto de venta"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Órdenes del punto de venta"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Sesión del punto de venta"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_preparation_display_orderline
+msgid "Point of Sale preparation order line"
+msgstr "Línea de orden de preparación del punto de venta"
+
+#. module: bi_pos_product_toppings
+#: model:ir.actions.act_window,name:bi_pos_product_toppings.action_topping_groups
+msgid "Pos Toppings Groups"
+msgstr "Pos Grupos de ingredientes"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_preparation_display_display
+msgid "Preparation display"
+msgstr "Pantalla de preparación"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_pos_preparation_display_order
+msgid "Preparation orders"
+msgstr "Comandas en preparación"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_product_topping_add_wizard
+msgid "Product Topping Wiz"
+msgstr "Asistente para la cobertura de productos"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_pos_order_line__line_topping_ids
+msgid "Product Toppings"
+msgstr "Coberturas del producto"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_product_product
+msgid "Product Variant"
+msgstr "Variante del producto"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_pos_preparation_display_orderline__line_topping_ids
+msgid "Selected Topping"
+msgstr "Ingrediente seleccionado"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_pos_order_line__top_data
+msgid "Top Data"
+msgstr "Datos Principales"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__topping_ids
+msgid "Topping"
+msgstr "Ingrediente"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model,name:bi_pos_product_toppings.model_topping_groups
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_product__topping_group_ids
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_topping_add_wizard__topping_group_ids
+msgid "Topping Groups"
+msgstr "Grupos de ingredientes"
+
+#. module: bi_pos_product_toppings
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_pos_category__topping_ids
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_product_product__topping_ids
+#: model:ir.model.fields,field_description:bi_pos_product_toppings.field_topping_groups__topping_ids
+#: model_terms:ir.ui.view,arch_db:bi_pos_product_toppings.product_normal_form_view_inherit
+msgid "Toppings"
+msgstr "Ingredientes"
+
+#. module: bi_pos_product_toppings
+#: model:ir.ui.menu,name:bi_pos_product_toppings.menu_product_toppings_groups_setting
+#: model_terms:ir.ui.view,arch_db:bi_pos_product_toppings.topping_groups_form_view
+#: model_terms:ir.ui.view,arch_db:bi_pos_product_toppings.topping_groups_tree_view
+msgid "Toppings Groups"
+msgstr "Grupos de ingredientes"

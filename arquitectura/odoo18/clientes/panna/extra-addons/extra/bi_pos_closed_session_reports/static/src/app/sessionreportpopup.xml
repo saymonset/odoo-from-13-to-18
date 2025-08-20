@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="bi_pos_closed_session_reports.SelectionReportType">
+        <Dialog title.translate="Print Report">
+            <div class="modal-body">
+                <div class="selection scrollable-y">
+                    <div class="attribute" style="text-align: left; margin-bottom: 15px; font-weight: normal;">
+                            <input type="radio" name="type" id="1" value="receipt" style="text-align: left;
+                                 display: inline-block;overflow: hidden;background: white;min-height: 20px;font-size: 20px;
+                                 color: #444;padding: 10px;border-radius: 3px;border: none;box-shadow: 0px 0px 0px 0px gainsboro inset;
+                                 box-sizing: border-box;width: 5%;" checked="checked"/>
+                            <span>
+                                Generate Receipt
+                            </span>
+                    </div>
+                    <div class="attribute" style="text-align: left; margin-bottom: 15px; font-weight: normal;">
+                        <input type="radio" name="type" id="2" value="pdf" style="text-align: left;
+                             display: inline-block;overflow: hidden;background: white;min-height: 20px;font-size: 20px;
+                             color: #444;padding: 10px;border-radius: 3px;border: none;box-shadow: 0px 0px 0px 0px gainsboro inset;
+                             box-sizing: border-box;width: 5%;"/>
+                        <span>
+                            Generate PDF
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <t t-set-slot="footer">
+                <button class="btn btn-primary btn-lg lh-lg o-default-button" t-on-click="confirm_report_type">
+                    Print
+                </button>
+                <button class="btn btn-primary btn-lg lh-lg o-default-button" t-on-click="cancel">
+                    Close
+                </button>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+	<t t-name="custom_invoice.CDFIDetailPopupWidget">
+          <Dialog title.translate="Información para CFDI">
+               <div class="mb-3">
+                   <label class='form-label'>Uso CFDI (Cliente)</label>
+                   <select class='detail form-select' name='uso_cfdi' t-model="state.uso_cfdi">
+                        <option value='G03'>Gastos en general</option>
+                        <option value='G01'>Adquisición de mercancías</option>
+                        <option value='G02'>Devoluciones, descuentos o bonificaciones</option>
+                        <option value='I01'>Construcciones</option>
+                        <option value='I02'>Mobiliario y equipo de oficina por inversiones</option>
+                        <option value='I03'>Equipo de transporte</option>
+                        <option value='I04'>Equipo de cómputo y accesorios</option>
+                        <option value='I05'>Dados, troqueles, moldes, matrices y herramental</option>
+                        <option value='I08'>Otra maquinaria y equipo</option>
+                        <option value='D01'>Honorarios médicos, dentales y gastos hospitalarios</option>
+                        <option value='D02'>Gastos médicos por incapacidad o discapacidad</option>
+                        <option value='D03'>Gastos funerales</option>
+                        <option value='D04'>Donativos</option>
+                        <option value='D07'>Primas por seguros de gastos médicos</option>
+                        <option value='D08'>Gastos de transportación escolar obligatoria</option>
+                        <option value='D10'>Pagos por servicios educativos (colegiaturas)</option>
+                        <option value='S01'>Sin efectos fiscales</option>
+                   </select>
+               </div>
+               <t t-set-slot="footer">
+                   <button class="btn btn-primary o-default-button" t-on-click="confirm">Aceptar</button>
+               </t>
+        </Dialog>
+    </t>
+</templates>

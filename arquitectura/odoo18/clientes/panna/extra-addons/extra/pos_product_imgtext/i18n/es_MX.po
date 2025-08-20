@@ -1,0 +1,63 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pos_product_imgtext
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250415\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-10 16:59+0000\n"
+"PO-Revision-Date: 2025-05-10 12:16-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: pos_product_imgtext
+#: model:ir.model.fields,field_description:pos_product_imgtext.field_pos_config__allow_large_text
+msgid "Allow large text"
+msgstr "Permitir texto grande"
+
+#. module: pos_product_imgtext
+#: model:ir.model.fields,help:pos_product_imgtext.field_pos_config__allow_large_text
+msgid "Allows you to show product name large text when there is no product image."
+msgstr "Muestra el nombre del producto en letras grandes si el producto no tiene imagen, para facilitar su identificación."
+
+#. module: pos_product_imgtext
+#: model:ir.model.fields,field_description:pos_product_imgtext.field_product_product__product_has_image
+msgid "Has Image"
+msgstr "Tiene image"
+
+#. module: pos_product_imgtext
+#: model:ir.model,name:pos_product_imgtext.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Configuración del punto de venta"
+
+#. module: pos_product_imgtext
+#: model:ir.model.fields,field_description:pos_product_imgtext.field_pos_config__product_block_height
+msgid "Product Block Height(px)"
+msgstr "Altura del bloque del producto (px)"
+
+#. module: pos_product_imgtext
+#: model:ir.model.fields,field_description:pos_product_imgtext.field_pos_config__product_block_width
+msgid "Product Block Width(px)"
+msgstr "Ancho del bloque del producto (px)"
+
+#. module: pos_product_imgtext
+#: model_terms:ir.ui.view,arch_db:pos_product_imgtext.pos_config_view_form_pos_sale
+msgid "Product Image Text"
+msgstr "Texto de la imagen"
+
+#. module: pos_product_imgtext
+#: model:ir.model,name:pos_product_imgtext.model_product_product
+msgid "Product Variant"
+msgstr "Variante del producto"
+
+#. module: pos_product_imgtext
+#: model:ir.model.fields,field_description:pos_product_imgtext.field_pos_config__text_font_size
+msgid "Text Font Size(px)"
+msgstr "Tamaño de texto (px)"

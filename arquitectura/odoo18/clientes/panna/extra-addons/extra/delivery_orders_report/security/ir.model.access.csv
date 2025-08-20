@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wizard_delivery_order,access_wizard_delivery_order,model_wizard_delivery_order,,1,1,1,1
+access_wizard_average_sales,access_wizard_average_sales,model_wizard_average_sales,,1,1,1,1
+access_wizard_average_sales_manager,wizard_average_sales_manager,model_wizard_average_sales,,1,1,1,1
+access_profit_margin_manager,profit_margin_manager,model_profit_margin,,1,1,1,1

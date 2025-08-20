@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="delivery_orders_report.ColumnProgress">
+          <div class="column-progress">
+            <div class="progress-bar" style="width: t.progressBar + '%'">
+                <span><t t-esc="t.aggregate || 'Sin datos'"/></span>
+            </div>
+            <button t-on-click="onBarClicked">Click me</button>
+        </div>
+    </t>
+</templates>

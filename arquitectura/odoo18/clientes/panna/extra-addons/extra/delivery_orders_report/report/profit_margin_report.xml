@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="profit_margin_report">
+       <t t-call="web.html_container">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <t t-set="user_company_info" t-value="json.loads(context['user_company_info'])"/>
+                <t t-set="products" t-value="json.loads(context['report_data'])"/>
+
+               <t t-call="delivery_orders_report.header_template"/>
+
+                <h1 class="text-center">Reporte de Productos</h1>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Costo</th>
+                            <th>Precio</th>
+                            <th>Margen (%) </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="products" t-as="product">
+                             <tr>
+                                <td><t t-esc="product['productName']"/></td>
+                                 <td><t t-esc="product['cost']"/></td>
+                                 <td><t t-esc="product['price']"/></td>
+                                <td>
+                                    <t t-raw="product['margin_percentage']"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </t>
+    </template>
+
+    <record id="action_profit_margin_report" model="ir.actions.report">
+        <field name="name">Profit Margin Report</field>
+        <field name="model">profit_margin</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">delivery_orders_report.profit_margin_report</field>
+        <field name="report_file">delivery_orders_report.profit_margin_report</field>
+        <field name="print_report_name">'Informe margen de ganancia'</field>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

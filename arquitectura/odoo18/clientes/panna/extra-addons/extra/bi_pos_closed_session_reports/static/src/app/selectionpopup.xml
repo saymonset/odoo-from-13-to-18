@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="bi_pos_closed_session_reports.SelectionSession">
+        <Dialog title.translate="Posted Session Report">
+            <div class="modal-body">
+                <div class="table-data" style="font-size: 18px; font-weight:bold;">
+                    Select Session :
+                        <select name="Select" id="Select" class="user-selection"
+                                style="background: white; padding: 5px; padding-right: 45px;
+                                            font-size: 15px; margin-left: 10px;" t-model="state.SelectedSession">
+                            <option value="">Please Choose </option>
+                            <t t-foreach='pos_sessions' t-as='ssn' t-key='ssn.id'>
+                                <t t-if="ssn.state == 'closed'">
+                                    <option t-att-value='ssn.id'>
+                                        <t t-esc="ssn.name"/>
+                                    </option>
+                                </t>
+                            </t>
+                        </select>
+                </div>
+            </div>
+
+            <t t-set-slot="footer">
+                <button class="btn btn-primary btn-lg lh-lg o-default-button"  t-on-click="confirm_session">
+                    Print
+                </button>
+
+                <button class="btn btn-primary btn-lg lh-lg o-default-button" t-on-click="cancel">
+                    Close
+                </button>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>

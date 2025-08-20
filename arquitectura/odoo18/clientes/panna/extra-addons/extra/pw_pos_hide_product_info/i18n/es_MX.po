@@ -1,0 +1,39 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pw_pos_hide_product_info
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250415\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-10 16:27+0000\n"
+"PO-Revision-Date: 2025-05-10 11:31-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_MX\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: pw_pos_hide_product_info
+#: model:ir.model,name:pw_pos_hide_product_info.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: pw_pos_hide_product_info
+#: model:ir.model.fields,field_description:pw_pos_hide_product_info.field_pos_config__pw_hide_product_info
+#: model:ir.model.fields,field_description:pw_pos_hide_product_info.field_res_config_settings__pw_hide_product_info
+msgid "Hide Product Info"
+msgstr "Ocultar Info Producto"
+
+#. module: pw_pos_hide_product_info
+#: model_terms:ir.ui.view,arch_db:pw_pos_hide_product_info.res_config_settings_view_form_inherit_hide_info
+msgid "Hide product information on pos"
+msgstr "Ocultar información de producto en pos"
+
+#. module: pw_pos_hide_product_info
+#: model:ir.model,name:pw_pos_hide_product_info.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Configuración del punto de venta"
