@@ -58,6 +58,8 @@ source .venv/bin/activate
     uv pip install inotify
     uv pip install watchdog
     uv pip install openai
+    uv pip install lxml
+
      ``
 # Instalar los requirement
 ```bash

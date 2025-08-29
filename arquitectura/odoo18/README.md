@@ -53,6 +53,8 @@ source .venv/bin/activate
     uv pip install pandas
     uv  pip install xmltodict
     uv    pip install gtts
+   uv pip install lxml
+
      ``
 # Instalar los requirement
 ```bash

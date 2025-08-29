@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="react-odoo.ItemCounter">
+    
+     
+        <div class="item-row ">
+            <strong t-esc="props.name2"/>: <span t-esc="props.quantity2"/>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="react-odoo.FirstStepsApp">
+
+    <div>
+            
+            <h1>Carrito de compras 2</h1>
+            <t t-foreach="itemsInCart2" t-as="item" t-key="item.productName">
+                <ItemCounter name2="item.productName" quantity2="item.quantity"/>
+            </t>
+        </div>
+    </t>
+</templates>
