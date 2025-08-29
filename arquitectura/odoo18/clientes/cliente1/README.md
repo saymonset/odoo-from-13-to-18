@@ -1,10 +1,10 @@
-## Para debuguear , siempre en el ssh abrir los fuentes desde ODOO-13-18
+## Ubicate en esta ruta para instalar los fuentes de odoo y el ambiente virtual enviroment .venv
 
-## Buscar un modulo
-
-## ejemplo , find con eso
-
-\_name = "stock.picking.type"
+/home/simon/odoo-13-18/arquitectura/odoo18
+sudo apt install tree
+tree -L 2 .
+cat /etc/os-release
+ps aux | grep odoo-bin
 
 ## Descripción
 
@@ -53,6 +53,11 @@ source .venv/bin/activate
     uv pip install pandas
     uv  pip install xmltodict
     uv    pip install gtts
+    # para debugg
+    uv pip install ptvsd
+    uv pip install inotify
+    uv pip install watchdog
+    uv pip install openai
      ``
 # Instalar los requirement
 ```bash
@@ -66,14 +71,24 @@ uv pip install -r odoo/requirements.txt
 ```
 
 ```bash
-CREATE ROLE odoo18 WITH LOGIN PASSWORD 'odoo' CREATEDB;
- ALTER USER odoo18 WITH SUPERUSER;
+CREATE ROLE panna18 WITH LOGIN PASSWORD 'odoo' CREATEDB;
+ ALTER USER panna18 WITH SUPERUSER;
+```
+
+# Cambiar password de admin en panna
+
+```bash
+ //--No funciona user y password
+Usuario: admin@ictecnologymx.com
+pwd: 123456
+select * from res_users where login='admin@ictecnologymx.com';
+UPDATE res_users SET password='$pbkdf2-sha512$25000$FCLkvFdKiTHGOAfgvLcWIg$/3T2Qx4D7dMamxXYUiKsd8ky0TrQpUVuFCN5sI0nqYIktPa88flL2fJJ2/5xCEh/qIWr/TrrB3Ja6YwtfcS/4g' WHERE login='admin@ictecnologymx.com';
 ```
 
 # En postgres creamos el usuario odoo18 con super usuario
 
 ```bash
-CREATE ROLE odoo18 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
+CREATE ROLE panna18 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 ```
 
 # Para listar los roles y permisos
@@ -88,13 +103,28 @@ CREATE ROLE odoo18 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 sudo ufw allow 8018/tcp
 ```
 
-# Instalamo la base de odoo en bd por primera vez
+# Abrir puerto para debugguear
 
+```bash
+sudo ufw allow 49003/tcp
+```
+
+# Abrir puerto para debugguear
+
+```bash
+sudo ufw allow 42091/tcp
+```
+
+# Abrir puerto para debugguear
+
+```bash
+sudo ufw allow 8888/tcp
+```
 # Ir a la ruta or path
 ```bash
 /home/simon/odoo-13-18/arquitectura/odoo18
 ```
-
+# Instalamo la base de odoo en bd por primera vez
 
 # Si no esta activao el ambiente
 
@@ -103,7 +133,7 @@ source .venv/bin/activate
 ```
 
 ```bash
-./odoo/odoo-bin -d dbcliente1_18 -i base -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbodoo18 -i base -c clientes/cliente1/conf/odoo.cfg
 ```
 
 # Arrancamos odoo de manera regular
@@ -113,20 +143,11 @@ source .venv/bin/activate
 ```bash
 source .venv/bin/activate
 ```
-# si esta activo dl puero lo matamos
-```bash
-sudo lsof -i :8018
-```
 
 ```bash
-./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+ ./odoo/odoo-bin -d dbodoo18 -c clientes/cliente1/conf/odoo.cfg --dev=all
 ```
 # Accedemos
 ```bash
 http://192.168.4.109:8018/
-```
-# Base de datos
-```bash
-psql -U panna18 -d dbpanna18
-password:odoo
 ```

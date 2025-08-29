@@ -120,7 +120,10 @@ sudo ufw allow 42091/tcp
 ```bash
 sudo ufw allow 8888/tcp
 ```
-
+# Ir a la ruta or path
+```bash
+/home/simon/odoo-13-18/arquitectura/odoo18
+```
 # Instalamo la base de odoo en bd por primera vez
 
 # Si no esta activao el ambiente
@@ -142,6 +145,10 @@ source .venv/bin/activate
 ```
 
 ```bash
-./odoo/odoo-bin -d dbpanna18 -c clientes/panna/conf/odoo.cfg
+./odoo/odoo-bin -d dbpanna18 -c clientes/panna/conf/odoo.cfg --dev=all
  ./odoo/odoo-bin -d panna -c clientes/panna/conf/odoo.cfg --dev=all
+```
+# Accedemos
+```bash
+http://192.168.4.109:8018/
 ```
