@@ -73,25 +73,23 @@ uv pip install -r odoo/requirements.txt
 ```
 
 ```bash
-CREATE ROLE panna18 WITH LOGIN PASSWORD 'odoo' CREATEDB;
- ALTER USER panna18 WITH SUPERUSER;
+CREATE ROLE odooia WITH LOGIN PASSWORD '123456' CREATEDB;
+ ALTER USER odooia WITH SUPERUSER;
 ```
-
-# Cambiar password de admin en panna
-
-```bash
- //--No funciona user y password
-Usuario: admin@ictecnologymx.com
-pwd: 123456
-select * from res_users where login='admin@ictecnologymx.com';
-UPDATE res_users SET password='$pbkdf2-sha512$25000$FCLkvFdKiTHGOAfgvLcWIg$/3T2Qx4D7dMamxXYUiKsd8ky0TrQpUVuFCN5sI0nqYIktPa88flL2fJJ2/5xCEh/qIWr/TrrB3Ja6YwtfcS/4g' WHERE login='admin@ictecnologymx.com';
+ 
 ```
 
 # En postgres creamos el usuario odoo18 con super usuario
 
 ```bash
-CREATE ROLE panna18 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
+CREATE ROLE odooia WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 ```
+```bash
+\q
+\exit
+ psql -U odooia -d postgres
+ CREATE DATABASE dbcontabo18;
+ ```
 
 # Para listar los roles y permisos
 
@@ -102,7 +100,7 @@ CREATE ROLE panna18 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 # Abrir el puertoen el server para que pueda escuchar
 
 ```bash
-sudo ufw allow 8018/tcp
+sudo ufw allow 8020/tcp
 ```
 
 # Abrir puerto para debugguear
@@ -135,7 +133,7 @@ source .venv/bin/activate
 ```
 
 ```bash
-./odoo/odoo-bin -d dbodoo18 -i base -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbcontabo18 -i base -c clientes/cliente1/conf/odoo.cfg
 ```
 
 # Arrancamos odoo de manera regular
@@ -147,9 +145,9 @@ source .venv/bin/activate
 ```
 
 ```bash
- ./odoo/odoo-bin -d dbodoo18 -c clientes/cliente1/conf/odoo.cfg --dev=all
+ ./odoo/odoo-bin -d dbcontabo18 -c clientes/cliente1/conf/odoo.cfg --dev=all
 ```
 # Accedemos
 ```bash
-http://192.168.4.109:8018/
+http://192.168.4.109:8020/
 ```
