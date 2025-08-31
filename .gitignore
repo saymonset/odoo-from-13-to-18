@@ -17,8 +17,8 @@
 /arquitectura/odoo*/clientes/*/extra-addons/enterprise
 
 # (Opcional) Ignorar todos los archivos .pyc y carpetas __pycache__ en cualquier parte del proyecto
-**/__pycache__/
-/**/*.pyc
+# **/__pycache__/
+# /**/*.pyc
 
-/arquitectura/odoo*/clientes/*/extra-addons/*/*/*.py
-/arquitectura/odoo*/clientes/*/extra-addons/*/*/*/*.py
+# /arquitectura/odoo*/clientes/*/extra-addons/*/*/*.py
+# /arquitectura/odoo*/clientes/*/extra-addons/*/*/*/*.py
