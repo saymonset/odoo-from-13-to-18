@@ -4,7 +4,7 @@ from odoo import http
 class Openai(http.Controller):
     @http.route('/react-odoo/openai', type='json', auth='public')
     def list(self, **kw):
-        records = http.request.env['reactodoo.micontacto'].search([])
+        records = http.request.env['reactodoo.micontacto'].sudo().search([])
         result = []
         # Llamar al método generar_descripcion_ai para cada registro
         for record in records:
