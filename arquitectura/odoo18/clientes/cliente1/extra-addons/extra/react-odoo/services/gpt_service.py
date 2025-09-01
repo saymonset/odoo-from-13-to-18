@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import logging
 import json
 from odoo import api, models, fields, _
@@ -18,6 +18,9 @@ class GptService(models.TransientModel):
     
     @api.model
     def orthography_check(self, prompt):
+        """Verificación ortográfica usando el caso de uso"""
+        use_case = self.env['orthography.use.case']
+        options = {"prompt": prompt}
         # Implementa aquí la lógica real de verificación ortográfica
         # Por ahora devolvemos un ejemplo básico
-        return {'hola': 'hola mundo', 'corrected_text': prompt}
+        return use_case.execute(options)
