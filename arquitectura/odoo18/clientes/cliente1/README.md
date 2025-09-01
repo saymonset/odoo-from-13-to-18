@@ -59,6 +59,7 @@ source .venv/bin/activate
     uv pip install watchdog
     uv pip install openai
     uv pip install lxml
+    uv pip install pydantic
 
      ``
 # Instalar los requirement
