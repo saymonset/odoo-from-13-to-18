@@ -38,3 +38,18 @@ class GptService(models.TransientModel):
         # Implementa aquí la lógica real de verificación ortográfica
         # Por ahora devolvemos un ejemplo básaico
         return use_case.execute(options)
+    
+    @api.model
+    def textToAudio(self, prompt, voice=None):
+        config = self._get_openai_config()
+        openai_client = OpenAI(api_key=config.api_key)
+        use_case = self.env['text_to_audio.use.case']
+        options = {"prompt": prompt,
+                   "voice": voice,
+                   "openai_client": openai_client,
+                   "model": config.default_model,  # Pasamos el modelo desde la configuración
+                   }
+         
+        # Implementa aquí la lógica real de verificación ortográfica
+        # Por ahora devolvemos un ejemplo básaico
+        return use_case.execute(options)
