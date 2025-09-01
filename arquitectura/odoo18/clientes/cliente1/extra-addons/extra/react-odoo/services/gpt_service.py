@@ -16,21 +16,23 @@ class GptService(models.TransientModel):
     _description = 'GPT Service Layer'
     
     @api.model
-    def _get_openai_client(self):
-        api_key = self.env['openai.config'].sudo().search([('active', '=', True)], limit=1).api_key
-        if not api_key:
-            None
+    def _get_openai_config(self):
+        """Obtiene la configuración de OpenAI"""
+        config = self.env['openai.config'].sudo().search([('active', '=', True)], limit=1)
+        if not config:
             raise ValidationError(_('Configura la clave de API de OpenAI en Ajustes.'))
-        return OpenAI(api_key=api_key)
+        return config
     
     @api.model
     def orthography_check(self, prompt, max_tokens=None):
         """Verificación ortográfica usando el caso de uso"""
-        openai_client = self._get_openai_client()
+        config = self._get_openai_config()
+        openai_client = OpenAI(api_key=config.api_key)
         use_case = self.env['orthography.use.case']
         options = {"prompt": prompt,
                    "max_tokens": max_tokens,
                    "openai_client": openai_client,
+                   "model": config.default_model,  # Pasamos el modelo desde la configuración
                    }
          
         # Implementa aquí la lógica real de verificación ortográfica

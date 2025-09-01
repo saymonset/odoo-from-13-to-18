@@ -21,6 +21,7 @@ class OrthographyUseCase(models.TransientModel):
         prompt = options.get('prompt', '')
         openai_client = options.get('openai_client')
         max_tokens = options.get('max_tokens', 150)
+        model = options.get('model', 'gpt-3.5-turbo')  # Obtenemos el modelo de las opciones
         
         if not prompt:
             _logger.error("No se proporcionó un prompt para la verificación ortográfica")
@@ -49,7 +50,7 @@ class OrthographyUseCase(models.TransientModel):
             """
             
             response = openai_client.chat.completions.create(
-                model="gpt-4o",
+                model=model,  # Usamos el modelo desde las opciones
                 messages=[
                     {
                         "role": "system", 
