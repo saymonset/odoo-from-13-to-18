@@ -19,9 +19,10 @@ class GptController(http.Controller):
             prompt = kw.get('prompt', '')
             if not prompt:
                 return {'error': 'No prompt provided'}
+            max_tokens = kw.get('max_tokens')
             
             service = http.request.env['gpt.service']
-            result = service.orthography_check(prompt)
+            result = service.orthography_check(prompt, max_tokens)
             return result
         except Exception as e:
             return {'error': str(e)}

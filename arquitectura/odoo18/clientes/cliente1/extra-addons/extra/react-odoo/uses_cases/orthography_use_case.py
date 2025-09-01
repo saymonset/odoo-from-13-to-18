@@ -18,6 +18,7 @@ class OrthographyUseCase(models.TransientModel):
         :return: Diccionario con resultados
         """
         prompt = options.get('prompt', '')
+        max_tokens = options.get('max_tokens')
         
         if not prompt:
             _logger.error("No se proporcionó un prompt para la verificación ortográfica")
@@ -29,5 +30,6 @@ class OrthographyUseCase(models.TransientModel):
             "case": prompt,
             "corrected_text": f"Texto corregido: {prompt}",
             "corrections": [],
-            "score": 0.95
+            "score": 0.95,
+            "max_tokens_used": max_tokens
         }
