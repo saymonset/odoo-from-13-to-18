@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+from pathlib import Path
 import logging
 import json
 from odoo import api, models, fields, _
@@ -53,3 +55,16 @@ class GptService(models.TransientModel):
         # Implementa aquí la lógica real de verificación ortográfica
         # Por ahora devolvemos un ejemplo básaico
         return use_case.execute(options)
+    @api.model
+    def getAudio(self, file_id):
+        # Obtener la ruta base donde se guardan los audios
+            folder_path = Path(__file__).parent.resolve() / '../generated/audios/'
+            folder_path = folder_path.resolve()
+            
+            # Construir la ruta completa del archivo
+            file_path = folder_path / f"{file_id}.mp3"
+            if not file_path.exists():
+                raise ValidationError(_('El archivo de audio no existe.'))
+            return str(file_path)
+            
+
