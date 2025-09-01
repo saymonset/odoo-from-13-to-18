@@ -1,7 +1,7 @@
 # services/openai_service.py
 import logging
 from odoo import api, models, _
-#from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 try:
     from openai import OpenAI
@@ -19,7 +19,7 @@ class OpenAIService(models.TransientModel):
         api_key = self.env['openai.config'].sudo().search([('active', '=', True)], limit=1).api_key
         if not api_key:
             None
-            #raise ValidationError(_('Configura la clave de API de OpenAI en Ajustes.'))
+            raise ValidationError(_('Configura la clave de API de OpenAI en Ajustes.'))
         return OpenAI(api_key=api_key)
 
     @api.model

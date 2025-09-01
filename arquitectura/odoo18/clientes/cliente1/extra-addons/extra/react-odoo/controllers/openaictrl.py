@@ -20,15 +20,3 @@ class Openai(http.Controller):
             'contacts': result,
             'saymon': 'Hola Saymon desde OpenAI',
         }
-        # return http.request.render(
-        #     'react-odoo.listing',
-        #     {
-        #         'root': '/react-odoo',
-        #         'objects': http.request.env['reactodoo.micontacto'].search([]),
-        #         'saymon':'Hola Saymon desde OpenAI',
-        #     },
-        # )
-
-    @http.route('/react-odoo/objects/<model("reactodoo.micontacto"):obj>', auth='public')
-    def object(self, obj, **kw):
-        return http.request.render('react-odoo.object', {'object': obj})
