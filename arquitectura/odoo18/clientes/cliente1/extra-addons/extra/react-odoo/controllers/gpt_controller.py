@@ -31,6 +31,7 @@ class GptController(http.Controller):
             return result
         except Exception as e:
             return {'error': str(e)}
+   
     @http.route('/gpt/text-to-audio',type='http', auth='public',csrf=False)
     def text_to_audio(self, **kw):
         try:
@@ -58,7 +59,7 @@ class GptController(http.Controller):
             response.headers.set('Content-Disposition', 'attachment; filename=audio.mp3')
             
             # Limpiar archivo temporal si lo deseas
-            os.unlink(file_path)
+            #os.unlink(file_path)
             
             return response
         except Exception as e:
@@ -70,7 +71,7 @@ class GptController(http.Controller):
             )
                 
     @http.route('/gpt/getaudio',type='http', auth='public',csrf=False)
-    def text_to_audio(self, **kw):
+    def getaudio(self, **kw):
         try:
             fileId = kw.get('fileId', '')
             if not fileId:
