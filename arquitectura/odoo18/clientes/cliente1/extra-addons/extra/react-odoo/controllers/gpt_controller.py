@@ -2,6 +2,7 @@ import json
 import tempfile
 import os
 from odoo import http
+import time
 from odoo.http import request, Response
 import logging
 from ..dto.orthography_dto import OrthographyDto
@@ -100,3 +101,45 @@ class GptController(http.Controller):
                 status=500,
                 mimetype='application/json'
             )
+            
+            
+            
+    @http.route('/gpt/audio-to-text', type='http', auth='public', csrf=False)
+    def audio_to_text(self, **kw):
+        # Acceder al archivo enviado
+        file_storage = http.request.httprequest.files.get('file')
+        if not file_storage:
+            return http.Response('No file uploaded', status=400)
+
+        # Validar tipo de archivo (ejemplo: audio)
+        if not file_storage.mimetype.startswith('audio/'):
+            return http.Response('Invalid file type', status=400)
+
+        # Validar tamaño (ejemplo: 5 MB)
+        file_storage.seek(0, os.SEEK_END)
+        file_size = file_storage.tell()
+        file_storage.seek(0)
+        if file_size > 5 * 1024 * 1024:
+            return http.Response('File is bigger than 5 MB', status=400)
+
+        # Guardar el archivo con nombre único
+        ext = file_storage.filename.split('.')[-1]
+        filename = f"{int(time.time())}.{ext}"
+        
+        # Ruta absoluta del directorio donde está este archivo Python
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Subir una carpeta y luego ir a generated/upload
+        upload_dir = os.path.abspath(os.path.join(current_dir, '..', 'generated', 'upload'))
+
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, filename)
+        with open(file_path, 'wb') as f:
+            file_storage.save(f)
+
+        service = http.request.env['gpt.service']
+        prompt = kw.get('prompt', '')
+        response = service.audioToText(file_path,prompt)
+        
+
+        return http.Response(f'File uploaded as {response}', status=200)

@@ -66,5 +66,20 @@ class GptService(models.TransientModel):
             if not file_path.exists():
                 raise ValidationError(_('El archivo de audio no existe.'))
             return str(file_path)
+        
+        
+    @api.model
+    def audioToText(self, file_path, prompt=''):
+            config = self._get_openai_config()
+            openai_client = OpenAI(api_key=config.api_key)
+            use_case = self.env['audio_to_text.use.case']
+            options = {"prompt": prompt,
+                    "file_path": file_path,
+                    "openai_client": openai_client
+                    }
+            
+            # Implementa aquí la lógica real de verificación ortográfica
+            # Por ahora devolvemos un ejemplo básaico
+            return use_case.execute(options)
             
 
