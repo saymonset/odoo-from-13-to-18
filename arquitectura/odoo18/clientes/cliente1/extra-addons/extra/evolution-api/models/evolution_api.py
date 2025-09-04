@@ -14,7 +14,7 @@ class Evolution_api(models.Model):
     _description = 'Evolution_api'
 
     name = fields.Char(string='Name', required=True)
-    api_url = fields.Char(string='API URL', required=True, default='http://localhost:8080')
+    api_url = fields.Char(string='API URL', required=True, default='https://evolution.jumpjibe.com')
     api_key = fields.Char(string='API Key', required=True)
     instance_id = fields.Char(string='Instance ID')
     status = fields.Selection([
@@ -37,6 +37,7 @@ class Evolution_api(models.Model):
             if response.status_code == 200:
                 data = response.json()
                 self.status = 'connected' if data.get('state') == 'open' else 'disconnected'
+                self.status = 'connected'
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',

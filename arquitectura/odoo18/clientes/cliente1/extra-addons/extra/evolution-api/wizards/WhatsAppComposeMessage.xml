@@ -4,7 +4,7 @@
     <!-- View WhatsAppComposeMessage form -->
     <record id="view_WhatsAppComposeMessage_form" model="ir.ui.view">
         <field name="name">view.WhatsAppComposeMessage.form</field>
-        <field name="model">WhatsAppComposeMessage</field>
+        <field name="model">whatsappcomposemessage</field>
         <field name="arch" type="xml">
             <form>
                 <group>
@@ -24,10 +24,22 @@
     <record id="action_WhatsAppComposeMessage" model="ir.actions.act_window">
         <field name="name">WhatsAppComposeMessage</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">WhatsAppComposeMessage</field>
+        <field name="res_model">whatsappcomposemessage</field>
         <field name="view_mode">form</field>
-        <field name="binding_model_id" ref="addon.model_model_name"/>
         <field name="target">new</field>
     </record>
+
+     
+
+        <menuitem id="menu_wizard_api_root" name="Mierda  Whatsapp ->" sequence="10"/>
+
+ 
+
+    <menuitem id="menu_whatsapp_api"
+            name="Send Number"
+            parent="menu_wizard_api_root"
+            action="action_WhatsAppComposeMessage"
+            sequence="100"/>
+
 
 </odoo>

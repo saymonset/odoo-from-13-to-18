@@ -20,6 +20,10 @@
         <field name="model">evolution_api</field>
         <field name="arch" type="xml">
             <form>
+             <header>
+                <button name="create_instance" string="Create Instance" type="object" class="btn-primary"/>
+                <button name="test_connection" string="Test Connection" type="object" class="btn-secondary"/>
+            </header>
                 <sheet>
                     <group>
                         <group>
@@ -30,16 +34,15 @@
                             <field name="status" widget="statusbar"/>
                         </group>
                         <group>
-                            <div style="text-align: center;" attrs="{'invisible': [('qr_code', '=', False)]}">
-                                <img t-att-src="'data:image/png;base64,' + qr_code" style="max-width: 300px; max-height: 300px;"/>
+                            <div style="text-align: center;" t-if="qr_code">
+                                <field name="qr_code" widget="image" 
+                                       style="max-width: 300px; max-height: 300px;"
+                                       options="{'preview_image': 'qr_code'}"/>
                                 <p>Escanee este código QR con WhatsApp para conectar</p>
                             </div>
-                        </group>
+                        </group>  
                     </group>
-                    <footer>
-                        <button name="create_instance" string="Create Instance" type="object" class="btn-primary"/>
-                        <button name="test_connection" string="Test Connection" type="object" class="btn-secondary"/>
-                    </footer>
+                   
                 </sheet>
             </form>
         </field>

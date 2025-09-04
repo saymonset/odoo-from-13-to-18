@@ -150,5 +150,5 @@ source .venv/bin/activate
 ```
 # Accedemos
 ```bash
-http://192.168.4.109:8020/
+http://5.189.161.7:8020/
 ```
