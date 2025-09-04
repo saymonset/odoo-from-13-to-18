@@ -20,10 +20,13 @@
         <field name="model">evolution_api</field>
         <field name="arch" type="xml">
             <form>
-             <header>
-                <button name="create_instance" string="Create Instance" type="object" class="btn-primary"/>
-                <button name="test_connection" string="Test Connection" type="object" class="btn-secondary"/>
-            </header>
+                <header>
+                    <button name="create_instance" string="Crear Instancia" type="object" class="btn-primary"/>
+                    <button name="get_qr_code" string="Obtener QR" type="object" class="btn-secondary"/>
+                    <button name="set_webhook" string="Configurar Webhook" type="object" class="btn-secondary"/>
+                    <button name="test_connection" string="Probar Conexión" type="object" class="btn-secondary"/>
+                    <field name="status" widget="statusbar"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
@@ -31,18 +34,16 @@
                             <field name="api_url"/>
                             <field name="api_key"/>
                             <field name="instance_id"/>
-                            <field name="status" widget="statusbar"/>
                         </group>
                         <group>
-                            <div style="text-align: center;" t-if="qr_code">
+                            <div style="text-align: center;" attrs="{'invisible': [('qr_code', '=', False)]}">
                                 <field name="qr_code" widget="image" 
                                        style="max-width: 300px; max-height: 300px;"
                                        options="{'preview_image': 'qr_code'}"/>
-                                <p>Escanee este código QR con WhatsApp para conectar</p>
+                                <p>Escanea este código QR con WhatsApp para conectar</p>
                             </div>
                         </group>  
                     </group>
-                   
                 </sheet>
             </form>
         </field>

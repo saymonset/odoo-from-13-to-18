@@ -9,19 +9,12 @@ _logger = logging.getLogger(__name__)
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
-    
-    whatsapp_phone = fields.Char(string='WhatsApp Phone')
-    
-    def action_send_whatsapp(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Send WhatsApp Message',
-            'res_model': 'whatsapp.compose.message',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_partner_id': self.id,
-                'default_phone': self.whatsapp_phone or self.mobile or self.phone,
-            }
-        }
+
+    def send_whatsapp(self):
+        instance = self.env['evolution_api'].sudo().search([('status', '=', 'connected')], limit=1)
+        if instance and self.phone:
+            message = "Hola, este es un mensaje de prueba desde Odoo."
+            instance.send_message(self.phone, message)
+            self.message_post(body=_('Mensaje WhatsApp enviado: %s') % message)
+        else:
+            raise UserError(_('No hay instancia conectada o número de teléfono.'))
