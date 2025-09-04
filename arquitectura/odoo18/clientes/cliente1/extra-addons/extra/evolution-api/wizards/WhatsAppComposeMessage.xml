@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View WhatsAppComposeMessage form -->
+    <record id="view_WhatsAppComposeMessage_form" model="ir.ui.view">
+        <field name="name">view.WhatsAppComposeMessage.form</field>
+        <field name="model">WhatsAppComposeMessage</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="partner_id" readonly="1"/>
+                    <field name="phone"/>
+                    <field name="message" placeholder="Type your message here..." nolabel="1"/>
+                </group>
+                <footer>
+                    <button name="action_send_message" string="Send" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action WhatsAppComposeMessage -->
+    <record id="action_WhatsAppComposeMessage" model="ir.actions.act_window">
+        <field name="name">WhatsAppComposeMessage</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">WhatsAppComposeMessage</field>
+        <field name="view_mode">form</field>
+        <field name="binding_model_id" ref="addon.model_model_name"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

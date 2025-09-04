@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View evolution_api View List -->
+    <record id="view_evolution_api_list" model="ir.ui.view">
+        <field name="name">view.evolution_api.list</field>
+        <field name="model">evolution_api</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="status"/>
+                <field name="instance_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- View evolution_api form -->
+    <record id="view_evolution_api_form" model="ir.ui.view">
+        <field name="name">view.evolution_api.form</field>
+        <field name="model">evolution_api</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="api_url"/>
+                            <field name="api_key"/>
+                            <field name="instance_id"/>
+                            <field name="status" widget="statusbar"/>
+                        </group>
+                        <group>
+                            <div style="text-align: center;" attrs="{'invisible': [('qr_code', '=', False)]}">
+                                <img t-att-src="'data:image/png;base64,' + qr_code" style="max-width: 300px; max-height: 300px;"/>
+                                <p>Escanee este código QR con WhatsApp para conectar</p>
+                            </div>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="create_instance" string="Create Instance" type="object" class="btn-primary"/>
+                        <button name="test_connection" string="Test Connection" type="object" class="btn-secondary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View evolution_api search -->
+    <record id="view_evolution_api_search" model="ir.ui.view">
+        <field name="name">view.evolution_api.search</field>
+        <field name="model">evolution_api</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action evolution_api -->
+    <record id="action_evolution_api" model="ir.actions.act_window">
+        <field name="name">Evolution_api</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evolution_api</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Evolution_api.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú raíz "React" -->
+<menuitem id="menu_evolution_api_root" name="Whatsapp " sequence="10"/>
+
+ 
+
+    <menuitem id="menu_evolution_api"
+            name="WhatsApp Evolution API"
+            parent="menu_evolution_api_root"
+            action="action_evolution_api"
+            sequence="100"/>
+
+</odoo>
