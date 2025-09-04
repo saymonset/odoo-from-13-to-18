@@ -18,11 +18,6 @@ class CreateThreadUseCase(models.TransientModel):
     def execute(self, options)->dict:
         try:
             openai = options.get('openai_client')
-            # conversation = openai.conversations.create(
-            #     items=[{"role": "user", "content": "what are the 5 Ds of dodgeball?"}],
-            #     metadata={"user_id": "peter_le_fleur"},
-            #     )
-            
             thread = openai.beta.threads.create()
             return {"id": thread.id}
              

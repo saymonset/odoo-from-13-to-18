@@ -66,23 +66,23 @@ class DixonGptController(http.Controller):
         except Exception as e:
             return {'error': str(e)}
         
-    @http.route('/dixon/user-run',type='json', auth='public',csrf=False)
-    def userRun(self, **kw):
-        try:
-            # Validar y parsear los datos de entrada con el DTO
-            try:
-                dto = QuestionDto(**kw)
-            except ValidationError as e:
-                return {'error': f'Datos inválidos: {e.errors()}'}
+    # @http.route('/dixon/user-run',type='json', auth='public',csrf=False)
+    # def userRun(self, **kw):
+    #     try:
+    #         # Validar y parsear los datos de entrada con el DTO
+    #         try:
+    #             dto = QuestionDto(**kw)
+    #         except ValidationError as e:
+    #             return {'error': f'Datos inválidos: {e.errors()}'}
             
-            threadId = kw.get('threadId', '')
-            if not threadId:
-                return {'error': 'No threadId provided'}
+    #         threadId = kw.get('threadId', '')
+    #         if not threadId:
+    #             return {'error': 'No threadId provided'}
             
-            service = http.request.env['dixon.service']
-            result = service.createRun(threadId)
-            return result
-        except Exception as e:
-            return {'error': str(e)}
+    #         service = http.request.env['dixon.service']
+    #         result = service.createRun(threadId)
+    #         return result
+    #     except Exception as e:
+    #         return {'error': str(e)}
    
     
