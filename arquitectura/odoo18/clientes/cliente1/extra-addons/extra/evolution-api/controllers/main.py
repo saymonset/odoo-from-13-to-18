@@ -14,6 +14,7 @@ class WhatsAppWebhook(http.Controller):
         # Intenta obtener el JSON del cuerpo
         try:
             data = json.loads(request.httprequest.data.decode('utf-8'))
+            _logger.info("data: %s", str(data))
         except Exception as e:
             return http.Response(
                 json.dumps({'status': 'error', 'detail': 'JSON inválido', 'error': str(e)}),
