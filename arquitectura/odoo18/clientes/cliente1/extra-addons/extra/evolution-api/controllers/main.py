@@ -27,20 +27,24 @@ class WhatsAppWebhook(http.Controller):
         apikey = data.get('apikey')
         instance = data.get('instance')
 
+        
+        
         respuesta = f"Hola, recibimos tu mensaje: '{message}'"
 
+        number = None
+        if remote_jid and '@' in remote_jid:
+            number = remote_jid.split('@')[0]
+
         payload = {
-            "jid": remote_jid,
-            "message": respuesta,
-            "instance": instance,
-            "apikey": apikey
-        }
-
-        evolution_url = "https://odoosaymon.evolution.jumpjibe.com/webhook/send-message"
-
+            "number": number,
+            "text": respuesta 
+}
+        
+        # Ahora la URL usa tu instancia "odoosaymon"
+        evolution_url = f"https://evolution.jumpjibe.com/message/sendText/{instance}"
         try:
-            headers = {'Content-Type': 'application/json', 'apikey': apikey }
-            resp = requests.post(evolution_url, data=json.dumps(payload), headers=headers, timeout=10)
+            headers = {'Content-Type': 'application/json', 'apikey': apikey}
+            resp = requests.post(evolution_url, json=payload, headers=headers, timeout=10)
             resp.raise_for_status()
             return http.Response(
                 json.dumps({"status": "success", "detail": "Mensaje enviado"}),
@@ -48,6 +52,7 @@ class WhatsAppWebhook(http.Controller):
                 mimetype='application/json'
             )
         except Exception as e:
+            _logger.error("Error enviando mensaje a Evolution: %s", str(e))
             return http.Response(
                 json.dumps({"status": "error", "detail": str(e)}),
                 status=500,
