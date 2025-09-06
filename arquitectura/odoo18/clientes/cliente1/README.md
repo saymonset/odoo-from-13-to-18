@@ -152,3 +152,13 @@ source .venv/bin/activate
 ```bash
 http://5.189.161.7:8020/
 ```
+
+# Coloca lo que haga en los fuentes a los addons de docker
+```bash
+cd /root/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra
+```
+```bash
+cp -r evolution-api /root/odoo/n8n-evolution-ap
+i-odoo-18/v18/addons
+```
+ 

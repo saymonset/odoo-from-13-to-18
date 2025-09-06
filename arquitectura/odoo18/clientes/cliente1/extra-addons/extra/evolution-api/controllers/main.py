@@ -1,9 +1,60 @@
+# -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
+import requests
+import json
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class WhatsAppWebhook(http.Controller):
-    @http.route('/whatsapp/webhook/<string:instance_name>', type='json', auth='public', methods=['POST'], csrf=False)
-    def receive_webhook(self, instance_name):
+    
+    @http.route('/webhook/messages-upsert', type='http', auth='none', methods=['POST'], csrf=False)
+    def handle_messages_upsert(self, **kw):
+        # Intenta obtener el JSON del cuerpo
+        try:
+            data = json.loads(request.httprequest.data.decode('utf-8'))
+        except Exception as e:
+            return http.Response(
+                json.dumps({'status': 'error', 'detail': 'JSON inválido', 'error': str(e)}),
+                status=400,
+                mimetype='application/json'
+            )
+
+        # Extraer información relevante
+        remote_jid = data.get('data', {}).get('key', {}).get('remoteJid')
+        message = data.get('data', {}).get('message', {}).get('conversation')
+        apikey = data.get('apikey')
+        instance = data.get('instance')
+
+        respuesta = f"Hola, recibimos tu mensaje: '{message}'"
+
+        payload = {
+            "jid": remote_jid,
+            "message": respuesta,
+            "instance": instance,
+            "apikey": apikey
+        }
+
+        evolution_url = "https://odoosaymon.evolution.jumpjibe.com/webhook/send-message"
+
+        try:
+            headers = {'Content-Type': 'application/json', 'apikey': apikey }
+            resp = requests.post(evolution_url, data=json.dumps(payload), headers=headers, timeout=10)
+            resp.raise_for_status()
+            return http.Response(
+                json.dumps({"status": "success", "detail": "Mensaje enviado"}),
+                status=200,
+                mimetype='application/json'
+            )
+        except Exception as e:
+            return http.Response(
+                json.dumps({"status": "error", "detail": str(e)}),
+                status=500,
+                mimetype='application/json'
+            )
+        
+   
         data = request.jsonrequest
         instance = request.env['evolution_api'].sudo().search([('name', '=', instance_name)], limit=1)
         if not instance:
