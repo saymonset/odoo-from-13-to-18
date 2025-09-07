@@ -44,6 +44,7 @@ sudo apt install openssh-server fail2ban libxml2-dev libxslt1-dev zlib1g-dev lib
 
 ```bash
  sudo apt install snapd
+ sudo apt-get install ffmpeg -y
 ```
 
 ```bash
@@ -86,6 +87,7 @@ source .venv/bin/activate
     uv pip install lxml
     uv pip install pydantic
     uv pip install pycryptodome
+    uv pip install pydub
 
      ``
 # Instalar los requirement
