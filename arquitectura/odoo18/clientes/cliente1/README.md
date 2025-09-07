@@ -30,7 +30,7 @@ sudo update-locale
 # 4-) Actualiza tu módulo para cargar las traducciones:
 ./odoo/odoo-bin --addons-path=/root/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra -d dbcontabo18 -u evolution-api -c clientes/cliente1/
 conf/odoo.cfg
-
+# -----------------------------------
 ## Descripción
 
 Este es la arquitectura para implementar diferentes versiones de odoo con sus respectios clientes y extra-addons
@@ -85,6 +85,7 @@ source .venv/bin/activate
     uv pip install openai
     uv pip install lxml
     uv pip install pydantic
+    uv pip install pycryptodome
 
      ``
 # Instalar los requirement
