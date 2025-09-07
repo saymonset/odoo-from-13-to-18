@@ -1,0 +1,11 @@
+ # Translation of Odoo Module evolution-api in Spanish
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Module evolution-api\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "WhatsAppComposeMessage"
+msgstr "Composición de Mensaje de WhatsApp"

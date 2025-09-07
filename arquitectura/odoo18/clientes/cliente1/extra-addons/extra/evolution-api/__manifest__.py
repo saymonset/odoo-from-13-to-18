@@ -6,7 +6,7 @@
     'author': 'Simòn Alberto Rodriguez Pacheco',
     'website': '',
     'category': 'Tools',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'web', 'react-odoo'], 
     "data": [
         "security/ir.model.access.csv",
         "views/evolution_api_views.xml",

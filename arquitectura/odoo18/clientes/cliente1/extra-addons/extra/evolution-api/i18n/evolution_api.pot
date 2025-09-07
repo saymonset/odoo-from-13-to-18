@@ -1,0 +1,174 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* evolution-api
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-07 15:54+0000\n"
+"PO-Revision-Date: 2025-09-07 15:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_WhatsAppComposeMessage_form
+msgid "Cancel"
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.model.fields.selection,name:evolution-api.selection__evolution_api__status__connected
+msgid "Conectado"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_evolution_api_form
+msgid "Configurar Webhook"
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.model,name:evolution-api.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_evolution_api_form
+msgid "Crear Instancia"
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.model.fields.selection,name:evolution-api.selection__evolution_api__status__disconnected
+msgid "Desconectado"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/evolution_api.py:0
+msgid "Error al configurar webhook: %s"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/evolution_api.py:0
+msgid "Error al crear instancia: %s"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/evolution_api.py:0
+msgid "Error al enviar mensaje: %s"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/evolution_api.py:0
+msgid "Error al obtener QR: %s"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/evolution_api.py:0
+msgid "Error en conexión: %s"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_evolution_api_form
+msgid "Escanea este código QR con WhatsApp para conectar"
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.actions.act_window,name:evolution-api.action_evolution_api
+#: model:ir.model,name:evolution-api.model_evolution_api
+msgid "Evolution_api"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_evolution_api_search
+msgid "Group By"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/evolution_api.py:0
+msgid "Instancia no conectada."
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/res_partner.py:0
+msgid "Mensaje WhatsApp enviado: %s"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/controllers/main.py:0
+msgid "Mensaje recibido de WhatsApp: %s"
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.ui.menu,name:evolution-api.menu_wizard_api_root
+msgid "Mierda  Whatsapp ->"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_evolution_api_search
+msgid "Name"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/models/res_partner.py:0
+msgid "No hay instancia conectada o número de teléfono."
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_evolution_api_form
+msgid "Obtener QR"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_evolution_api_form
+msgid "Probar Conexión"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_WhatsAppComposeMessage_form
+msgid "Send"
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.ui.menu,name:evolution-api.menu_whatsapp_api
+msgid "Send Number"
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.actions.act_window,help:evolution-api.action_evolution_api
+msgid "There is no examples click here to add new Evolution_api."
+msgstr ""
+
+#. module: evolution-api
+#: model_terms:ir.ui.view,arch_db:evolution-api.view_WhatsAppComposeMessage_form
+msgid "Type your message here..."
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.ui.menu,name:evolution-api.menu_evolution_api
+msgid "WhatsApp Evolution API"
+msgstr ""
+
+#. module: evolution-api
+#. odoo-python
+#: code:addons/evolution-api/wizards/WhatsAppComposeMessage.py:0
+#: model:ir.actions.act_window,name:evolution-api.action_WhatsAppComposeMessage
+#: model:ir.model,name:evolution-api.model_whatsappcomposemessage
+msgid "WhatsAppComposeMessage"
+msgstr ""
+
+#. module: evolution-api
+#: model:ir.ui.menu,name:evolution-api.menu_evolution_api_root
+msgid "Whatsapp "
+msgstr ""
