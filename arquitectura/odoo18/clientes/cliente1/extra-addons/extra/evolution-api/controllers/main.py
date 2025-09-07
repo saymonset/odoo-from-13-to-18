@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class WhatsAppWebhook(http.Controller):
     
-    @http.route('/webhook/messages-upsert', type='http', auth='none', methods=['POST'], csrf=False)
+    @http.route('/webhook/messages-upsertkkk', type='http', auth='none', methods=['POST'], csrf=False)
     def handle_messages_upsert(self, **kw):
         # Intenta obtener el JSON del cuerpo
         try:

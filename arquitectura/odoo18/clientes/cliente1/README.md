@@ -6,6 +6,13 @@ tree -L 2 .
 cat /etc/os-release
 ps aux | grep odoo-bin
 
+## Configurar en ubuntu locale para venezuela. Correr en la terminal
+
+```bash
+sudo locale-gen es_VE.UTF-8
+sudo update-locale
+```
+
 ## Descripción
 
 Este es la arquitectura para implementar diferentes versiones de odoo con sus respectios clientes y extra-addons
