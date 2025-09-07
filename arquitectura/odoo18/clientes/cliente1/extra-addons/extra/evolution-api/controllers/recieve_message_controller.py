@@ -17,6 +17,8 @@ class WhatsAppWebhook(http.Controller):
             _logger.info("data: %s", str(data))
             service = http.request.env['evolution.service']
             info = service.getInfo(data)
+            serviceIA = http.request.env['gpt.service']
+            result = serviceIA.orthography_check('ola mundo', max_tokens=100)
             return info
         
         except Exception as e:
