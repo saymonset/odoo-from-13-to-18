@@ -15,7 +15,7 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import hashlib, hmac
-from pydub import AudioSegment
+import subprocess
 
 _logger = logging.getLogger(__name__)
 try:
@@ -67,20 +67,24 @@ class GetDataUseCase(models.TransientModel):
             cipher = AES.new(cipher_key, AES.MODE_CBC, iv)
             enc_file_trimmed = enc_file[:-10]
             decrypted = cipher.decrypt(enc_file_trimmed)
-            # Intentar quitar padding PKCS7
+
             try:
                 decrypted = unpad(decrypted, AES.block_size)
             except ValueError:
-                # Si el padding no es válido, no lo tocamos
                 _logger.warning("El padding no era válido, se deja el buffer tal cual")
-            
-            # Buscar el encabezado real de OGG
+
+            # 4. Buscar cabecera OGG y limpiar basura
             ogg_header = b"OggS"
             start = decrypted.find(ogg_header)
-            if start > 0:
+            if start == -1:
+                _logger.error("No se encontró cabecera OggS en el audio descifrado")
+            else:
                 decrypted = decrypted[start:]
+                last = decrypted.rfind(ogg_header)
+                if last > start:
+                    decrypted = decrypted[:last] + decrypted[last:]
 
-            # 4. Guardar primero como OGG
+            # 5. Guardar primero como OGG
             folder_path = Path(__file__).parent.resolve() / '../generated/audios/'
             folder_path = folder_path.resolve()
             os.makedirs(folder_path, exist_ok=True)
@@ -92,14 +96,16 @@ class GetDataUseCase(models.TransientModel):
             with open(ogg_path, 'wb') as f:
                 f.write(decrypted)
 
-            # 5. Convertir a MP3 con pydub
+            # 6. Convertir a MP3 con ffmpeg (más robusto que pydub)
             try:
-                audio = AudioSegment.from_file(ogg_path, format="ogg")
-                audio.export(mp3_path, format="mp3")
+                subprocess.run(
+                    ["ffmpeg", "-y", "-i", str(ogg_path), str(mp3_path)],
+                    check=True, capture_output=True
+                )
                 final_file = mp3_path
-            except Exception as conv_err:
-                _logger.error(f"Error convirtiendo OGG a MP3: {conv_err}")
-                final_file = ogg_path  # fallback si falla la conversión
+            except subprocess.CalledProcessError as conv_err:
+                _logger.error(f"ffmpeg no pudo convertir OGG a MP3: {conv_err.stderr.decode(errors='ignore')}")
+                final_file = ogg_path
 
             # ---- Manejo de datos ----
             client_phone = None
