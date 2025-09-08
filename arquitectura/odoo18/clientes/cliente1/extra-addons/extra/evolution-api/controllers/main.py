@@ -39,7 +39,7 @@ class WhatsAppWebhook(http.Controller):
         payload = {
             "number": number,
             "text": respuesta 
-}
+        }
         
         # Ahora la URL usa tu instancia "odoosaymon"
         evolution_url = f"https://evolution.jumpjibe.com/message/sendText/{instance}"
