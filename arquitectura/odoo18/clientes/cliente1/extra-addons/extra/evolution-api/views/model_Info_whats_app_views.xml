@@ -8,6 +8,11 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
+                <field name="host_phone"/>
+                <field name="client_phone"/>
+                <field name="message_type"/>
+                <field name="instance"/>
+                <field name="timestamp"/>
             </list>
         </field>
     </record>
@@ -25,6 +30,21 @@
                             <field name="name" placeholder="Name..."/>
                         </h1>
                     </div>
+                    <group>
+                        <group>
+                            <field name="host_phone" placeholder="Host Phone..."/>
+                            <field name="client_phone" placeholder="Client Phone..."/>
+                            <field name="message_type" placeholder="Message Type..."/>
+                        </group>
+                        <group>
+                            <field name="instance" placeholder="Instance..."/>
+                            <field name="apikey" placeholder="API Key..."/>
+                            <field name="timestamp"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="conversation" widget="text" placeholder="Conversation..."/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -36,8 +56,16 @@
         <field name="model">model.info_whats_app</field>
         <field name="arch" type="xml">
             <search>
+                <field name="name"/>
+                <field name="host_phone"/>
+                <field name="client_phone"/>
+                <field name="message_type"/>
+                <field name="instance"/>
                 <group expand="1" string="Group By">
                     <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                    <filter string="Host Phone" name="host_phone" domain="[]" context="{'group_by':'host_phone'}"/>
+                    <filter string="Client Phone" name="client_phone" domain="[]" context="{'group_by':'client_phone'}"/>
+                    <filter string="Message Type" name="message_type" domain="[]" context="{'group_by':'message_type'}"/>
                 </group>
             </search>
         </field>

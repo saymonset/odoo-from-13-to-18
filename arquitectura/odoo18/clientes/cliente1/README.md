@@ -179,6 +179,10 @@ source .venv/bin/activate
 ```bash
  ./odoo/odoo-bin -d dbcontabo18 -c clientes/cliente1/conf/odoo.cfg --dev=all
 ```
+# actualizar modulo
+```bash
+ ./odoo/odoo-bin -d dbcontabo18 -c clientes/cliente1/conf/odoo.cfg -d dbcontabo18 -u all
+```
 # Accedemos
 ```bash
 http://5.189.161.7:8020/
