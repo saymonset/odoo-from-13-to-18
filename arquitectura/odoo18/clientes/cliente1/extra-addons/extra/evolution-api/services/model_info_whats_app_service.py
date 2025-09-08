@@ -26,4 +26,16 @@ class ModelInfoWhatsAppService(models.TransientModel):
         # Por ahora devolvemos un ejemplo básaico
         return use_case.execute(options)
     
+    @api.model
+    def getLastRecordInfo(self, data):
+        """GetMessageList el caso de uso"""
+        use_case = self.env['lastrecordinfo_model_info_whats_app_use_case']
+        options = { 
+                   "data":data,
+                   }
+        # Implementa aquí la lógica real de verificación ortográfica
+        # Por ahora devolvemos un ejemplo básaico
+        return use_case.execute(options)
+     
+    
     

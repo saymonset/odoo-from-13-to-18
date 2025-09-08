@@ -9,6 +9,7 @@ class InfoWhatsAppDto(BaseModel):
     instance:     str = Field(..., description="instance text")
     apikey:       str = Field(..., description="apikey text")
     conversation:       str = Field(..., description="conversation text")
+    conversation_ia:  Optional[str] = Field(None, description="conversation_ia text")
     timestamp: Optional[datetime] = Field(default_factory=datetime.utcnow, description="Timestamp of the message")
     
     

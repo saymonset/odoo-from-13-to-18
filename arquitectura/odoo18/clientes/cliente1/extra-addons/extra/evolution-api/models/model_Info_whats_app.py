@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-
+from datetime import datetime, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -12,7 +12,7 @@ class ModelInfo_whats_app(models.Model):
     _description = 'ModelInfo_whats_app'
     _order = 'timestamp desc'
 
-    name = fields.Char('Name')
+    conversation_ia = fields.Char('conversation_ia', help="AI conversation summary or response")
     host_phone = fields.Char('Host Phone', required=True, help="Phone number of the host")
     client_phone = fields.Char('Client Phone', required=True, help="Phone number of the client")
     message_type = fields.Char('Message Type', required=True, help="Type of message")
@@ -48,6 +48,7 @@ class ModelInfo_whats_app(models.Model):
                 'conversation': dto_data.get('conversation', ''),
                 'timestamp': dto_data.get('timestamp', fields.Datetime.now()),
                 'thread_id': dto_data.get('thread_id', ''),
+                'conversation_ia': dto_data.get('conversation_ia', ''),
             }
             
             _logger.info("Creating record with data: %s", create_data)
@@ -58,3 +59,52 @@ class ModelInfo_whats_app(models.Model):
         except Exception as e:
             _logger.exception("Error creating record from DTO: %s", str(e))
             raise
+    
+    @api.model
+    def get_last_record_info(self, client_phone):
+        """
+        Obtiene información del último registro para un client_phone específico.
+        
+        Args:
+            client_phone (str): Número de teléfono del cliente a buscar.
+        
+        Returns:
+            dict: Contiene:
+                - 'thread_id' si han pasado más de 48 horas desde el último registro
+                - 'conversation' si han pasado menos de 48 horas
+                - None si no se encuentra ningún registro
+        """
+        if not client_phone:
+            _logger.warning("No se proporcionó client_phone")
+            return None
+        
+        # Buscar el último registro para el client_phone
+        last_record = self.search([
+            ('client_phone', '=', client_phone)
+        ], order='timestamp desc', limit=1)
+        
+        if not last_record:
+            _logger.info("No se encontraron registros para el client_phone: %s", client_phone)
+            return None
+        
+        # Calcular la diferencia de tiempo
+        now = datetime.now()
+        record_time = fields.Datetime.from_string(last_record.timestamp)
+        time_difference = now - record_time
+        
+        # Verificar si han pasado más de 48 horas
+        if time_difference > timedelta(hours=48):
+            _logger.info(
+                "Han pasado más de 48 horas (%s) desde el último mensaje. Devolviendo thread_id: %s",
+                time_difference, None
+            )
+            return None
+        else:
+            _logger.info(
+                "Han pasado menos de 48 horas (%s) desde el último mensaje. Devolviendo thread_id: %s",
+                 time_difference, last_record.thread_id
+            )
+            return last_record.thread_id
+ 
+ 
+ 

@@ -47,6 +47,7 @@ class SaveModelInfoWhatsAppUseCase(models.TransientModel):
                 'conversation': whatsapp_record.conversation,
                 'timestamp': whatsapp_record.timestamp,
                 'thread_id': whatsapp_record.thread_id,
+                'conversation_ia': whatsapp_record.conversation_ia,
             }
 
         except ValidationError as ve:
