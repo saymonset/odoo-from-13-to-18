@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class WhatsAppComposeMessage(models.TransientModel):
     _name = 'whatsappcomposemessage'
-    _description = _('WhatsAppComposeMessage')
+    _description = 'WhatsAppComposeMessage'
 
     partner_id = fields.Many2one('res.partner', string='Partner')
     phone = fields.Char(string='Phone', required=True)

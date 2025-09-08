@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- View model.Info_whats_app View List -->
+    <!-- View model.info_whats_app View List -->
     <record id="view_model_Info_whats_app_list" model="ir.ui.view">
-        <field name="name">view.model.Info_whats_app.list</field>
-        <field name="model">model.Info_whats_app</field>
+        <field name="name">view.model.info_whats_app.list</field>
+        <field name="model">model.info_whats_app</field>
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
@@ -12,12 +12,12 @@
         </field>
     </record>
 
-    <!-- View model.Info_whats_app form -->
+    <!-- View model.info_whats_app form -->
     <record id="view_model_Info_whats_app_form" model="ir.ui.view">
-        <field name="name">view.model.Info_whats_app.form</field>
-        <field name="model">model.Info_whats_app</field>
+        <field name="name">view.model.info_whats_app.form</field>
+        <field name="model">model.info_whats_app</field>
         <field name="arch" type="xml">
-            <form string="Model Info_whats_app">
+            <form string="Model info_whats_app">
                 <sheet>
                     <div class="oe_title">
                         <label for="name"/>
@@ -30,10 +30,10 @@
         </field>
     </record>
 
-    <!-- View model.Info_whats_app search -->
+    <!-- View model.info_whats_app search -->
     <record id="view_model_Info_whats_app_search" model="ir.ui.view">
-        <field name="name">view.model.Info_whats_app.search</field>
-        <field name="model">model.Info_whats_app</field>
+        <field name="name">view.model.info_whats_app.search</field>
+        <field name="model">model.info_whats_app</field>
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
@@ -43,11 +43,11 @@
         </field>
     </record>
 
-    <!-- Action model.Info_whats_app -->
+    <!-- Action model.info_whats_app -->
     <record id="action_model_Info_whats_app" model="ir.actions.act_window">
         <field name="name">Model Info_whats_app</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">model.Info_whats_app</field>
+        <field name="res_model">model.info_whats_app</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
@@ -57,5 +57,13 @@
             </p>
         </field>
     </record>
+
+
+    <menuitem id="menu_whatsapp_api_root" name="info Whatsapp " sequence="10"/>
+    <menuitem id="menu_evolution_api"
+            name="WhatsApp API"
+            parent="menu_whatsapp_api_root"
+            action="action_model_Info_whats_app"
+            sequence="100"/>
 
 </odoo>

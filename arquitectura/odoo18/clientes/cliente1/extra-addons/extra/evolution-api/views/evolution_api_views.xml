@@ -79,12 +79,9 @@
     </record>
 
     <!-- Menú raíz "React" -->
-<menuitem id="menu_evolution_api_root" name="Whatsapp " sequence="10"/>
-
- 
-
+<menuitem id="menu_evolution_api_root" name="evolution " sequence="10"/>
     <menuitem id="menu_evolution_api"
-            name="WhatsApp Evolution API"
+            name=" Evolution API"
             parent="menu_evolution_api_root"
             action="action_evolution_api"
             sequence="100"/>

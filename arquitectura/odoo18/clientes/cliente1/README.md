@@ -12,6 +12,7 @@ ps aux | grep odoo-bin
 sudo locale-gen es_VE.UTF-8
 sudo update-locale
 ```
+# MULTI LENGUAJE
 # Creamos lenguaje multiple con i18n
 # 1 -) Crear el directorio i18n en tu módulo:
 # Asegúrate de que tu módulo evolution-api tenga un directorio i18n en su estructura.
@@ -30,6 +31,8 @@ sudo update-locale
 # 4-) Actualiza tu módulo para cargar las traducciones:
 ./odoo/odoo-bin --addons-path=/root/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra -d dbcontabo18 -u evolution-api -c clientes/cliente1/
 conf/odoo.cfg
+# FIN MULTI LENGUAJE
+
 # -----------------------------------
 ## Descripción
 

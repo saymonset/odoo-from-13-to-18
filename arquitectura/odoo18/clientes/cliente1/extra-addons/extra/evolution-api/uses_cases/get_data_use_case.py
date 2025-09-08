@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
 from odoo import models, api
 from odoo.exceptions import ValidationError
 from ..dto.get_info_whatsapp_dto import InfoWhatsAppDto

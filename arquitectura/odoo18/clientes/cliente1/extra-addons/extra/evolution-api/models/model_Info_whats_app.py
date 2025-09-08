@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ModelInfo_whats_app(models.Model):
-    _name = 'model.Info_whats_app'
+    _name = 'model.info_whats_app'
     _description = 'ModelInfo_whats_app'
 
     name = fields.Char('Name')
