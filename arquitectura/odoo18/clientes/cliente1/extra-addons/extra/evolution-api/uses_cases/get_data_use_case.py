@@ -38,9 +38,10 @@ class GetDataUseCase(models.TransientModel):
             required_fields = {
                 'remoteJid': 'client_phone',
                 'sender': 'host_phone',
-                'messageType': 'message_type',
+                'message_type': 'message_type',
                 'instance': 'instance',
-                'apikey': 'apikey'
+                'conversation': 'conversation',
+                'apiKey': 'apikey'
             }
 
             # Extract and validate fields in a single pass
@@ -64,7 +65,6 @@ class GetDataUseCase(models.TransientModel):
 
             # Create DTO with validated data
             info_whatsapp_dto = InfoWhatsAppDto(
-                conversation=data.get('conversation', ''),
                 timestamp=datetime.now(),
                 **extracted
             )

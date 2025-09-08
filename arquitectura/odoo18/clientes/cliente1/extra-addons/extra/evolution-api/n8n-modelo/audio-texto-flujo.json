@@ -1,0 +1,437 @@
+{
+  "name": "dixon-openai",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook0/messages-upsert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1376,
+        -320
+      ],
+      "id": "fd191984-e52b-4844-b6f3-c485c95dc053",
+      "name": "Webhook",
+      "webhookId": "cd021541-d2a5-49c2-9ec1-61000d467e00"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f4634f5-1966-4131-90b6-681c4f25fe1d",
+              "name": "sender",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "cb7da8e0-2e24-4c32-82d6-7d75bf50d310",
+              "name": "message_type",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "d611e307-6e5f-4d6f-8667-51fba2c7ae10",
+              "name": "voice_message",
+              "value": "={{ $json.body.data.message.base64 }}",
+              "type": "string"
+            },
+            {
+              "id": "346ab87d-a084-4f9e-845b-fff8e94fd534",
+              "name": "text_message",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        -320
+      ],
+      "id": "313f905e-c701-44e0-af9f-4ab60ad3256d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "43f5aa2b-597c-46d9-9e3f-185c705e5c12",
+              "leftValue": "={{ $json.message_type }}",
+              "rightValue": "conversation",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -896,
+        -320
+      ],
+      "id": "2f36d1d5-528d-4b31-8ec2-374194ec013f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "voice_message",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -880,
+        -128
+      ],
+      "id": "362efdfa-7d27-493d-aee2-4e9145256e3f",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -880,
+        48
+      ],
+      "id": "16796173-584c-4c4d-bed7-030c92ae1666",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "JzrnHYJGcFvPX3Ee",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f5e56f0d-38cc-4109-9b8b-eb9c2107ff87",
+              "name": "final_message",
+              "value": "={{ $json.text_message }}",
+              "type": "string"
+            },
+            {
+              "id": "1db41844-9db9-4dc2-b00d-e975811fa7e8",
+              "name": "body.data.key.remoteJid",
+              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "d38c3934-4a97-4d1e-86bb-859978606352",
+              "name": "body.instance",
+              "value": "={{ $('Webhook').item.json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "4faf1608-e937-406b-9f0b-15a5d42e7373",
+              "name": "apiKey",
+              "value": "={{ $('Webhook').item.json.body.data.key.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -688,
+        -416
+      ],
+      "id": "84227fca-2e9c-438c-93da-8814a9641305",
+      "name": "final_message_txt"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "47bf30a0-3e30-4f52-9d56-6f4468ca9e2f",
+              "name": "conversation",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "5c482dc0-f69d-476a-9ca6-bc5ea7542922",
+              "name": "instance",
+              "value": "={{ $('Webhook').item.json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "720b67a6-0d13-4d57-b7d2-fb7941c005bf",
+              "name": "client_phone",
+              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "34092d37-128e-4ed9-a289-ead682afab7c",
+              "name": "host_phone",
+              "value": "={{ $('Webhook').item.json.body.sender }}",
+              "type": "string"
+            },
+            {
+              "id": "782899d3-78bf-4505-83c7-492e322758b5",
+              "name": "message_type",
+              "value": "={{ $('Webhook').item.json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "9a2a4980-ae22-4ada-ada8-11ec9086870f",
+              "name": "apikey",
+              "value": "={{ $('Webhook').item.json.body.apikey }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -688,
+        -208
+      ],
+      "id": "afd2791f-684b-4489-9b22-c1565a325005",
+      "name": "final_message_voice"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://5.189.161.7:8020/webhook/n8n-messages-upsert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "conversation",
+              "value": "={{ $json.conversation }}"
+            },
+            {
+              "name": "instance",
+              "value": "={{ $json.instance }}"
+            },
+            {
+              "name": "remoteJid",
+              "value": "={{ $json.client_phone }}"
+            },
+            {
+              "name": "sender",
+              "value": "={{ $json.host_phone }}"
+            },
+            {
+              "name": "message_type",
+              "value": "={{ $json.message_type }}"
+            },
+            {
+              "name": "apiKey",
+              "value": "={{ $json.apikey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        -208
+      ],
+      "id": "8bd021a0-16f9-4dab-9b42-44bb6cc85728",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://5.189.161.7:8020/webhook/n8n-messages-upsert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "sender",
+              "value": "={{ $('If').item.json.sender }}"
+            },
+            {
+              "name": "message_type",
+              "value": "={{ $('If').item.json.message_type }}"
+            },
+            {
+              "name": "remoteJid",
+              "value": "={{ $json.body.data.key.remoteJid }}"
+            },
+            {
+              "name": "instance",
+              "value": "={{ $json.body.instance }}"
+            },
+            {
+              "name": "apiKey",
+              "value": "={{ $json.apiKey }}"
+            },
+            {
+              "name": "conversation",
+              "value": "={{ $json.final_message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        -416
+      ],
+      "id": "00226664-09a1-48c5-82ee-a35e8dfe88c0",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "final_message_txt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "final_message_voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "final_message_voice": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "final_message_txt": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f3bfead7-cde8-4e1f-a62b-8f190d6e55d8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69e08be6901cee5833624506805c03afe90678957ed1ca25bbb9823a375e137a"
+  },
+  "id": "v08SgGbeaOQfQnoE",
+  "tags": []
+}
