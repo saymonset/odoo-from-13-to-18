@@ -1,3 +1,4 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_evolution_api_manager,evolution_api_manager,model_evolution_api,,1,1,1,1
 access_WhatsAppComposeMessage_manager,WhatsAppComposeMessage_manager,model_whatsappcomposemessage,,1,1,1,1
+access_model_Info_whats_app_manager,model_Info_whats_app_manager,model_model_Info_whats_app,,1,1,1,1

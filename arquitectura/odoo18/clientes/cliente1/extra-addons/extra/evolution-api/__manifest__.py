@@ -10,6 +10,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/evolution_api_views.xml",
+        "views/model_Info_whats_app_views.xml",
         "views/templates.xml",
         "wizards/WhatsAppComposeMessage.xml"
     ],
