@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+import os
+from pathlib import Path
+import logging
+import json
+from odoo import api, models, fields, _
+from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
+
+class ModelInfoWhatsAppService(models.TransientModel):
+    _name = 'model_info_whats_app.service'
+    _description = 'model_info_whats_app Service Layer'
+    
+     
+    
+    
+    @api.model
+    def getSaveData(self, data):
+        """GetMessageList el caso de uso"""
+        use_case = self.env['save_model_info_whats_app.use.case']
+        options = { 
+                   "data":data,
+                   }
+        # Implementa aquí la lógica real de verificación ortográfica
+        # Por ahora devolvemos un ejemplo básaico
+        return use_case.execute(options)
+    
+    

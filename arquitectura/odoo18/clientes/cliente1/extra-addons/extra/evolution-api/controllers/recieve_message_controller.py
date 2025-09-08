@@ -19,18 +19,11 @@ class WhatsAppWebhook(http.Controller):
             info = service.getInfo(data)
            # serviceIA = http.request.env['gpt.service']
           #  result = serviceIA.orthography_check('ola mundo', max_tokens=100)
-          # O usando el método auxiliar
-            #whatsapp_record = request.env['model.info_whats_app'].sudo().create_from_dto(info)
+        
+            service_info_whats_app = request.env['model_info_whats_app.service'].sudo()
+            info = service_info_whats_app.getSaveData(info)
             
-            # Forzar el commit de la transacción
-            whatsapp_record = request.env['model.info_whats_app'].sudo().create_from_dto(info)
-            request.env.cr.commit()  # Confirmar la transacción explícitamente
             
-            _logger.info("Record created successfully with ID: %s", whatsapp_record.id)
-            
-            # Verificar que el registro existe realmente
-            record_exists = request.env['model.info_whats_app'].sudo().search([('id', '=', whatsapp_record.id)])
-            _logger.info("Record verification - exists: %s", bool(record_exists))
             
             
             return info
