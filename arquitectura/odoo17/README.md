@@ -15,9 +15,12 @@ sudo apt install openssh-server fail2ban libxml2-dev libxslt1-dev zlib1g-dev lib
 ```bash
 sudo snap install astral-uv --classic
 ```
-
 ```bash
-mkdir -p odoo13 odoo14 odoo15 odoo16 odoo17 odoo18
+cd /home/simon/odoo-from-13-to-18/arquitectura
+```
+```bash
+mkdir -p odoo17 
+cd odoo17
 ```
 
 # Bajar fuentes
@@ -55,6 +58,9 @@ uv pip install -r odoo/requirements.txt
 ```bash
    psql -U postgres -d postgres
 ```
+```bash
+123456
+```
 
 ```bash
 CREATE ROLE odoo17 WITH LOGIN PASSWORD 'odoo' CREATEDB;
@@ -72,7 +78,9 @@ CREATE ROLE odoo17 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 ```bash
 \du
 ```
-
+```bash
+\q
+```
 # Abrir el puertoen el server para que pueda escuchar
 
 ```bash
@@ -99,4 +107,8 @@ source .venv/bin/activate
 
 ```bash
 ./odoo/odoo-bin -d dbodoo17 -c clientes/cliente1/conf/odoo.cfg
+```
+
+```bash
+http://192.168.4.109:8017
 ```
