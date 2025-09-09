@@ -27,38 +27,16 @@ class WhatsAppWebhook(http.Controller):
             # Buscamos por cliente el último registro para obtener el threadid  < a 48 horas, si no creamos uno nuevo
             service_info_whats_app = request.env['model_info_whats_app.service'].sudo()
            
+           # Si el threadId esta vacio, lo generara la IA
             threadId = service_info_whats_app.getLastRecordInfo(info)
-            
-            
-            
-            #Hilo de conversación de IA
-            serviceIA = http.request.env['dixon.service']
-            if not threadId:
-                id = serviceIA.createThread(None)
-                threadId = id.get('id')
-                _logger.info("Nuevo threadId creado: %s", str(threadId)) 
-           
-           
-            question = info.get('conversation', '')
-            
-            serviceIA.createMessage(threadId,question)
-            
-            run = serviceIA.createRun(threadId)
-            
-            result = serviceIA.checkCompleteStatusRun(threadId,run.id)
-            
-            messages = serviceIA.getMessageList(threadId)
-            
-            respAssistentIA= messages[-1] if messages else {}
-            
-            messageIA = respAssistentIA.get('content', 'No response from AI')
-            
-            info['conversation_ia'] = messageIA
-            
             info['thread_id'] = threadId
             
-            service_info_whats_app = request.env['model_info_whats_app.service'].sudo()
+            # LLamamos capa service IA para crear la respuesta de la IA
+            iaService = request.env['ia.service'].sudo()
+            info = iaService.generateThreadIdAndAnswerIA(info)
             
+            # Guardamos el threadid si es nuevo y la respuesta de la IA
+            service_info_whats_app = request.env['model_info_whats_app.service'].sudo()
             info = service_info_whats_app.getSaveData(info)
             
             
