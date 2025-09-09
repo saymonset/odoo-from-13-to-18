@@ -1,2 +1,4 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_a_hospital_specialty_manager,a_hospital_specialty_manager,model_a_hospital_specialty,,1,1,1,1
+access_a_hospital_specialty_user,a_hospital.specialty,model_a_hospital_specialty,a_hospital_18.group_a_hospital_doctor,1,0,0,0
+access_a_hospital_specialty_manager,a_hospital.specialty,model_a_hospital_specialty,a_hospital_18.group_a_hospital_manager,1,1,0,0
+access_a_hospital_specialty_admin,a_hospital.specialty,model_a_hospital_specialty,a_hospital_18.group_a_hospital_admin,1,1,1,1

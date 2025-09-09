@@ -8,6 +8,7 @@
     'category': '',
     'depends': ['base', 'web'],
     "data": [
+        "security/a_hospital_groups.xml",
         "security/ir.model.access.csv",
         "views/a_hospital_specialty_views.xml",
         "views/a_hospital_menu_views.xml"
