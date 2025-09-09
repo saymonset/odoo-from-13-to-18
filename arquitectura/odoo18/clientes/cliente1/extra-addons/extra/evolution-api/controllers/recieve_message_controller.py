@@ -26,9 +26,13 @@ class WhatsAppWebhook(http.Controller):
             
             # Buscamos por cliente el último registro para obtener el threadid  < a 48 horas, si no creamos uno nuevo
             service_info_whats_app = request.env['model_info_whats_app.service'].sudo()
+           
+            threadId = service_info_whats_app.getLastRecordInfo(info)
+            
+            
+            
             #Hilo de conversación de IA
             serviceIA = http.request.env['dixon.service']
-            threadId = service_info_whats_app.getLastRecordInfo(info)
             if not threadId:
                 id = serviceIA.createThread(None)
                 threadId = id.get('id')
