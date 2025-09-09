@@ -29,7 +29,7 @@
                     <div class="oe_title">
                         <label for="conversation_ia"/>
                         <h1>
-                            <field name="conversation_ia" placeholder="conversation_ia..."/>
+                            <field name="conversation" widget="text" placeholder="Conversation..."/>
                         </h1>
                     </div>
                     <group>
@@ -45,7 +45,7 @@
                         </group>
                     </group>
                     <group>
-                        <field name="conversation" widget="text" placeholder="Conversation..."/>
+                       <field name="conversation_ia" placeholder="conversation_ia..."/>
                     </group>
                 </sheet>
             </form>
