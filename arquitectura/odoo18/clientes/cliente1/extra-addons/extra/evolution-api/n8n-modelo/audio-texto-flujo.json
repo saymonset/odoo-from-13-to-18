@@ -44,6 +44,12 @@
               "name": "text_message",
               "value": "={{ $json.body.data.message.conversation }}",
               "type": "string"
+            },
+            {
+              "id": "ee02b0d1-0121-44a6-8d69-d5615dd97c0a",
+              "name": "apikey",
+              "value": "={{ $json.body.apikey }}",
+              "type": "string"
             }
           ]
         },
@@ -153,9 +159,9 @@
               "type": "string"
             },
             {
-              "id": "4faf1608-e937-406b-9f0b-15a5d42e7373",
-              "name": "apiKey",
-              "value": "={{ $('Webhook').item.json.body.data.key.id }}",
+              "id": "0697dabe-98a8-46f7-9e54-e9372e783f7f",
+              "name": "apikey",
+              "value": "={{ $json.apikey }}",
               "type": "string"
             }
           ]
@@ -310,12 +316,12 @@
               "value": "={{ $json.body.instance }}"
             },
             {
-              "name": "apiKey",
-              "value": "={{ $json.apiKey }}"
-            },
-            {
               "name": "conversation",
               "value": "={{ $json.final_message }}"
+            },
+            {
+              "name": "apiKey",
+              "value": "={{ $json.apikey }}"
             }
           ]
         },
@@ -423,11 +429,11 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f3bfead7-cde8-4e1f-a62b-8f190d6e55d8",
+  "versionId": "fe1e6c91-714e-418a-bc89-b67342985c9f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "69e08be6901cee5833624506805c03afe90678957ed1ca25bbb9823a375e137a"
