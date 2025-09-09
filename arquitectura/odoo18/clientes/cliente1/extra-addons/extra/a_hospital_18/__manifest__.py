@@ -9,8 +9,8 @@
     'depends': ['base', 'web'],
     "data": [
         "security/ir.model.access.csv",
-        "views/a_hospital_menu_views.xml",
-        "views/a_hospital_specialty_views.xml"
+        "views/a_hospital_specialty_views.xml",
+        "views/a_hospital_menu_views.xml"
     ],
     'assets': {
               'web.assets_backend': [
