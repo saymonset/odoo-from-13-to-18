@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View a_hospital.specialty View List -->
+    <record id="view_a_hospital_specialty_list" model="ir.ui.view">
+        <field name="name">view.a_hospital.specialty.list</field>
+        <field name="model">a_hospital.specialty</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- View a_hospital.specialty form -->
+    <record id="view_a_hospital_specialty_form" model="ir.ui.view">
+        <field name="name">view.a_hospital.specialty.form</field>
+        <field name="model">a_hospital.specialty</field>
+        <field name="arch" type="xml">
+            <form string="A_hospital Specialty">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                    <div class="oe_title">
+                        <label for="description"/>
+                        <h1>
+                            <field name="description" placeholder="Description..."/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View a_hospital.specialty search -->
+    <record id="view_a_hospital_specialty_search" model="ir.ui.view">
+        <field name="name">view.a_hospital.specialty.search</field>
+        <field name="model">a_hospital.specialty</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action a_hospital.specialty -->
+    <record id="action_a_hospital_specialty" model="ir.actions.act_window">
+        <field name="name">A_hospital Specialty</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">a_hospital.specialty</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new A_hospital Specialty.
+            </p>
+        </field>
+    </record>
+
+</odoo>
