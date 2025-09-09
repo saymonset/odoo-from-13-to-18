@@ -13,6 +13,9 @@
         "views/a_hospital_specialty_views.xml",
         "views/a_hospital_menu_views.xml"
     ],
+     'demo': [
+        'demo/a_hospital_specialty.xml',
+    ],
     'assets': {
               'web.assets_backend': [
                   'a_hospital_18/static/src/**/*'
@@ -22,4 +25,7 @@
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
+    'test': [
+        'tests/test_specialty.py',
+    ],
 }
