@@ -31,9 +31,12 @@ class IaUseCase(models.TransientModel):
             #LLamamos al modulo externo IA
             serviceIA = request.env['dixon.service']
             
+            threadId = info.get('thread_id', '')
+            
             if not threadId:
                 id = serviceIA.createThread(None)
                 threadId = id.get('id')
+                info['thread_id'] = threadId
                 _logger.info("Nuevo threadId creado: %s", str(threadId)) 
            
            
@@ -54,7 +57,7 @@ class IaUseCase(models.TransientModel):
             info['conversation_ia'] = messageIA
             
 
-            return info.dict()
+            return info
 
         except ValidationError as ve:
             raise
