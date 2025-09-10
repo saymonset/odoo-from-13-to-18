@@ -24,7 +24,7 @@ class A_hospitalDisease(models.Model):
         - child_ids (One2many): List of child diseases associated with
         the current disease.
         - disease_type_id (Many2one): Reference to the type of disease.
-    """
+    """      
     _name = 'a_hospital.disease'
     _description = 'A_hospitalDisease'
     _parent_store = True                # Вкл. підтримку ієрархії
@@ -57,11 +57,11 @@ class A_hospitalDisease(models.Model):
         index=True,
         unaccent=False)
 
-    disease_type_id = fields.Many2one(
-        comodel_name='a_hospital.disease.type',
-        string='Disease Type',
-        required=False
-    )
+    # disease_type_id = fields.Many2one(
+    #     comodel_name='a_hospital.disease.type',
+    #     string='Disease Type',
+    #     required=False
+    # )
     
     @api.constrains('parent_id')
     def _check_parent_id(self):
@@ -87,3 +87,4 @@ class A_hospitalDisease(models.Model):
                     disease.name)
             else:
                 disease.complete_name = disease.name
+ 

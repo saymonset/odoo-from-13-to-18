@@ -25,8 +25,8 @@ class A_hospitalDiseaseType(models.Model):
     name = fields.Char(string="Type Name", required=True)
     description = fields.Text()
 
-    disease_ids = fields.One2many(
-        comodel_name='a_hospital.disease',
-        inverse_name='parent_id',
-        string='Child Diseases',
-    )
+    # disease_ids = fields.One2many(
+    #     comodel_name='a_hospital.disease',
+    #     inverse_name='disease_type_id',
+    #     string='Child Diseases',
+    # )
