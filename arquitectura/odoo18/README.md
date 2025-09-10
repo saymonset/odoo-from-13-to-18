@@ -125,7 +125,7 @@ sudo lsof -i :8018
 ```
 # Accedemos
 ```bash
-http://192.168.4.109:8018/
+http://5.189.161.7:8020/
 ```
 # Base de datos
 ```bash
