@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View a_hospital.disease View List -->
+    <record id="view_a_hospital_disease_list" model="ir.ui.view">
+        <field name="name">view.a_hospital.disease.list</field>
+        <field name="model">a_hospital.disease</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="disease_type_id"/>
+                <!-- Hierarchy displayed by parent disease -->
+                <field name="parent_id" invisible="0"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- View a_hospital.disease form -->
+    <record id="view_a_hospital_disease_form" model="ir.ui.view">
+        <field name="name">view.a_hospital.disease.form</field>
+        <field name="model">a_hospital.disease</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                        <field name="disease_type_id"/>
+                        <field name="parent_id" string="Parent Disease"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View a_hospital.disease search -->
+    <record id="view_a_hospital_disease_search" model="ir.ui.view">
+        <field name="name">view.a_hospital.disease.search</field>
+        <field name="model">a_hospital.disease</field>
+        <field name="arch" type="xml">
+            <search string="Filters">
+                <searchpanel>
+                    <field name="disease_type_id" select="one" hierarchize="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+      <record id="a_hospital_disease_pivot" model="ir.ui.view">
+        <field name="name">Disease pivot</field>
+        <field name="model">a_hospital.disease</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <pivot string="Pivot Diseases"
+                   disable_linking="1"
+                   sample="1"
+                   display_quantity="1">
+                <field name="create_date" interval="year" type="col"/>
+                <field name="create_date" interval="month" type="col"/>
+                <field name="disease_type_id" type="row"/>
+                <field name="name" type="row"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph view for disease analysis -->
+    <record id="a_hospital_disease_graph" model="ir.ui.view">
+        <field name="name">Disease Graph</field>
+        <field name="model">a_hospital.disease</field>
+        <field name="arch" type="xml">
+            <graph string="Disease Analysis"
+                   type="bar">  <!-- чи line -->
+                <field name="create_date" type="col" interval="month"/>
+                <field name="disease_type_id" type="row"/>
+                <field name="id" type="measure" string="Number of Diseases"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action a_hospital.disease -->
+    <record id="action_a_hospital_disease" model="ir.actions.act_window">
+        <field name="name">A_hospital Disease</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">a_hospital.disease</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new A_hospital Disease.
+            </p>
+        </field>
+    </record>
+
+</odoo>

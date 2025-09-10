@@ -10,8 +10,10 @@
     "data": [
         "security/a_hospital_groups.xml",
         "security/ir.model.access.csv",
-        "views/a_hospital_specialty_views.xml",
-        "views/a_hospital_menu_views.xml"
+        "views/a_hospital_disease_type_views.xml",
+        "views/a_hospital_disease_views.xml",
+        "views/a_hospital_menu_views.xml",
+        "views/a_hospital_specialty_views.xml"
     ],
      'demo': [
         'demo/a_hospital_specialty.xml',
