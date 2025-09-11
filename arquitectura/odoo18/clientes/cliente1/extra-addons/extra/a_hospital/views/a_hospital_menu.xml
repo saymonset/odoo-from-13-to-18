@@ -20,11 +20,11 @@
         parent="a_hospital_menu_root"
         action="a_hospital.action_a_hospital_doctor"/>
 
-    <menuitem
+    <!-- <menuitem
         id="a_hospital_menu_visit"
         name="Visit"
         parent="a_hospital_menu_root"
-        action="a_hospital.action_a_hospital_visit"/>
+        action="a_hospital.action_a_hospital_visit"/> -->
 
     <menuitem
         id="a_hospital_menu_disease"

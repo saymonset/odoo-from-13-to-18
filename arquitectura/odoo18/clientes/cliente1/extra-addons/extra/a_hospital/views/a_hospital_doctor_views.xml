@@ -8,17 +8,17 @@
             <list>
                 <header>
                     <!-- Action button to generate a report on diseases -->
-                    <button name="%(a_hospital_action_disease_report_in_doctor_list)d"
+                    <!-- <button name="%(a_hospital_action_disease_report_in_doctor_list)d"
                             string="Report on diseases"
-                            type="action"/>
+                            type="action"/> -->
                 </header>
                 <field name="first_name"/>
                 <field name="last_name"/>
                 <field name="phone"/>
                 <field name="gender" widget="toggle"/>
                 <field name="specialty_id"/>
-                <field name="is_intern"/>
-                <field name="mentor_id"/>
+                <!-- <field name="is_intern"/>
+                <field name="mentor_id"/> -->
             </list>
         </field>
     </record>
@@ -30,9 +30,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="%(a_hospital_action_disease_report_in_doctor_list)d"
+                    <!-- <button name="%(a_hospital_action_disease_report_in_doctor_list)d"
                             string="Report on diseases"
-                            type="action"/>
+                            type="action"/> -->
                 </header>
                 <sheet>
                     <group>
@@ -50,12 +50,12 @@
                                    class="oe_avatar m-0"
                                    options='{"zoom": true, "size": [150, 150]}'/>
                             <field name="specialty_id"/>
-                            <field name="is_intern" />
-                            <field name="mentor_id" />
+                            <!-- <field name="is_intern" />
+                            <field name="mentor_id" /> -->
                         </group>
                     </group>
-                    <notebook>
-                        <!-- Page to manage assigned interns for a mentor doctor -->
+                    <!-- <notebook>
+                        
                         <page string="Interns">
                             <field name="intern_ids" mode="kanban">
                                 <kanban default_group_by="specialty_id">
@@ -84,7 +84,7 @@
                                 <field name="mentor_id" widget="many2one"/>
                             </group>
                         </page>
-                    </notebook>
+                    </notebook> -->
                 </sheet>
             </form>
         </field>
