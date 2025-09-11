@@ -7,21 +7,20 @@
         <field name="arch" type="xml">
             <list>
                 <header>
-                    <!-- Button to change the personal doctor of a patient -->
-                    <button name="%(a_hospital_personal_doctor_wizard_action)d"
-                            string="Change personal doctor"
-                            type="action"/>
+                   
                 </header>
                 <field name="first_name"/>
                 <field name="last_name"/>
-                <field name="phone"/>
+                
                 <field name="gender"/>
-                <field name="passport_details"/>
-                <field name="contact_person"/>
-                <field name="age"/>
                 <field name="disease_id"/>
-                <field name="doctor_id" string="Doctor" readonly="1"/>
-                <field name="personal_doctor_id"/>
+                 <field name="age"/>
+                <field name="phone"/>
+                <field name="passport_details"/>
+                <field name="res_partner_id"/>
+               
+                <!-- <field name="doctor_id" string="Doctor" readonly="1"/>
+                <field name="personal_doctor_id"/> -->
             </list>
         </field>
     </record>
@@ -53,7 +52,6 @@
                             <field name="age"/>
                             <field name="phone"/>
                             <field name="gender" widget="radio"/>
-                            <field name="res_partner_id"/>
                         </group>
                         <group>
                             <field name="photo"
@@ -61,23 +59,20 @@
                                    class="oe_avatar m-0"
                                    options="{'zoom': True, 'preview_image': 'avatar_256'}"/>
                             <field name="passport_details"/>
-                            <field name="contact_person"/>
                             <field name="doctor_id" />
                             <field name="res_partner_id"/>
                         </group>
                     </group>
-                    <notebook>
-                        <!-- Page displaying the patient's diagnosis history -->
+                    <!-- <notebook>
                         <page string="Diagnosis History">
                             <field name="diagnosis_history_ids">
                                 <list>
                                     <field name="disease_id"/>
                                     <field name="description"/>
-                                    <field name="is_approved"/>
                                 </list>
                             </field>
                         </page>
-                    </notebook>
+                    </notebook> -->
                 </sheet>
             </form>
         </field>

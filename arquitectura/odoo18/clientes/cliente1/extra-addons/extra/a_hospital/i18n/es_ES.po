@@ -322,10 +322,7 @@ msgstr "Médicos"
 msgid "Edit"
 msgstr "Editar"
 
-#. module: a_hospital
-#: model:ir.model.fields,field_description:a_hospital.field_a_hospital_patient__contact_person
-msgid "Emergency Contact"
-msgstr "Contacto de emergencia"
+ 
 
 #. module: a_hospital
 #: model:ir.model.fields.selection,name:a_hospital.selection__a_hospital_doctor__gender__female
@@ -498,7 +495,7 @@ msgstr "Ruta principal"
 #. module: a_hospital
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_patient__passport_details
 msgid "Passport Details"
-msgstr "Detalles del pasaporte"
+msgstr "Cédula"
 
 #. module: a_hospital
 #: model:ir.model,name:a_hospital.model_a_hospital_patient

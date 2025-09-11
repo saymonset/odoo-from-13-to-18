@@ -9,7 +9,7 @@
                     <!-- Display key details for each visit entry -->
                     <field name="patient_id"/>
                     <field name="doctor_id"/>
-                    <field name="doctor_approved"/>
+                    <!-- <field name="doctor_approved"/> -->
                     <field name="visit_date"/>
                     <field name="notes"/>
                     <field name="visit_status"/>
@@ -32,8 +32,8 @@
                             <!-- Patient and doctor details along with date information -->
                             <field name="patient_id"/>
                             <field name="doctor_id"/>
-                            <field name="initial_doctor_visit"/>
-                            <field name="doctor_approved"/>
+                            <!-- <field name="initial_doctor_visit"/> -->
+                            <!-- <field name="doctor_approved"/> -->
                             <field name="scheduled_date"/>
                             <field name="visit_date"/>
                             <field name="visit_status"/>

@@ -321,10 +321,7 @@ msgstr "Лікарі"
 msgid "Edit"
 msgstr "Редагувати"
 
-#. module: a_hospital
-#: model:ir.model.fields,field_description:a_hospital.field_a_hospital_patient__contact_person
-msgid "Emergency Contact"
-msgstr "Контакт на випадок екстреної ситуації"
+ 
 
 #. module: a_hospital
 #: model:ir.model.fields.selection,name:a_hospital.selection__a_hospital_doctor__gender__female

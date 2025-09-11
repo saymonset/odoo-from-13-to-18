@@ -17,7 +17,6 @@ class Patient(models.Model):
         of the patient.
         - birth_date (Date): Date of birth of the patient.
         - passport_details (Char): Passport or ID details of the patient.
-        - contact_person (Char): Emergency contact for the patient.
         - age (Integer): Computed field representing the age of the patient.
         - disease_id (Many2one): Reference to the patient’s primary disease.
         - diagnosis_history_ids (One2many): History of diagnoses
@@ -36,7 +35,7 @@ class Patient(models.Model):
 
     passport_details = fields.Char()
 
-    contact_person = fields.Char(string="Emergency Contact")
+ 
 
     age = fields.Integer(
         compute='_compute_age',

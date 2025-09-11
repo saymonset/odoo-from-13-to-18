@@ -268,10 +268,7 @@ msgstr "Médicos"
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_doctor_kanban
 msgid "Edit"
 msgstr "Editar"
-#. module: a_hospital
-#: model:ir.model.fields,field_description:a_hospital.field_a_hospital_patient__contact_person
-msgid "Emergency Contact"
-msgstr "Contacto de Emergencia"
+ 
 #. module: a_hospital
 #: model:ir.model.fields.selection,name:a_hospital.selection__a_hospital_doctor__gender__female
 #: model:ir.model.fields.selection,name:a_hospital.selection__a_hospital_patient__gender__female
@@ -417,7 +414,7 @@ msgstr "Ruta Padre"
 #. module: a_hospital
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_patient__passport_details
 msgid "Passport Details"
-msgstr "Detalles del Pasaporte"
+msgstr "Cédula"
 #. module: a_hospital
 #: model:ir.model,name:a_hospital.model_a_hospital_patient
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_diagnosis__patient_id

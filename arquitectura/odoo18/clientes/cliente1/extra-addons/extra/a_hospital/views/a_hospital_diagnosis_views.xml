@@ -7,36 +7,40 @@
             <list>
                 <!-- Display fields description and approval status for diagnoses -->
                 <field name="description"/>
-                <field name="is_approved"/>
+               
             </list>
         </field>
     </record>
 
-    <!-- Pivot view for analyzing diagnoses by disease type and disease name -->
-    <record id="a_hospital_diagnosis_pivot" model="ir.ui.view">
-        <field name="name">Diagnosis pivot</field>
+ <!-- Form view for Diagnosis model -->
+    <record id="view_diagnosis_form" model="ir.ui.view">
+        <field name="name">Diagnosis Form</field>
         <field name="model">a_hospital.diagnosis</field>
-        <field name="priority">50</field>
         <field name="arch" type="xml">
-            <pivot string="Pivot Diseases"
-                   disable_linking="1"
-                   sample="1"
-                   display_quantity="1">
-                <!-- Columns for yearly and monthly creation dates -->
-                <field name="create_date" interval="year" type="col"/>
-                <field name="create_date" interval="month" type="col"/>
-                <!-- Rows for disease type and specific disease -->
-                <field name="disease_type_id" type="row"/>
-                <field name="disease_id" type="row"/>
-            </pivot>
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Diagnosis Information">
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <!-- Nueva sección para archivos adjuntos -->
+                    <notebook>
+                        <page string="Archivos Adjuntos">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
         </field>
     </record>
+ 
 
     <!-- Action to open Diagnosis views (list, form, pivot) -->
     <record id="action_a_hospital_diagnosis" model="ir.actions.act_window">
         <field name="name">Diagnoses</field>
         <field name="res_model">a_hospital.diagnosis</field>
-        <field name="view_mode">list,form,pivot</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>
