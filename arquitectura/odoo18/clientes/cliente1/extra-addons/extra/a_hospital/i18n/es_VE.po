@@ -161,11 +161,7 @@ msgstr "Diagnósticos"
 #: model:ir.model,name:a_hospital.model_a_hospital_diagnosis
 msgid "Diagnosis"
 msgstr "Diagnóstico"
-#. module: a_hospital
-#: model:ir.model.fields,field_description:a_hospital.field_a_hospital_patient__diagnosis_history_ids
-#: model_terms:ir.ui.view,arch_db:a_hospital.view_patient_form
-msgid "Diagnosis History"
-msgstr "Historial de Diagnósticos"
+ 
 #. module: a_hospital
 #. odoo-python
 #: code:addons/a_hospital/models/diagnosis.py:0

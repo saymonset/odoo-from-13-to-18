@@ -19,7 +19,6 @@ class Patient(models.Model):
         - passport_details (Char): Passport or ID details of the patient.
         - age (Integer): Computed field representing the age of the patient.
         - disease_id (Many2one): Reference to the patient’s primary disease.
-        - diagnosis_history_ids (One2many): History of diagnoses
         for the patient.
     """
     _inherit = 'a_hospital.person'
@@ -50,11 +49,7 @@ class Patient(models.Model):
         comodel_name='a_hospital.doctor',
         string='Person doctor')
 
-    diagnosis_history_ids = fields.One2many(
-        comodel_name='a_hospital.diagnosis',
-        inverse_name='patient_id',
-        string="Diagnosis History"
-    )
+ 
 
     def add_visit(self):
         """

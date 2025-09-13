@@ -64,10 +64,10 @@ class TestCommon(TransactionCase):
         })
 
         # Створення діагнозу
-        self.diagnosis = self.env['a_hospital.diagnosis'].create({
-            'visit_id': self.visit.id,
-            'doctor_id': self.intern_doctor.id,
-            'disease_id': self.disease_flu.id,
-            'patient_id': self.patient.id,
-            'is_approved': False,
-        })
+        # self.diagnosis = self.env['a_hospital.diagnosis'].create({
+        #     'visit_id': self.visit.id,
+        #     'doctor_id': self.intern_doctor.id,
+        #     'disease_id': self.disease_flu.id,
+        #     'patient_id': self.patient.id,
+        #     'is_approved': False,
+        # })

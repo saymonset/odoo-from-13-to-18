@@ -36,7 +36,10 @@ class Diagnosis(models.Model):
         string='Archivos Adjuntos',
         help='Documentos, imágenes u otros archivos relacionados con el diagnóstico'
     )
-
+    visit_id = fields.Many2one(
+        comodel_name='a_hospital.visit',
+        string='Visit',
+    )
       
     description = fields.Text()
  
