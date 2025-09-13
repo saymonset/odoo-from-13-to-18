@@ -23,7 +23,7 @@ class Diagnosis(models.Model):
         - is_approved (Boolean): Indicates if the diagnosis was approved
         by a mentor doctor.
         - doctor_approved (Char): Name of the mentor doctor who approved
-        the diagnosis.
+        the diagnosis.      
         - disease_type_id (Many2one): Related field showing
         the type of the diagnosed disease.
     """

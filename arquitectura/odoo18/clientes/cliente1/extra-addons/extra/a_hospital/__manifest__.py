@@ -34,6 +34,14 @@
         'report/a_hospital_doctor_report.xml'
 
     ],
+    'assets': {
+              'web.assets_backend': [
+                  'a_hospital/static/src/css/ItemCunter.css',
+                  'a_hospital/static/src/components/upload_progress/upload_progress.js',
+                  'a_hospital/static/src/**/*.js',
+                  'a_hospital/static/src/**/*.xml',
+              ],
+          },
     'demo': [
         'demo/a_hospital_disease.xml',
         'demo/a_hospital_specialty.xml',

@@ -20,8 +20,6 @@
                   'react-odoo/static/src/**/*.js',
                   'react-odoo/static/src/**/*.xml',
               ],
-            
-          
           },
     'application': True,
     'installable': True,

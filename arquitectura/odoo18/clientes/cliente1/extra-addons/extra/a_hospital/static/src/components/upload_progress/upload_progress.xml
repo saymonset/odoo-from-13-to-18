@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="a_hospital.Upload_progress">
+         <div class="o_upload_progress modal" role="dialog" tabindex="-1" t-attf-style="display: block;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" t-esc="props.title"/>
+                        <button type="button" class="o_upload_close close" t-on-click="onClose">
+                            <i class="fa fa-times"/>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p t-esc="props.message"/>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                role="progressbar"
+                                t-attf-style="width: #{state.percent}%;"
+                                t-att-aria-valuenow="state.percent"
+                                aria-valuemin="0"
+                                aria-valuemax="100">
+                                <t t-esc="state.percent"/>%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </t>
+</templates>
