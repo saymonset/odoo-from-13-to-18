@@ -1,6 +1,6 @@
 import logging
 from dateutil.relativedelta import relativedelta
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 _logger = logging.getLogger(__name__)
 
 
@@ -83,16 +83,19 @@ class Patient(models.Model):
             else:
                 record.age = 0
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         """
-        Logs the creation of a new patient record.
+        Create new patient records with batch support.
         """
-        patient = super(Patient, self).create(vals)
-        _logger.info(f"New patient created: "
-                     f"{patient.first_name} {patient.last_name}, "
-                     f"ID: {patient.id}")
-        return patient
+        if isinstance(vals_list, dict):
+            vals_list = [vals_list]
+
+        # for vals in vals_list:
+        #     if not vals.get('patient_code'):
+        #         vals['patient_code'] = self.env['ir.sequence'].next_by_code('hospital.patient') or _('New')
+
+        return super().create(vals_list)
 
     def write(self, vals):
         """
