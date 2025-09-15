@@ -5,14 +5,14 @@
             <field name="name">Visit List</field>
             <field name="model">a_hospital.visit</field>
             <field name="arch" type="xml">
-                <list>
+                 <list default_order="create_date desc">
                     <!-- Display key details for each visit entry -->
                     <field name="patient_id"/>
-                    <field name="doctor_id"/>
                     <!-- <field name="doctor_approved"/> -->
-                    <field name="visit_date"/>
                     <field name="notes"/>
                     <field name="visit_status"/>
+                    <field name="scheduled_date"/>
+                    <field name="visit_date"/>
                 </list>
             </field>
         </record>

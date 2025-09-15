@@ -27,6 +27,7 @@ class Visit(models.Model):
     """
     _name = 'a_hospital.visit'
     _description = 'Patient Visit'
+    _order = 'create_date desc'  
 
     active = fields.Boolean(default=True)           # Поле для архівування
 
@@ -88,20 +89,21 @@ class Visit(models.Model):
         random_date = today + timedelta(days=days_offset)
         return random_date.strftime('%Y-%m-%d %H:%M:%S')
 
-    @api.onchange('visit_date', 'doctor_id', 'visit_status')
-    def _onchange_visit_date(self):
-        """
-        Restricts modification of visit date, doctor, or status
-        if the visit is completed and the doctor is an intern.
-        Raises:
-            ValidationError: If attempting to modify details
-            of a completed visit.
-        """
-        self.ensure_one()
-        if self.visit_status == 'completed' and self.doctor_id.is_intern:
-            raise ValidationError(_(
-                "You cannot modify the scheduled date "
-                "or doctor for a completed visit."))
+    # @api.onchange('visit_date', 'doctor_id', 'visit_status')
+    # def _onchange_visit_date(self):
+    #     """
+    #     Restricts modification of visit date, doctor, or status
+    #     if the visit is completed and the doctor is an intern.
+    #     Raises:
+    #         ValidationError: If attempting to modify details
+    #         of a completed visit.
+    #     """
+    #     self.ensure_one()
+    #     if self.visit_status == 'completed' and self.doctor_id.is_intern:
+    #         None
+    #         # raise ValidationError(_(
+    #         #     "You cannot modify the scheduled date "
+    #         #     "or doctor for a completed visit."))
 
     def unlink(self):
         """
@@ -194,6 +196,7 @@ class Visit(models.Model):
                     if not visit.doctor_approved:  # Якщо порожнє або None
                         visit.doctor_approved = doctor.display_name
                     else:
-                        raise ValidationError(_(
-                            "Doctor has already been "
-                            "approved for this visit."))
+                        None
+                        # raise ValidationError(_(
+                        #     "Doctor has already been "
+                        #     "approved for this visit."))
