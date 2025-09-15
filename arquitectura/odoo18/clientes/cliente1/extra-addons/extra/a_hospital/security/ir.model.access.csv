@@ -38,4 +38,3 @@ access_a_hospital_visit_intern,a_hospital.visit,model_a_hospital_visit,a_hospita
 access_a_hospital_visit_doctor,a_hospital.visit,model_a_hospital_visit,a_hospital.group_a_hospital_doctor,1,1,0,0
 access_a_hospital_visit_manager,a_hospital.visit,model_a_hospital_visit,a_hospital.group_a_hospital_manager,1,0,0,0
 access_a_hospital_visit_admin,a_hospital.visit,model_a_hospital_visit,a_hospital.group_a_hospital_admin,1,1,1,1
- 

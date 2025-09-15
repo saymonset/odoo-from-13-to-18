@@ -179,6 +179,7 @@ source .venv/bin/activate
 
 ```bash
  ./odoo/odoo-bin -d dbcontabo18 -c clientes/cliente1/conf/odoo.cfg --dev=all
+ ./odoo/odoo-bin -d dbtest0 -c clientes/cliente1/conf/odoo.cfg --dev=all
 ```
 # actualizar modulo
 ```bash
