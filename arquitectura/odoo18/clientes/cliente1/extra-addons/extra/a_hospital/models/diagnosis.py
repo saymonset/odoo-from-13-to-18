@@ -23,7 +23,7 @@ class Diagnosis(models.Model):
         - is_approved (Boolean): Indicates if the diagnosis was approved
         by a mentor doctor.
         - doctor_approved (Char): Name of the mentor doctor who approved
-        the diagnosis.      
+        the diagnosis.
         - disease_type_id (Many2one): Related field showing
         the type of the diagnosed disease.
     """
@@ -36,10 +36,7 @@ class Diagnosis(models.Model):
         string='Archivos Adjuntos',
         help='Documentos, imágenes u otros archivos relacionados con el diagnóstico'
     )
-    visit_id = fields.Many2one(
-        comodel_name='a_hospital.visit',
-        string='Visit',
-    )
+
       
     description = fields.Text()
  

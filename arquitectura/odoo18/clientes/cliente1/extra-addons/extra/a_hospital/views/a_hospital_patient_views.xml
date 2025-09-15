@@ -63,7 +63,16 @@
                             <field name="res_partner_id"/>
                         </group>
                     </group>
-                     
+                    <!-- <notebook>
+                        <page string="Diagnosis History">
+                            <field name="diagnosis_history_ids">
+                                <list>
+                                    <field name="disease_id"/>
+                                    <field name="description"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook> -->
                 </sheet>
             </form>
         </field>

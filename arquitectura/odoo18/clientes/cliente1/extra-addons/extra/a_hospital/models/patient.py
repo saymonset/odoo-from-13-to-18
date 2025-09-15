@@ -1,6 +1,6 @@
 import logging
 from dateutil.relativedelta import relativedelta
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 _logger = logging.getLogger(__name__)
 
 
@@ -19,6 +19,7 @@ class Patient(models.Model):
         - passport_details (Char): Passport or ID details of the patient.
         - age (Integer): Computed field representing the age of the patient.
         - disease_id (Many2one): Reference to the patient’s primary disease.
+        - diagnosis_history_ids (One2many): History of diagnoses
         for the patient.
     """
     _inherit = 'a_hospital.person'
@@ -49,7 +50,11 @@ class Patient(models.Model):
         comodel_name='a_hospital.doctor',
         string='Person doctor')
 
- 
+    diagnosis_history_ids = fields.One2many(
+        comodel_name='a_hospital.diagnosis',
+        inverse_name='patient_id',
+        string="Diagnosis History"
+    )
 
     def add_visit(self):
         """
@@ -83,19 +88,16 @@ class Patient(models.Model):
             else:
                 record.age = 0
 
-    @api.model_create_multi
-    def create(self, vals_list):
+    @api.model
+    def create(self, vals):
         """
-        Create new patient records with batch support.
+        Logs the creation of a new patient record.
         """
-        if isinstance(vals_list, dict):
-            vals_list = [vals_list]
-
-        # for vals in vals_list:
-        #     if not vals.get('patient_code'):
-        #         vals['patient_code'] = self.env['ir.sequence'].next_by_code('hospital.patient') or _('New')
-
-        return super().create(vals_list)
+        patient = super(Patient, self).create(vals)
+        _logger.info(f"New patient created: "
+                     f"{patient.first_name} {patient.last_name}, "
+                     f"ID: {patient.id}")
+        return patient
 
     def write(self, vals):
         """

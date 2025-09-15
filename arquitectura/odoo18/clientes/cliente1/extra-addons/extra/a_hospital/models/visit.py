@@ -1,7 +1,6 @@
 import random
 from datetime import datetime, timedelta
-from odoo import models, fields, api, _
-
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo import _
 
@@ -152,29 +151,29 @@ class Visit(models.Model):
                     "A patient cannot have multiple visits "
                     "with the same doctor on the same day."))
 
-    @api.model_create_multi
-    def create(self, vals_list):
+    @api.model
+    def create(self, vals):
         """
-        Create new visit records with batch support.
-        
-        Args:
-            vals_list (list or dict): List of dictionaries containing the values for creating records.
-                                    If a single dict is passed, it is converted to a list.
-        
-        Returns:
-            recordset: Created visit records.
+        Sets the initial doctor’s name if not provided and validates
+        that an intern cannot be assigned as the initial doctor when
+        the field is already populated.
         """
-        # Ensure vals_list is a list
-        if isinstance(vals_list, dict):
-            vals_list = [vals_list]
+        if 'doctor_id' in vals:
+            doctor = self.env['a_hospital.doctor'].browse(vals['doctor_id'])
 
-        # # Process each dictionary in vals_list
-        # for vals in vals_list:
-        #     if not vals.get('visit_code'):
-        #         vals['visit_code'] = self.env['ir.sequence'].next_by_code('hospital.visit') or _('New')
+            # Якщо лікар є інтерном і поле initial_doctor_visit
+            # не пусте, забороняємо збереження
+            if doctor.is_intern and vals.get('initial_doctor_visit'):
+                raise ValidationError(_(
+                    "An intern cannot be assigned as the initial doctor "
+                    "when the field is already filled."))
 
-        # Call the parent create method
-        return super(Visit, self).create(vals_list)
+            # Якщо поле initial_doctor_visit пусте,
+            # записуємо ім'я лікаря в нього
+            if not vals.get('initial_doctor_visit'):
+                vals['initial_doctor_visit'] = doctor.display_name
+
+        return super(Visit, self).create(vals)
 
     @api.constrains('doctor_id', 'visit_status')
     def _onchange_doctor_id(self):

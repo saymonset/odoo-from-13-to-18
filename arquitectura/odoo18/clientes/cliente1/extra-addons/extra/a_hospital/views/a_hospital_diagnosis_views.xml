@@ -27,7 +27,7 @@
                     <!-- Nueva sección para archivos adjuntos -->
                     <notebook>
                         <page string="Archivos Adjuntos">
-                            <field name="attachment_ids" widget="hospital_many2many_binary"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
                         </page>
                     </notebook>
                 </sheet>
