@@ -36,6 +36,48 @@ class Diagnosis(models.Model):
         string='Archivos Adjuntos',
         help='Documentos, imágenes u otros archivos relacionados con el diagnóstico'
     )
+    
+    visit_id = fields.Many2one(
+        comodel_name='a_hospital.visit',
+        string='Visit',
+    )
+
+    doctor_id = fields.Many2one(
+        comodel_name='a_hospital.doctor',
+        string='Doctor',
+    )
+
+    disease_id = fields.Many2one(
+        comodel_name='a_hospital.disease',
+        string='Disease',
+    )
+
+    patient_id = fields.Many2one(
+        comodel_name='a_hospital.patient',
+        string='Patient',
+    )
+
+    description = fields.Text()
+
+    is_approved = fields.Boolean(
+        string='Approved',
+        default=False,
+        help="""This sign indicates that the given diagnosis,
+                made by the mentor doctor,
+                has been verified and approved by his mentor."""
+    )
+
+    doctor_approved = fields.Char(
+        string='Doctor approved'
+    )
+
+    disease_type_id = fields.Many2one(
+        related='disease_id.disease_type_id',
+        comodel_name='a_hospital.disease.type',
+        string='Disease Type',
+        store=True,
+        readonly=True
+    )
 
       
     description = fields.Text()

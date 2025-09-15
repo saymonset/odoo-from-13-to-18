@@ -166,6 +166,7 @@ source .venv/bin/activate
 
 ```bash
 ./odoo/odoo-bin -d dbcontabo18 -i base -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbtest0 -i base -c clientes/cliente1/conf/odoo.cfg
 ```
 
 # Arrancamos odoo de manera regular
