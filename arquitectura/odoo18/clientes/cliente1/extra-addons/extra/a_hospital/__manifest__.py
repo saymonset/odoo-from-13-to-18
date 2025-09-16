@@ -7,9 +7,8 @@
     'license': 'OPL-1',
     'version': '18.0',
 
-    'depends': [
-        'base',
-    ],
+    
+    'depends': ['base', 'calendar'],
 
     'external_dependencies': {
         'python': [],

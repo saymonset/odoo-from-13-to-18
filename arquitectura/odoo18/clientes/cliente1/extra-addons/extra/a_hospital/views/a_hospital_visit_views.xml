@@ -38,6 +38,7 @@
                             <field name="visit_date"/>
                             <field name="visit_status"/>
                             <field name="notes"/>
+                            <field name="calendar_event_id" widget="many2one" options="{'no_create': True}"/>
                         </group>
 
                         <notebook>

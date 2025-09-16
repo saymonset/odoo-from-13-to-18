@@ -28,6 +28,7 @@ class Visit(models.Model):
     _name = 'a_hospital.visit'
     _description = 'Patient Visit'
     _order = 'create_date desc'  
+    
 
     active = fields.Boolean(default=True)           # Поле для архівування
 
@@ -52,6 +53,8 @@ class Visit(models.Model):
         string='Doctor approved',
         readonly=True,
     )
+    
+    calendar_event_id = fields.Many2one('calendar.event', string='Calendar Event')
 
     visit_status = fields.Selection(
         [('scheduled', 'Scheduled'),
@@ -77,6 +80,29 @@ class Visit(models.Model):
         inverse_name='visit_id',
         string='Diagnoses'
     )
+    
+    def _create_calendar_event(self):
+        """ Create calendar event for the visit """
+        for visit in self:
+            event = self.env['calendar.event'].create({
+                'name': f'Visit: {visit.patient_id.first_name} with Dr. {visit.doctor_id.first_name}',
+                'start': visit.scheduled_date,
+                'stop': visit.visit_date or visit.scheduled_date + timedelta(hours=1),
+                'description': visit.notes,
+                'partner_ids': [(6, 0, [])],  # Add relevant partners if available
+            })
+            visit.calendar_event_id = event.id
+
+    def _update_calendar_event(self):
+        """ Update existing calendar event """
+        for visit in self:
+            if visit.calendar_event_id:
+                visit.calendar_event_id.write({
+                    'name': f'Visit: {visit.patient_id.first_name} with Dr. {visit.doctor_id.first_name}',
+                    'start': visit.scheduled_date,
+                    'stop': visit.visit_date or visit.scheduled_date + timedelta(hours=1),
+                    'description': visit.notes,
+                })
 
     def generate_random_date(self):
         """
@@ -89,33 +115,8 @@ class Visit(models.Model):
         random_date = today + timedelta(days=days_offset)
         return random_date.strftime('%Y-%m-%d %H:%M:%S')
 
-    # @api.onchange('visit_date', 'doctor_id', 'visit_status')
-    # def _onchange_visit_date(self):
-    #     """
-    #     Restricts modification of visit date, doctor, or status
-    #     if the visit is completed and the doctor is an intern.
-    #     Raises:
-    #         ValidationError: If attempting to modify details
-    #         of a completed visit.
-    #     """
-    #     self.ensure_one()
-    #     if self.visit_status == 'completed' and self.doctor_id.is_intern:
-    #         None
-    #         # raise ValidationError(_(
-    #         #     "You cannot modify the scheduled date "
-    #         #     "or doctor for a completed visit."))
-
-    def unlink(self):
-        """
-        Prevents deletion of visits that have associated diagnoses.
-        Raises:
-            ValidationError: If there are diagnoses linked to the visit.
-        """
-        for visit in self:
-            if visit.diagnosis_ids:
-                raise ValidationError(_("You cannot delete "
-                                      "visits with diagnoses."))
-            return super(Visit, self).unlink()  # Викликаємо super
+     
+     
 
     @api.constrains('active')
     def _check_active(self):
@@ -153,30 +154,27 @@ class Visit(models.Model):
                     "A patient cannot have multiple visits "
                     "with the same doctor on the same day."))
 
+    def write(self, vals):
+        """ Override write to update calendar event """
+        result = super(Visit, self).write(vals)
+        self._update_calendar_event()
+        return result
+
+    def unlink(self):
+        """ Delete associated calendar event when visit is deleted """
+        for visit in self:
+            if visit.calendar_event_id:
+                visit.calendar_event_id.unlink()
+        return super(Visit, self).unlink()
+    
     @api.model
     def create(self, vals):
-        """
-        Sets the initial doctor’s name if not provided and validates
-        that an intern cannot be assigned as the initial doctor when
-        the field is already populated.
-        """
-        if 'doctor_id' in vals:
-            doctor = self.env['a_hospital.doctor'].browse(vals['doctor_id'])
-
-            # Якщо лікар є інтерном і поле initial_doctor_visit
-            # не пусте, забороняємо збереження
-            if doctor.is_intern and vals.get('initial_doctor_visit'):
-                raise ValidationError(_(
-                    "An intern cannot be assigned as the initial doctor "
-                    "when the field is already filled."))
-
-            # Якщо поле initial_doctor_visit пусте,
-            # записуємо ім'я лікаря в нього
-            if not vals.get('initial_doctor_visit'):
-                vals['initial_doctor_visit'] = doctor.display_name
-
-        return super(Visit, self).create(vals)
-
+        """ Override create to generate calendar event """
+        visit = super(Visit, self).create(vals)
+        visit._create_calendar_event()
+        return visit
+    
+    
     @api.constrains('doctor_id', 'visit_status')
     def _onchange_doctor_id(self):
         """
