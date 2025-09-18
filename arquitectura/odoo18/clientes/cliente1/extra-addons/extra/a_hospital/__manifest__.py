@@ -8,7 +8,7 @@
     'version': '18.0',
 
     
-    'depends': ['base', 'calendar'],
+    'depends': ['base', 'calendar','website'],
 
     'external_dependencies': {
         'python': [],
@@ -21,14 +21,15 @@
         "views/a_hospital_diagnosis_views.xml",
         "views/a_hospital_disease_views.xml",
         "views/a_hospital_doctor_views.xml",
-        "views/a_hospital_menu.xml",
         "views/a_hospital_patient_views.xml",
         "views/a_hospital_specialty_views.xml",
         "views/a_hospital_visit_views.xml",
         "views/remove_mark_whater_views.xml",
+         "views/a_hospital_menu.xml",
         "report/a_hospital_doctor_report.xml",
         "wizard/a_hospital_disease_report_wizard_views.xml",
-        "wizard/a_hospital_mass_reassign_doctor_wizard_views.xml"
+        "wizard/a_hospital_mass_reassign_doctor_wizard_views.xml",
+      
     ],
     'demo': [
         'demo/a_hospital_disease.xml',

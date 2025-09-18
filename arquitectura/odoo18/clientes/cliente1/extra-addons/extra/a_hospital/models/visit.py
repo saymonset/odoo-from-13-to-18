@@ -167,7 +167,7 @@ class Visit(models.Model):
                 visit.calendar_event_id.unlink()
         return super(Visit, self).unlink()
     
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         """ Override create to generate calendar event """
         visit = super(Visit, self).create(vals)

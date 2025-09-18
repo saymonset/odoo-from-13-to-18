@@ -7,18 +7,13 @@
         <field name="arch" type="xml">
             <list>
                 <header>
-                    <!-- Action button to generate a report on diseases -->
-                    <!-- <button name="%(a_hospital_action_disease_report_in_doctor_list)d"
-                            string="Report on diseases"
-                            type="action"/> -->
                 </header>
                 <field name="first_name"/>
                 <field name="last_name"/>
                 <field name="phone"/>
                 <field name="gender" widget="toggle"/>
                 <field name="specialty_id"/>
-                <!-- <field name="is_intern"/>
-                <field name="mentor_id"/> -->
+                
             </list>
         </field>
     </record>
@@ -30,9 +25,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <!-- <button name="%(a_hospital_action_disease_report_in_doctor_list)d"
-                            string="Report on diseases"
-                            type="action"/> -->
+                    
                 </header>
                 <sheet>
                     <group>
@@ -50,41 +43,10 @@
                                    class="oe_avatar m-0"
                                    options='{"zoom": true, "size": [150, 150]}'/>
                             <field name="specialty_id"/>
-                            <!-- <field name="is_intern" />
-                            <field name="mentor_id" /> -->
+                             
                         </group>
                     </group>
-                    <!-- <notebook>
-                        
-                        <page string="Interns">
-                            <field name="intern_ids" mode="kanban">
-                                <kanban default_group_by="specialty_id">
-                                    <field name="first_name"/>
-                                    <field name="last_name"/>
-                                    <field name="specialty_id"/>
-                                    <field name="phone"/>
-                                    <field name="is_intern"/>
-                                    <templates>
-                                        <t t-name="kanban-box">
-                                            <div class="oe_kanban_global_click o_kanban_record">
-                                                <div class="o_kanban_details">
-                                                    <strong><t t-esc="record.first_name.value"/> <t t-esc="record.last_name.value"/></strong>
-                                                    <div><t t-esc="record.specialty_id.value"/></div>
-                                                    <div><t t-esc="record.phone.value"/></div>
-                                                    <div><small><t t-esc="record.phone.value"/></small></div>
-                                                </div>
-                                            </div>
-                                        </t>
-                                    </templates>
-                                </kanban>
-                            </field>
-                        </page>
-                        <page string="Mentors information" invisible="not is_intern">
-                            <group>
-                                <field name="mentor_id" widget="many2one"/>
-                            </group>
-                        </page>
-                    </notebook> -->
+                    
                 </sheet>
             </form>
         </field>

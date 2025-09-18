@@ -88,7 +88,7 @@ class Patient(models.Model):
             else:
                 record.age = 0
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         """
         Logs the creation of a new patient record.

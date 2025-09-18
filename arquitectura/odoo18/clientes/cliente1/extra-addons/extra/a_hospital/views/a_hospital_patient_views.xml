@@ -19,8 +19,7 @@
                 <field name="passport_details"/>
                 <field name="res_partner_id"/>
                
-                <!-- <field name="doctor_id" string="Doctor" readonly="1"/>
-                <field name="personal_doctor_id"/> -->
+              
             </list>
         </field>
     </record>
@@ -63,16 +62,7 @@
                             <field name="res_partner_id"/>
                         </group>
                     </group>
-                    <!-- <notebook>
-                        <page string="Diagnosis History">
-                            <field name="diagnosis_history_ids">
-                                <list>
-                                    <field name="disease_id"/>
-                                    <field name="description"/>
-                                </list>
-                            </field>
-                        </page>
-                    </notebook> -->
+                  
                 </sheet>
             </form>
         </field>

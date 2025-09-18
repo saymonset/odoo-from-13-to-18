@@ -49,8 +49,7 @@ class Disease(models.Model):
     )
 
     parent_path = fields.Char(
-        index=True,
-        unaccent=False)
+        index=True)
 
     disease_type_id = fields.Many2one(
         comodel_name='a_hospital.disease.type',
@@ -65,7 +64,7 @@ class Disease(models.Model):
         Raises:
             ValidationError: If a recursive hierarchy is detected.
         """
-        if not self._check_recursion():
+        if not self._has_cycle():
             raise models.ValidationError(_(
                 'You cannot create recursive hierarchy.'))
 
