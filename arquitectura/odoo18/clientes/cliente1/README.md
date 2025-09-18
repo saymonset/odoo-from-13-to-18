@@ -109,7 +109,6 @@ CREATE ROLE odooia WITH LOGIN PASSWORD '123456' CREATEDB;
  ALTER USER odooia WITH SUPERUSER;
 ```
  
-```
 
 # En postgres creamos el usuario odoo18 con super usuario
 
@@ -163,7 +162,7 @@ sudo ufw allow 8888/tcp
 ```bash
 source .venv/bin/activate
 ```
-
+# Inicializamos BD
 ```bash
 ./odoo/odoo-bin -d dbcontabo18 -i base -c clientes/cliente1/conf/odoo.cfg
 ./odoo/odoo-bin -d dbtest0 -i base -c clientes/cliente1/conf/odoo.cfg
