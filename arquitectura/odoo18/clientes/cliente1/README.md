@@ -131,7 +131,7 @@ CREATE ROLE odooia WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 # Abrir el puertoen el server para que pueda escuchar
 
 ```bash
-sudo ufw allow 8020/tcp
+sudo ufw allow 18069/tcp
 ```
 
 # Abrir puerto para debugguear
@@ -186,7 +186,7 @@ source .venv/bin/activate
 ```
 # Accedemos
 ```bash
-http://5.189.161.7:8020/
+http://5.189.161.7:18069/
 ```
 
 ```bash
