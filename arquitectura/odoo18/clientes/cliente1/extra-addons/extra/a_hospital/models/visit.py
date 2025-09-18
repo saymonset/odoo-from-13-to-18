@@ -80,29 +80,52 @@ class Visit(models.Model):
         inverse_name='visit_id',
         string='Diagnoses'
     )
-    
+    def _get_event_name(self):
+        """Genera un nombre elegante para el evento de calendario."""
+        self.ensure_one()
+        patient = self.patient_id
+        doctor = self.doctor_id
+        return (
+            f"Visit: {patient.first_name} {patient.last_name} "
+            f"with Dr. {doctor.first_name} {doctor.last_name}"
+        )
+
+    def _get_event_description(self):
+        """Genera una descripción elegante para el evento de calendario."""
+        self.ensure_one()
+        patient = self.patient_id
+        doctor = self.doctor_id
+        desc = (
+            f"Patient: {patient.first_name} {patient.last_name}\n"
+            f"Doctor: Dr. {doctor.first_name} {doctor.last_name}\n"
+        )
+        if self.notes:
+            desc += f"\nNotes:\n{self.notes}"
+        return desc
+
     def _create_calendar_event(self):
-        """ Create calendar event for the visit """
+        """Create calendar event for the visit with elegant formatting."""
         for visit in self:
             event = self.env['calendar.event'].create({
-                'name': f'Visit: {visit.patient_id.first_name} with Dr. {visit.doctor_id.first_name}',
+                'name': visit._get_event_name(),
                 'start': visit.scheduled_date,
                 'stop': visit.visit_date or visit.scheduled_date + timedelta(hours=1),
-                'description': visit.notes,
+                'description': visit._get_event_description(),
                 'partner_ids': [(6, 0, [])],  # Add relevant partners if available
             })
             visit.calendar_event_id = event.id
 
     def _update_calendar_event(self):
-        """ Update existing calendar event """
+        """Update existing calendar event with elegant formatting."""
         for visit in self:
             if visit.calendar_event_id:
                 visit.calendar_event_id.write({
-                    'name': f'Visit: {visit.patient_id.first_name} with Dr. {visit.doctor_id.first_name}',
+                    'name': visit._get_event_name(),
                     'start': visit.scheduled_date,
                     'stop': visit.visit_date or visit.scheduled_date + timedelta(hours=1),
-                    'description': visit.notes,
+                    'description': visit._get_event_description(),
                 })
+        
 
     def generate_random_date(self):
         """
