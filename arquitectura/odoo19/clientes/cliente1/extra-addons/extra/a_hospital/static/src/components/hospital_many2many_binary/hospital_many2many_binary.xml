@@ -1,0 +1,17 @@
+<templates xml:space="preserve">
+    <t t-name="a_hospital.Hospital_many2many_binary">
+        <div>
+            <input type="file" multiple t-on-change="_onUpload"/>
+            <div class="progress mt-2">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                    role="progressbar"
+                    t-att-style="'width: ' + progressState.percent + '%;'"
+                    t-att-aria-valuenow="progressState.percent"
+                    aria-valuemin="0"
+                    aria-valuemax="100">
+                    <t t-esc="progressState.percent"/>%
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
