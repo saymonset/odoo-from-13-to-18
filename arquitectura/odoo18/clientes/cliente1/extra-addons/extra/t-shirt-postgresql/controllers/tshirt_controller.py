@@ -26,9 +26,9 @@ class TshirtInventario(http.Controller):
         """
         try:
             # Buscar las 10 camisetas principales
-            tshirts = request.env['product.product'].search([
-                ('categ_id.name', 'ilike', 'camiseta')
-            ], limit=10)
+            tshirts = request.env['product.product'].sudo().search([
+                                    ('categ_id.name', 'ilike', 'camiseta')
+                                ], limit=10)
             
             # Preparar los datos para JSON
             tshirts_data = []
