@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'T-shirt-postgresql',
-    'version': '1.0.0',
+    'version': '18.0',
     'summary': """ T-shirt-postgresql Summary """,
     'author': '',
     'website': '',
     'category': '',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'product','web'],
     "data": [
         "views/templates.xml"
+    ],
+    'controllers': [
+        'controllers/tshirt_controller.py'
     ],
     'assets': {
               'web.assets_backend': [

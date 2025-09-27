@@ -20,7 +20,7 @@ sudo update-locale
  # 2-) Generar el archivo de traducción base (.pot):
  # Usa el comando de Odoo para exportar las cadenas traducibles de tu módulo a un archivo .pot
 ```bash
-./odoo/odoo-bin --addons-path=/root/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra -d dbcontabo18 --i18n-export=clientes/cliente1/extra-addons/extra/evolution-api/i18n/evolution_api.pot --modules=evolution-api -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin --addons-path=/root/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra -d dbcliente1_18 --i18n-export=clientes/cliente1/extra-addons/extra/evolution-api/i18n/evolution_api.pot --modules=evolution-api -c clientes/cliente1/conf/odoo.cfg
 ```
 # 3-) Crear archivos de traducción para los idiomas deseados:
   # Copia el archivo evolution_api.pot a un archivo .po para cada idioma que desees soportar. Por ejemplo, para español:
@@ -29,7 +29,7 @@ sudo update-locale
 # Repite este paso para otros idiomas (por ejemplo, en.po para inglés).
 # Cargar las traducciones en Odoo:
 # 4-) Actualiza tu módulo para cargar las traducciones:
-./odoo/odoo-bin --addons-path=/root/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra -d dbcontabo18 -u evolution-api -c clientes/cliente1/
+./odoo/odoo-bin --addons-path=/root/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra -d dbcliente1_18 -u evolution-api -c clientes/cliente1/
 conf/odoo.cfg
 # FIN MULTI LENGUAJE
 
@@ -119,7 +119,7 @@ CREATE ROLE odooia WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 \q
 \exit
  psql -U odooia -d postgres
- CREATE DATABASE dbcontabo18;
+ CREATE DATABASE dbcliente1_18;
  ```
 
 # Para listar los roles y permisos
@@ -164,7 +164,7 @@ source .venv/bin/activate
 ```
 # Inicializamos BD
 ```bash
-./odoo/odoo-bin -d dbcontabo18 -i base -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbcliente1_18 -i base -c clientes/cliente1/conf/odoo.cfg
 ./odoo/odoo-bin -d dbtest0 -i base -c clientes/cliente1/conf/odoo.cfg
 ```
 
@@ -177,12 +177,11 @@ source .venv/bin/activate
 ```
 
 ```bash
- ./odoo/odoo-bin -d dbcontabo18 -c clientes/cliente1/conf/odoo.cfg --dev=all
- ./odoo/odoo-bin -d dbtest0 -c clientes/cliente1/conf/odoo.cfg --dev=all
+ ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg --dev=all
 ```
 # actualizar modulo
 ```bash
- ./odoo/odoo-bin -d dbcontabo18 -c clientes/cliente1/conf/odoo.cfg -u all
+ ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u all
 ```
 # Accedemos
 ```bash
