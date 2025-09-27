@@ -6,6 +6,12 @@ tree -L 2 .
 cat /etc/os-release
 ps aux | grep odoo-bin
 
+ 
+## Rebuild assets (si faltan archivos web)
+## Si los errores son de web.assets_*:
+```bash
+./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u web --stop-after-init
+```
 ## Configurar en ubuntu locale para venezuela. Correr en la terminal
 
 ```bash
@@ -175,6 +181,7 @@ source .venv/bin/activate
 ```bash
 source .venv/bin/activate
 ```
+
 
 ```bash
  ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg --dev=all
