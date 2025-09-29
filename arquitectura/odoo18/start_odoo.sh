@@ -1,4 +1,13 @@
 #!/bin/bash
+
+
+## Si es la primera vez que se ejecuta, iniciar bdcon esto
+# ir a consola
+# source .venv/bin/activate
+# ./odoo/odoo-bin -d dbcliente1_18 -i base -c clientes/cliente1/conf/odoo.cfg
+
+
+# Luego salir con ctrl+D y ejecutar este script
 # Script para levantar Odoo cliente1 con entorno virtual
 
 # Activar entorno virtual
