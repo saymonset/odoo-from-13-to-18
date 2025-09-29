@@ -97,6 +97,12 @@ source .venv/bin/activate
     uv pip install pydantic
     uv pip install pycryptodome
     uv pip install pydub
+    uv pip install Babel
+    uv pip install pytz
+    uv pip install lxml
+    uv pip install lxml_html_clean
+    uv pip install passlib
+
 
      ``
 # Instalar los requirement
@@ -168,7 +174,7 @@ sudo ufw allow 8888/tcp
 ```bash
 source .venv/bin/activate
 ```
-# Inicializamos BD
+# Inicializamos BD si es la primera vez
 ```bash
 ./odoo/odoo-bin -d dbcliente1_18 -i base -c clientes/cliente1/conf/odoo.cfg
 ./odoo/odoo-bin -d dbtest0 -i base -c clientes/cliente1/conf/odoo.cfg
