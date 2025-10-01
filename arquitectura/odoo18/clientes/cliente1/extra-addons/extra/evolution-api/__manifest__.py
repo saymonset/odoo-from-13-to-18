@@ -6,7 +6,7 @@
     'author': 'Simòn Alberto Rodriguez Pacheco',
     'website': '',
     'category': 'Tools',
-    'depends': ['base', 'web', 'react-odoo'], 
+    'depends': ['base', 'web', 'chat-bot-n8n-ia'], 
     "data": [
         "security/ir.model.access.csv",
         "views/evolution_api_views.xml",

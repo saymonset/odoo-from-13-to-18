@@ -3,11 +3,11 @@ WhatsApp Gateway: Recibe y envía mensajes entre WhatsApp y Evolution API.
 
 n8n: Orquesta los flujos automáticos (por ejemplo: crear clientes, registrar reservas, enviar respuestas automáticas).
 
-React-Odoo (Módulo de IA): Interfaz web para visualizar y gestionar mensajes, incorpora IA para transcripción y análisis de textos.
+chat-bot-n8n-ia (Módulo de IA): Interfaz web para visualizar y gestionar mensajes, incorpora IA para transcripción y análisis de textos.
 
 Base de Datos Odoo: Almacena los datos de clientes, mensajes y transcripciones para uso histórico y operativo.
 ## Proceso 
-   0-) Inyectamos IA en 'depends': ['react-odoo']
+   0-) Inyectamos IA en 'depends': ['chat-bot-n8n-ia']
    1-) Controler
    2-) service
    3-)use case
