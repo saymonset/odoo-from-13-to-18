@@ -1,28 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <t t-name="chat-bot-n8n-ia.FirstStepsApp">
+ <t t-name="chat-bot-n8n-ia.FirstStepsApp">
+    <div>
+        <h1>Carrito de compras 2hhhgffd</h1>
+        <t t-foreach="state.itemsInCart2" t-as="item" t-key="item.productName">
+            <ItemCounter name2="item.productName" quantity2="item.quantity"/>
+        </t>
+    </div>
 
-         <div class="chatbot-wrapper">
-            <t t-if="state.error">
-                <div class="alert alert-warning mt-2">
-                    <i class="fa fa-exclamation-triangle me-2"/>
-                    Error loading chatbot: <t t-esc="state.error"/>
-                </div>
-            </t>
-            <t t-elif="!state.loaded">
-                <div class="text-center mt-2">
-                    <i class="fa fa-spinner fa-spin me-2"/>
-                    Loading chatbot...
-                </div>
-            </t>
-            <!-- El chatbot se insertará automáticamente en el body del documento -->
-        </div>
-        <div>
-            
-            <h1>Carrito de compras 2hhhgffd</h1>
-            <t t-foreach="state.itemsInCart2" t-as="item" t-key="item.productName">
-                <ItemCounter name2="item.productName" quantity2="item.quantity"/>
-            </t>
-        </div>
-    </t>
+    <!-- Reutilización del ChatBotWrapper -->
+    <ChatBotWrapper webhookUrl="state.chatWebhook"/>
+
+</t>
+
 </templates>
