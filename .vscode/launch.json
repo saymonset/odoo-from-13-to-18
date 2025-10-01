@@ -8,7 +8,7 @@
       "name": "LaunchChrome cliente1",
       "request": "launch",
       "type": "chrome",
-      "url": "http://192.168.4.109:8018/",
+      "url": "https://jumpjibe.com/",
       "webRoot": "./arquitectura/odoo18/clientes/cliente1/extra-addons/*"
     },
 
