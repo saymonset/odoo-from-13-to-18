@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
-from . import tshirt_controller
+from . import product_controller
+from . import sale_order_line_details_controller

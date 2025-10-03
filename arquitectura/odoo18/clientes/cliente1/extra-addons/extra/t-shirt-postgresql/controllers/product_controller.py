@@ -8,30 +8,16 @@ _logger = logging.getLogger(__name__)
 
 class TshirtInventario(http.Controller):
 
-    @http.route('/api/tshirts', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
-    def get_products(self, **kwargs):
+    @http.route('/api/products/<string:nombre_producto>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
+    # El nombre_producto viene como path parametro y no como parameter despues del? que es clave valor
+    def get_products(self,nombre_producto, **kw):
         """
         Endpoint que devuelve hasta 20 productos
         """
         try:
-            # # Buscar hasta 20 productos
-            # products = request.env['product.product'].sudo().search([], limit=20)
-
-            # # Preparar los datos
-            # products_data = []
-            # for product in products:
-            #     products_data.append({
-            #         'id': product.id,
-            #         'name': product.name,  # nombre del producto
-            #         'template_name': product.product_tmpl_id.name,  # nombre de plantilla
-            #         'default_code': product.default_code or '',
-            #         'barcode': product.barcode or '',
-            #         'list_price': product.list_price,
-            #     })
-             
-            
-            service = request.env['tshirt.service']
-            result = service.quantity_sell_total_sell_service()
+            service = request.env['product_name_.service']
+            # nombre_producto = kw.get('nombre_producto', '')
+            result = service.product_name_service(nombre_producto)
             _logger.info(f"Resultado del servicio: {result}")    
             #return result;
             

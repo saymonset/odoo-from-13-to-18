@@ -50,6 +50,10 @@ export class ChatBotWrapper extends Component {
         window.n8nCreateChat({
             webhookUrl: this.props.webhookUrl,
             // Aquí puedes añadir más opciones configurables
+            initialMessages: [
+                'Hola Venezuela! 👋',
+                'Mi nombre es Simôn Alberto. Como puedo ayudarte hoy?'
+            ],
         });
     }
 }
