@@ -64,10 +64,11 @@ uv pip install -r odoo/requirements.txt
 # En postgres creamos el usuario odoo19
 
 ```bash
-   psql -U postgres -d postgres
+   psql -U odoo -d postgres
 ```
 
 ```bash
+
 CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB;
  ALTER USER odoo19 WITH SUPERUSER;
 ```
@@ -76,6 +77,12 @@ CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB;
 
 ```bash
 CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
+```
+## Para docker
+```bash
+\q
+psql -U odoo19 -d postgres
+CREATE DATABASE dbcliente1_19;
 ```
 
 # Para listar los roles y permisos
@@ -125,10 +132,10 @@ sudo lsof -i :8019
 ```
 # Accedemos
 ```bash
-http://5.189.161.7:8020/
+http://5.189.161.7:18069/
 ```
 # Base de datos
 ```bash
-psql -U panna19 -d dbpanna19
+psql -U panna19 -d dbcliente1_19
 password:odoo
 ```

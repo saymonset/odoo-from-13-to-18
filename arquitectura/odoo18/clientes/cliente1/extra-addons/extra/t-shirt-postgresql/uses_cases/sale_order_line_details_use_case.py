@@ -37,6 +37,7 @@ class Sale_order_line_details_UseCase(models.TransientModel):
                         SELECT 
                             so.name as order_number,
                             so.date_order as order_date,
+                            so.effective_date as effective_date,
                             partner.name as customer_name,
                             shipping_address.street as shipping_street,
                             shipping_address.city as shipping_city,
@@ -81,6 +82,7 @@ class Sale_order_line_details_UseCase(models.TransientModel):
                 products_data.append({
                     'order_number': product['order_number'],
                     'order_date': self.format_date(product['order_date']),  # Ahora funciona
+                    'effective_date': self.format_date(product['effective_date']),  # Ahora funciona
                     'customer_name': product['customer_name'],
                     'shipping_street': product['shipping_street'] or '',
                     'shipping_city': product['shipping_city'] or '',
