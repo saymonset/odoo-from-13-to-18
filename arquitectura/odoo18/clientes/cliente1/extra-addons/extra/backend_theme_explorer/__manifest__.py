@@ -18,11 +18,7 @@
             "backend_theme_explorer/static/src/scss/login.scss",
              'chat-bot-n8n-ia/static/src/**/*.js',
              'chat-bot-n8n-ia/static/src/**/*.xml',
-        ],
-         'web.assets_backend': [
-                  'chat-bot-n8n-ia/static/src/**/*.js',
-                  'chat-bot-n8n-ia/static/src/**/*.xml',
-              ],
+        ]
     },
     "installable": True,
     "license": "Other proprietary",
