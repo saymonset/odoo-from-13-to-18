@@ -1,0 +1,61 @@
+.o_call_chat_bot {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  padding: 1rem;
+}
+.o_call_chat_bot h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+/* Chatbot público */
+.o_public_chatbot {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.o_public_chatbot .card {
+    border: none;
+    background: white;
+}
+
+.o_public_chatbot .btn-primary {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.o_public_chatbot .messages-area {
+    min-height: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Asegurar que el chatbot esté por encima de otros elementos */
+.o_call_chat_bot_container {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 10000;
+}
+
+/* Estilos específicos para el botón del chatbot */
+.o_public_chatbot .btn-primary.rounded-circle {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.o_public_chatbot .btn-primary.rounded-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+}
+
+/* Ventana del chat */
+.o_public_chatbot .card {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    border: 1px solid #e0e0e0 !important;
+}

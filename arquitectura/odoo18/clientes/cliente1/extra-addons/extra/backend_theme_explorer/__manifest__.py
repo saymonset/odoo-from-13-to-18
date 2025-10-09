@@ -1,29 +1,47 @@
-# For more details see https://www.odoo.com/documentation/17.0/developer/reference/backend/module.html
 {
     "name": "Explorer Backend Theme",
-    # The first 2 numbers are Odoo major version, the last 3 are x.y.z version of the module.
     "version": "18.0.1.0.0",
-    "depends": ["web", "auth_signup"],
-    "author": "Yoni Tjio",
-    # Categories are freeform, for existing categories visit https://github.com/odoo/odoo/blob/17.0/odoo/addons/base/data/ir_module_category_data.xml
+    "depends": ["web","website", "auth_signup", "chat-bot-n8n-ia"],
     "category": "Customizations",
-    "description": """
-    Explorer backend theme.
-    """,
-    # data files always loaded at installation
+    "author": "Yoni Tjio",
+    "description": "Explorer backend theme.",
     "data": [
+        "views/menu.xml",
         "views/res_config_settings_views.xml",
-        "views/login_templates.xml"
+        "views/login_templates.xml",
     ],
     "assets": {
+            "backend_theme_explorer.assets_login": [
+            "backend_theme_explorer/static/src/css/o_call_chat_bot.css",
+            "backend_theme_explorer/static/src/components/call_chat_bot_app/CallChatBotApp.js",
+            "backend_theme_explorer/static/src/components/public/public_chatbot.js",
+            'backend_theme_explorer/static/src/components/call_chat_bot_app/CallChatBotApp.js',
+            'backend_theme_explorer/static/src/components/call_chat_bot_app/CallChatBotApp.xml',
+        ],
         "web.assets_frontend": [
-            ('include', 'web._assets_bootstrap_frontend'),
+            ("include", "web._assets_bootstrap_frontend"),
             "backend_theme_explorer/static/fonts/poppins.css",
             "backend_theme_explorer/static/src/scss/login.scss",
+            'backend_theme_explorer/static/src/components/call_chat_bot_app/CallChatBotApp.js',
+            'backend_theme_explorer/static/src/components/call_chat_bot_app/CallChatBotApp.xml',
+        ],
+        "web.assets_login": [
+            # ChatBot visible en login - ORDEN IMPORTANTE
+            "backend_theme_explorer/static/src/css/o_call_chat_bot.css",
+            'backend_theme_explorer/static/src/components/call_chat_bot_app/CallChatBotApp.js',
+            "backend_theme_explorer/static/src/components/public/public_chatbot.js",
+            "backend_theme_explorer/static/src/components/public/call_chat_bot_public.js",
+            "backend_theme_explorer/static/src/debug_chatbot.js",  
+        ],
+        "web.assets_backend": [
+            'backend_theme_explorer/static/src/css/o_call_chat_bot.css',
+                  'backend_theme_explorer/static/src/components/public/call_chat_bot_public.js',
+                  'backend_theme_explorer/static/src/components/call_chat_bot_app/CallChatBotApp.js',
+                  'backend_theme_explorer/static/src/components/webclient/chatbot_injector.js',
+                  'backend_theme_explorer/static/src/**/*.js',
+                  'backend_theme_explorer/static/src/**/*.xml',
         ],
     },
-    "application": False,
     "installable": True,
-    "auto_install": False,
     "license": "Other proprietary",
 }

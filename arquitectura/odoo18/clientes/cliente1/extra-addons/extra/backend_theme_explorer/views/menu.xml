@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_call_chat_bot" model="ir.actions.client">
+            <field name="name">Chat Bot</field>
+            <field name="tag">call_chat_bot.CallChatBot</field> <!-- 🔧 corregido -->
+        </record>
+
+        <record id="menu_call_chat_bot" model="ir.ui.menu">
+            <field name="name">Chat Bot</field>
+            <field name="sequence">10</field>
+            <field name="action" ref="action_call_chat_bot"/>
+            <field name="parent_id" ref="base.menu_administration"/>
+            <field name="web_icon">call_chat_bot,static/description/icon.png</field>
+        </record>
+    </data>
+</odoo>
