@@ -5,7 +5,7 @@
      <xpath expr="//div[@id='wrap']" position="inside"> 
             <div class="container my-5"> 
                 <h2>Mi página con Chatbot 3</h2> 
-                <owl-component name="ChatBotWrapper" props='{"webhookUrl": "https://your-n8n-webhook-url"}'/>
+                <owl-component name="ChatBotWrapper" props='{"webhookUrl": "https://n8n.jumpjibe.com/webhook/4eef5bde-1509-4240-9b8f-9723e26d723f/chat"}'/>
 
                 <h2>Mi página con Chatbot 4</h2> 
              </div> 
