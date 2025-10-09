@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
+<template id="insertar_boton_en_home" inherit_id="website.homepage" name="Insertar Botón OWL en Home"> 
+     <xpath expr="//div[@id='wrap']" position="inside"> 
+            <div class="container my-5"> 
+                <h2>Mi página con Chatbot 3</h2> 
+                <owl-component name="ChatBotWrapper" props='{"webhookUrl": "https://your-n8n-webhook-url"}'/>
+
+                <h2>Mi página con Chatbot 4</h2> 
+             </div> 
+     </xpath> 
+</template> 
 
 
-    <template id="insertar_boton_en_home" inherit_id="website.homepage" name="Insertar Botón OWL en Home">
-        <xpath expr="//div[@id='wrap']" position="inside">
-            <div class="container my-5">
-                <h2>Mi página con botón OWL</h2>
-                <owl-component name="backend_theme_explorer.CallChatBotApp" />
-            </div>
-        </xpath>
-    </template>
 
     <!-- ===============================
          LOGIN LAYOUT CON CHATBOT

@@ -1,6 +1,7 @@
 /** @odoo-module **/
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { loadCSS } from "@web/core/assets";
+import { registry } from "@web/core/registry";
 
 export class ChatBotWrapper extends Component {
     static template = "chat-bot-n8n-ia.ChatBotWrapper";
@@ -57,3 +58,8 @@ export class ChatBotWrapper extends Component {
         });
     }
 }
+
+
+// ✅ REGISTRO CORRECTO PARA ODOO 18
+registry.category("public_components").add("ChatBotWrapper", ChatBotWrapper);
+

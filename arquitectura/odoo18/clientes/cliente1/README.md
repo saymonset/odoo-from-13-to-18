@@ -202,7 +202,8 @@ http://5.189.161.7:18069/
 ```
 
 ```bash
- ./odoo/odoo-bin --test-enable --stop-after-init  -d dbtest0 -i a_hospital_18 -c clientes/cliente1/conf/odoo.cfg 
+ ./odoo/odoo-bin --test-enable --stop-after-init  -d dbcliente1_18 -u all -c clientes/cliente1/conf/odoo.cfg 
+ ./odoo/odoo-bin -d dbcliente1_18 --without-demo=all --test-disable --log-level=info -c clientes/cliente1/conf/odoo.cfg 
  ```
 # Coloca lo que haga en los fuentes a los addons de docker
 ```bash

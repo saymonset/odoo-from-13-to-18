@@ -9,7 +9,8 @@
             <p>Hola 👋 Soy tu ChatBot!</p>
         </div>
     </div>
-
+    <!-- <t t-set="chatWebhook" t-value="chatWebhook or 'https://your-n8n-webhook-url'" /> -->
+    <!-- <owl-component name="chat-bot-n8n-ia.ChatBotWrapper" props="{'webhookUrl': chatWebhook}" /> -->
     <!-- Reutilización del ChatBotWrapper -->
     <!-- <ChatBotWrapper webhookUrl="state.chatWebhook"/> -->
 
