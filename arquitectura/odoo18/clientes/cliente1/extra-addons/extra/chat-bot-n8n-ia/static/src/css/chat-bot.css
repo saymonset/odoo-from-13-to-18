@@ -1,0 +1,231 @@
+/* chat-bot.css - Paleta Profesional para ERP - Compatible Odoo 18 */
+:root {
+    /* Colores principales - Azul Corporativo y Púrpura Elegante */
+    --chat-color-primary: #2C5AA0;
+    --chat-color-primary-shade-50: #274e8c;
+    --chat-color-primary-shade-100: #224378;
+    
+    --chat-color-secondary: #6B46C1;
+    --chat-color-secondary-shade-50: #5f3eb0;
+    --chat-color-secondary-shade-100: #53369f;
+    
+    /* Colores neutros - Limpio y Profesional */
+    --chat-color-white: #ffffff;
+    --chat-color-light: #F8FAFC;
+    --chat-color-light-shade-50: #F1F5F9;
+    --chat-color-light-shade-100: #E2E8F0;
+    --chat-color-medium: #CBD5E1;
+    --chat-color-dark: #1E293B;
+    --chat-color-disabled: #94A3B8;
+    --chat-color-typing: #475569;
+
+    /* Colores de acento */
+    --chat-color-accent: #7C3AED;
+    --chat-color-success: #059669;
+    --chat-color-warning: #D97706;
+    --chat-color-error: #DC2626;
+
+    /* Espaciado y dimensiones */
+    --chat-spacing: 1rem;
+    --chat-border-radius: 0.5rem;
+    --chat-transition-duration: 0.2s;
+
+    /* Dimensiones de la ventana */
+    --chat-window-width: 380px;
+    --chat-window-height: 580px;
+
+    /* Header */
+    --chat-header-height: auto;
+    --chat-header-padding: var(--chat-spacing);
+    --chat-header-background: linear-gradient(135deg, var(--chat-color-primary) 0%, var(--chat-color-secondary) 100%);
+    --chat-header-color: var(--chat-color-white);
+    --chat-header-border-top: none;
+    --chat-header-border-bottom: 1px solid var(--chat-color-light-shade-100);
+    --chat-heading-font-size: 1.5em;
+    --chat-subtitle-font-size: 0.9em;
+    --chat-subtitle-line-height: 1.6;
+    --chat-subtitle-opacity: 0.9;
+
+    /* Área de texto */
+    --chat-textarea-height: 52px;
+    --chat-textarea-background: var(--chat-color-white);
+    --chat-textarea-border: 1px solid var(--chat-color-light-shade-100);
+    --chat-textarea-focus-border: 1px solid var(--chat-color-accent);
+
+    /* Mensajes */
+    --chat-message-font-size: 0.95rem;
+    --chat-message-padding: 0.75rem 1rem;
+    --chat-message-border-radius: var(--chat-border-radius);
+    --chat-message-line-height: 1.6;
+    
+    /* Mensajes del Bot */
+    --chat-message-bot-background: var(--chat-color-white);
+    --chat-message-bot-color: var(--chat-color-dark);
+    --chat-message-bot-border: 1px solid var(--chat-color-light-shade-100);
+    --chat-message-bot-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    /* Mensajes del Usuario */
+    --chat-message-user-background: linear-gradient(135deg, var(--chat-color-primary) 0%, var(--chat-color-accent) 100%);
+    --chat-message-user-color: var(--chat-color-white);
+    --chat-message-user-border: none;
+    --chat-message-user-box-shadow: 0 2px 4px rgba(44, 90, 160, 0.2);
+    
+    /* Código y preformateado */
+    --chat-message-pre-background: var(--chat-color-light);
+    --chat-message-pre-border: 1px solid var(--chat-color-light-shade-100);
+
+    /* Botón de toggle */
+    --chat-toggle-background: linear-gradient(135deg, var(--chat-color-primary) 0%, var(--chat-color-secondary) 100%);
+    --chat-toggle-hover-background: linear-gradient(135deg, var(--chat-color-primary-shade-50) 0%, var(--chat-color-secondary-shade-50) 100%);
+    --chat-toggle-active-background: linear-gradient(135deg, var(--chat-color-primary-shade-100) 0%, var(--chat-color-secondary-shade-100) 100%);
+    --chat-toggle-color: var(--chat-color-white);
+    --chat-toggle-size: 60px;
+    --chat-toggle-box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+    --chat-toggle-hover-box-shadow: 0 6px 16px rgba(44, 90, 160, 0.4);
+
+    /* Estados de carga */
+    --chat-typing-animation-color: var(--chat-color-primary);
+    
+    /* Botones */
+    --chat-button-primary-background: var(--chat-color-accent);
+    --chat-button-primary-hover: var(--chat-color-secondary);
+}
+
+/* Contenedor principal del chat */
+.o_chatbot_container {
+    all: initial;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+.n8n-chat-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid var(--chat-color-light-shade-100) !important;
+    border-radius: var(--chat-border-radius) !important;
+}
+
+/* Header del chat */
+.n8n-chat-header {
+    background: var(--chat-header-background) !important;
+    color: var(--chat-header-color) !important;
+    padding: var(--chat-header-padding) !important;
+    border-bottom: var(--chat-header-border-bottom) !important;
+}
+
+.n8n-chat-header h1 {
+    font-size: var(--chat-heading-font-size) !important;
+    color: var(--chat-header-color) !important;
+    margin: 0 !important;
+}
+
+.n8n-chat-header .subtitle {
+    font-size: var(--chat-subtitle-font-size) !important;
+    line-height: var(--chat-subtitle-line-height) !important;
+    opacity: var(--chat-subtitle-opacity) !important;
+}
+
+/* Mensajes */
+.n8n-chat-message {
+    font-size: var(--chat-message-font-size) !important;
+    line-height: var(--chat-message-line-height) !important;
+    border-radius: var(--chat-message-border-radius) !important;
+    padding: var(--chat-message-padding) !important;
+}
+
+/* Mensajes del bot */
+.n8n-chat-message-bot {
+    background: var(--chat-message-bot-background) !important;
+    color: var(--chat-message-bot-color) !important;
+    border: var(--chat-message-bot-border) !important;
+    box-shadow: var(--chat-message-bot-box-shadow) !important;
+}
+
+/* Mensajes del usuario */
+.n8n-chat-message-user {
+    background: var(--chat-message-user-background) !important;
+    color: var(--chat-message-user-color) !important;
+    border: var(--chat-message-user-border) !important;
+    box-shadow: var(--chat-message-user-box-shadow) !important;
+}
+
+/* Área de texto */
+.n8n-chat-textarea {
+    height: var(--chat-textarea-height) !important;
+    background: var(--chat-textarea-background) !important;
+    border: var(--chat-textarea-border) !important;
+    border-radius: var(--chat-border-radius) !important;
+}
+
+.n8n-chat-textarea:focus {
+    border: var(--chat-textarea-focus-border) !important;
+    outline: none !important;
+}
+
+/* Botón de toggle */
+.n8n-chat-toggle {
+    background: var(--chat-toggle-background) !important;
+    color: var(--chat-toggle-color) !important;
+    width: var(--chat-toggle-size) !important;
+    height: var(--chat-toggle-size) !important;
+    border-radius: 50% !important;
+    box-shadow: var(--chat-toggle-box-shadow) !important;
+    border: none !important;
+}
+
+.n8n-chat-toggle:hover {
+    background: var(--chat-toggle-hover-background) !important;
+    box-shadow: var(--chat-toggle-hover-box-shadow) !important;
+}
+
+.n8n-chat-toggle:active {
+    background: var(--chat-toggle-active-background) !important;
+}
+
+/* Botones primarios */
+.n8n-chat-button-primary {
+    background: var(--chat-button-primary-background) !important;
+    border: none !important;
+    border-radius: var(--chat-border-radius) !important;
+}
+
+.n8n-chat-button-primary:hover {
+    background: var(--chat-button-primary-hover) !important;
+}
+
+/* Estados de typing */
+.n8n-chat-typing-indicator {
+    color: var(--chat-typing-animation-color) !important;
+}
+
+/* Preformateado */
+.n8n-chat-message pre {
+    background: var(--chat-message-pre-background) !important;
+    border: var(--chat-message-pre-border) !important;
+    border-radius: var(--chat-border-radius) !important;
+    padding: var(--chat-spacing) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    :root {
+        --chat-window-width: 100vw;
+        --chat-window-height: 100vh;
+        --chat-border-radius: 0;
+    }
+    
+    .n8n-chat-container {
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Reset para evitar conflictos con Odoo */
+.o_chatbot_wrapper * {
+    box-sizing: border-box !important;
+}
+
+/* Asegurar que los estilos se apliquen con alta especificidad */
+body .n8n-chat-container,
+body [class*="n8n-chat"] {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
