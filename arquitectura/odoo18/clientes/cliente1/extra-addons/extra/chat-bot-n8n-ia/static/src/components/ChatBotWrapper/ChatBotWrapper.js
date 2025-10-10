@@ -27,12 +27,12 @@ export class ChatBotWrapper extends Component {
     }
 
     async loadDependencies() {
-        // Cargar CSS personalizado primero
-        await loadCSS('/chat-bot-n8n-ia/static/src/css/chat-bot.css');
         
         // Luego el CSS de n8n
         await loadCSS('https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css');
-
+  // Cargar CSS personalizado primero
+        await loadCSS('/chat-bot-n8n-ia/static/src/css/chat-bot.css');
+      
         try {
             const module = await import('https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js');
             if (module.createChat) {

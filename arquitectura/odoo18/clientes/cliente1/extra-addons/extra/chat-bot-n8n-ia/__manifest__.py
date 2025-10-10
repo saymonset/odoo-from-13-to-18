@@ -16,14 +16,14 @@
     ],
     'assets': {
           "web.assets_frontend": [
-                  'chat_bot_n8n_ia/static/src/css/chat-bot.css',
-                  'chat_bot_n8n_ia/static/src/js/chat_bot_wrapper.js',
+                  'chat-bot-n8n-ia/static/src/css/chat-bot.css',
+                  'chat-bot-n8n-ia/static/src/js/chat_bot_wrapper.js',
                   'chat-bot-n8n-ia/static/src/**/*.js',
                   'chat-bot-n8n-ia/static/src/**/*.xml',
                 ],
               'web.assets_backend': [
-                  'chat_bot_n8n_ia/static/src/css/chat-bot.css',
-                  'chat_bot_n8n_ia/static/src/js/chat_bot_wrapper.js',
+                  'chat-bot-n8n-ia/static/src/css/chat-bot.css',
+                  'chat-bot-n8n-ia/static/src/js/chat_bot_wrapper.js',
                   'chat-bot-n8n-ia/static/src/css/ItemCunter.css',
                   'chat-bot-n8n-ia/static/src/**/*.js',
                   'chat-bot-n8n-ia/static/src/**/*.xml',
