@@ -5,19 +5,14 @@ import json
 import logging
 
 _logger = logging.getLogger(__name__)
-
-class SaleOrderLineDetailsController(http.Controller):
-
-    @http.route('/api/sale_order_linea_detailsXX/<string:order_number>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
-    def get_products(self,order_number, **kw):
-        """
-        Endpoint que devuelve hasta 20 productos
-        """
+# Ventas del día con detalles completos 
+class SalesCustomController(http.Controller):
+    @http.route('/api/sales_custom_queries/<string:order_number>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
+    def get_sales_custom_queries(self,order_number, **kw):
         try:
-            service = request.env['sale_order_line.service']
-            result = service.sale_order_line_service(order_number)
+            service = request.env['sales_custom_queries.service']
+            result = service.sales_custom_queries_service(order_number)
             _logger.info(f"Resultado del servicio: {result}")    
-            #return result;
             
             return request.make_response(
                 json.dumps({
