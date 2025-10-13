@@ -13,7 +13,7 @@ from odoo.http import request
 _logger = logging.getLogger(__name__)
 
 class Sale_order_line_details_UseCase(models.TransientModel):
-    _name = 'Sale_order_line_details.use.case'
+    _name = 'sale_order_line_details.use.case'
     _description = 'Sale_order_line_details Use Case'
 
     @staticmethod
@@ -31,7 +31,7 @@ class Sale_order_line_details_UseCase(models.TransientModel):
     @api.model
     def execute(self, options)->dict:
         try:
-            filtro_nombre = options.get('nombre_producto')
+            filtro_order_number = options.get('order_number')
             # Consulta más simple
             query = """
                         SELECT 
@@ -64,8 +64,9 @@ class Sale_order_line_details_UseCase(models.TransientModel):
         
             params = []
             # Agregar filtro por nombre si se proporciona
-            if filtro_nombre:
-                None
+            if filtro_order_number:
+                    query += " AND ((so.name) ILIKE %s)"
+                    params.append(f'%{filtro_order_number}%')
                 #    query += " AND (COALESCE(pt.name->>'es_VE',pt.name->>'en_US') ILIKE %s)"
                 #    params.append(f'%{filtro_nombre}%')
                 

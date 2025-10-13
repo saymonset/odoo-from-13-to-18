@@ -20,13 +20,13 @@ class saleOrderLineService(models.TransientModel):
   
     
     @api.model
-    def sale_order_line_service(self, nombre_producto):
+    def sale_order_line_service(self, order_number):
         """Obtiene nombre de los productos usando el caso de uso"""
         
-        use_case = self.env['Sale_order_line_details.use.case']
+        use_case = self.env['sale_order_line_details.use.case']
         
         options = { 
-                   "nombre_producto":nombre_producto
+                   "order_number":order_number
                    }
        
         # Implementa aquí la lógica real de verificación ortográfica

@@ -8,18 +8,14 @@ _logger = logging.getLogger(__name__)
 
 class SaleOrderLineDetailsController(http.Controller):
 
-    #@http.route('/api/sale_order_linea_details/<string:nombre_producto>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
-    #def get_products(self,nombre_producto, **kw):
-  
-    @http.route('/api/sale_order_linea_details', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
-    def get_sale_order_detail(self, **kw):
+    @http.route('/api/sale_order_linea_details/<string:order_number>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
+    def get_products(self,order_number, **kw):
         """
         Endpoint que devuelve hasta 20 productos
         """
         try:
             service = request.env['sale_order_line.service']
-            nombre_producto = kw.get('nombre_producto', '')
-            result = service.sale_order_line_service(nombre_producto)
+            result = service.sale_order_line_service(order_number)
             _logger.info(f"Resultado del servicio: {result}")    
             #return result;
             
