@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class SaleOrderLineDetailsController(http.Controller):
 
-    @http.route('/api/sale_order_linea_detailsXX/<string:order_number>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
+    @http.route('/api/sale_order_linea_details/<string:order_number>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
     def get_products(self,order_number, **kw):
         """
         Endpoint que devuelve hasta 20 productos

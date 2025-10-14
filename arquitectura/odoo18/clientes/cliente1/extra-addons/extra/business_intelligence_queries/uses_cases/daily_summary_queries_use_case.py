@@ -100,7 +100,12 @@ class DailySummaryUseCase(models.TransientModel):
         try:
             date_condition, date_params, summary_type = self._build_date_conditions(options)
 
-            if not date_condition or not date_params:
+            # Por esto:
+            if not date_condition:
+                return {"error": "No se pudo construir una condición de fecha válida."}
+
+            # Si no hay parámetros pero el resumen es 'resumen_dia_actual', no pasa nada.
+            if not date_params and summary_type != "resumen_dia_actual":
                 return {"error": "Las fechas proporcionadas no son válidas."}
 
             # --- 🔧 Query optimizado con CTEs ---
