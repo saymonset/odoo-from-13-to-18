@@ -20,17 +20,20 @@ class DailySummaryQueriesService(models.TransientModel):
   
     
     @api.model
-    def daily_summary_queries_service(self, order_number):
+    def daily_summary_queries_service(self, date_from, date_to, specific_date):
         """Obtiene nombre de los productos usando el caso de uso"""
         
         use_case = self.env['daily_summary_queries.use.case']
         
         options = { 
-                   "order_number":order_number
+                   "date_from":date_from,
+                   "date_to":date_to,
+                   "specific_date":specific_date,
                    }
        
         # Implementa aquí la lógica real de verificación ortográfica
         # Por ahora devolvemos un ejemplo básaico
+
         return use_case.execute(options)
     
    

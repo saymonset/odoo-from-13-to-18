@@ -7,12 +7,16 @@ import logging
 _logger = logging.getLogger(__name__)
 # Ventas del día con detalles completos 
 class DailySummaryQueriesController(http.Controller):
-    @http.route('/api/sale_order_linea_details/<string:order_number>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
-   # @http.route('/api/daily_summary/<string:order_number>', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
-    def get_daily_summary_queries(self,order_number, **kw):
+    @http.route('/api/daily_summary', auth='public', methods=['GET'], type='http', cors='*', csrf=False)
+    def get_daily_summary_queries(self, **kw):
         try:
             service = request.env['daily_summary_queries.service']
-            result = service.daily_summary_queries_service(order_number)
+             # Capturar parámetros de la URL
+            date_from = kw.get('date_from')
+            date_to = kw.get('date_to')
+            specific_date = kw.get('specific_date')
+            order_number = None
+            result = service.daily_summary_queries_service(date_from, date_to, specific_date)
             _logger.info(f"Resultado del servicio: {result}")    
             
             return request.make_response(
