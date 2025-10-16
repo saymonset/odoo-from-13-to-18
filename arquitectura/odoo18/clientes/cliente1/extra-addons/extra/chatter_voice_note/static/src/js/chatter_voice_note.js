@@ -6,11 +6,11 @@ import { rpc } from "@web/core/network/rpc";
 
 export class VoiceRecorder extends Component {
     setup() {
-        // Eliminamos el uso de useService("rpc_service")
         this.state = useState({
             recording: false,
             uploading: false,
             mediaRecorder: null,
+            notes: [],  // Lista de notas grabadas
             error: null,
         });
     }
@@ -18,7 +18,6 @@ export class VoiceRecorder extends Component {
     async toggleRecording() {
         if (!this.state.recording) {
             try {
-                // Solicitar acceso al micrófono
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 const recorder = new MediaRecorder(stream);
                 const chunks = [];
@@ -29,28 +28,38 @@ export class VoiceRecorder extends Component {
 
                 recorder.onstop = async () => {
                     const blob = new Blob(chunks, { type: "audio/webm" });
-                    const reader = new FileReader();
+                    const url = URL.createObjectURL(blob);  // URL para reproducir
+                    const name = `voice_note_${new Date().toISOString()}.webm`;
 
+                    // Guardar en lista de notas
+                    this.state.notes.push({
+                        name: name,
+                        url: url,
+                        uploading: true,
+                        error: null,
+                    });
+
+                    const noteIndex = this.state.notes.length - 1;
+
+                    const reader = new FileReader();
                     reader.onload = async () => {
                         const base64 = reader.result.split(",")[1];
-                        this.state.uploading = true;
                         try {
-                            // ⚡ Usamos rpc directamente
+                            // ⚡ RPC correcto para Odoo 18
                             await rpc({
-                                route: "/web/dataset/call_kw/ir.attachment/create",
-                                params: {
-                                    args: [{
-                                        name: `voice_note_${new Date().toISOString()}.webm`,
-                                        datas: base64,
-                                        mimetype: "audio/webm",
-                                        type: "binary",
-                                    }],
-                                },
+                                model: "ir.attachment",
+                                method: "create",
+                                args: [{
+                                    name: name,
+                                    datas: base64,
+                                    mimetype: "audio/webm",
+                                    type: "binary",
+                                }],
                             });
+                            this.state.notes[noteIndex].uploading = false;
                         } catch (rpcError) {
-                            this.state.error = `Error al subir el audio: ${rpcError.message}`;
-                        } finally {
-                            this.state.uploading = false;
+                            this.state.notes[noteIndex].error = `Error al subir: ${rpcError.message}`;
+                            this.state.notes[noteIndex].uploading = false;
                         }
                     };
 
