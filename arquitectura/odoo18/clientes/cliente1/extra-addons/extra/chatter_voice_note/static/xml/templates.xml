@@ -1,0 +1,12 @@
+<templates id="template" xml:space="preserve">
+    <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
+        <div class="o_container p-4">
+            <h2>🎙️ Voice Recorder</h2>
+            <button t-on-click="toggleRecording"
+                    t-att-class="'btn btn-lg ' + (state.recording ? 'btn-warning' : 'btn-primary')">
+                <i t-att-class="'fa ' + (state.recording ? 'fa-stop' : 'fa-microphone')"></i>
+                <t t-esc="state.recording ? ' Stop Recording' : ' Start Recording'"/>
+            </button>
+        </div>
+    </t>
+</templates>
