@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="assets_backend" inherit_id="web.assets_backend" name="chatter_voice_note assets">
+    <xpath expr="." position="inside">
+      <script type="text/javascript" src="/chatter_voice_note/static/src/js/chatter_voice_note.js"/>
+    </xpath>
+  </template>
+</odoo>
