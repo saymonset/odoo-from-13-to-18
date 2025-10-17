@@ -8,6 +8,13 @@
                 <t t-esc="state.recording ? ' Stop Recording' : ' Start Recording'"/>
             </button>
 
+            <button t-on-click="sendToN8N"
+                        t-att-disabled="state.isSending || state.recording || state.notes.length === 0"
+                        class="btn btn-lg btn-success">
+                    <span t-if="state.isSending" class="spinner-border spinner-border-sm me-2"/>
+                    <t t-esc="state.isSending ? 'Enviando...' : 'Enviar a n8n'"/>
+                </button>
+
             <div t-if="state.error" class="mt-2 text-danger">
                 <t t-esc="state.error"/>
             </div>
