@@ -14,15 +14,23 @@
 
             <div class="mt-3">
                 <h4>Notas grabadas:</h4>
-                <t t-foreach="state.notes" t-as="note" t-key="note.name">
-                    <div class="mb-2 p-2 border rounded">
-                        <strong t-esc="note.name"/>
-                        <audio t-att-src="note.url" t-att-controls="true" class="d-block mt-1"></audio>
-                        <div t-if="note.uploading" class="text-info">Subiendo...</div>
-                        <div t-if="note.error" class="text-danger" t-esc="note.error"></div>
+                <t t-foreach="this.sortedNotes" t-as="note" t-key="note.id">
+                    <div class="mb-2 p-2 border rounded d-flex align-items-center justify-content-between">
+                        <div class="flex-grow-1 me-3">
+                            <strong t-esc="note.name"/>
+                            <audio t-att-src="note.url" t-att-controls="true" class="d-block mt-1"></audio>
+                            <div t-if="note.uploading" class="text-info">Subiendo...</div>
+                            <div t-if="note.error" class="text-danger" t-esc="note.error"></div>
+                        </div>
+
+                        <button t-on-click="() => this.deleteNote(note.id)"
+                                class="btn btn-sm btn-danger ms-2"
+                                aria-label="Eliminar nota">
+                            <i class="fa fa-trash"></i>
+                        </button>
                     </div>
                 </t>
             </div>
-        </div>
+         </div>
     </t>
 </templates>
