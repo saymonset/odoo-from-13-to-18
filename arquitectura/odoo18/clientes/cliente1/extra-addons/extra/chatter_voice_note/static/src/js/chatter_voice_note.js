@@ -6,7 +6,7 @@ import { rpc } from "@web/core/network/rpc";
 import { useService } from "@web/core/utils/hooks";
 
 export class VoiceRecorder extends Component {
-    setup() {
+        setup() {
         this.state = useState({
             recording: false,
             uploading: false,
@@ -14,10 +14,34 @@ export class VoiceRecorder extends Component {
             notes: [],  // Lista de notas grabadas
             error: null,
             isSending: false,
+            searchTerm: '',  // Término de búsqueda para contactos
+            availableContacts: [],  // Contactos disponibles para selección
+            selectedContacts: [],  // Contactos seleccionados
         });
          this.orm = useService("orm");
     }
 
+    /**
+ * Agrega un contacto a la lista de contactos seleccionados.
+ * @param {Object} contact - El contacto a agregar.
+ */
+addContact= (contact) =>{
+    // Evitar duplicados
+    if (!this.state.selectedContacts.some(c => c.id === contact.id)) {
+        this.state.selectedContacts.push(contact);
+    }
+    // Limpiar el término de búsqueda y los contactos disponibles después de agregar
+    this.state.searchTerm = '';
+    this.state.availableContacts = [];
+}
+
+/**
+ * Quita un contacto de la lista de contactos seleccionados.
+ * @param {number} contactId - El ID del contacto a quitar.
+ */
+removeContact  = (contactId) => {
+    this.state.selectedContacts = this.state.selectedContacts.filter(c => c.id !== contactId);
+}
      /**
      * Propiedad computada para ordenar las notas.
      * Ordena las notas por 'id' de forma descendente (mayor a menor),
@@ -61,7 +85,24 @@ export class VoiceRecorder extends Component {
         }
     }
 
-
+/**
+     * Busca contactos en Odoo basados en el término de búsqueda.
+     */
+    async searchContacts() {
+        if (this.state.searchTerm.length < 2) {
+            this.state.availableContacts = [];
+            return;
+        }
+        try {
+            const domain = [['name', 'ilike', this.state.searchTerm]];
+            const fields = ['name', 'email', 'phone'];  // Campos a recuperar (puedes agregar más si necesitas)
+            const contacts = await this.orm.searchRead('res.partner', domain, fields, { limit: 20 });
+            this.state.availableContacts = contacts;
+        } catch (error) {
+            console.error("Error al buscar contactos:", error);
+            this.state.error = "Error al buscar contactos.";
+        }
+    }
 
     async toggleRecording() {
         if (!this.state.recording) {
