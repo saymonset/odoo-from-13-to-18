@@ -190,13 +190,15 @@ removeContact  = (contactId) => {
      * Envía todas las notas grabadas a la URL del webhook de n8n.
      */
     async sendToN8N() {
-        const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook-test/webhook-test/audios";
+        const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook/audios";
 
         // Filtrar solo las notas que se hayan subido correctamente (tienen un ID de Odoo)
         const notesToSend = this.state.notes.filter(note => note.id);
 
-        if (notesToSend.length === 0) {
+      //  if (notesToSend.length === 0) {
+        if (notesToSend.length === 0 && this.state.selectedContacts.length === 0) {
             //this.notification.add("No hay notas de voz grabadas y subidas para enviar.", { type: "info" });
+            alert("No hay notas de voz ni contactos seleccionados para enviar.");
             return;
         }
 
@@ -204,23 +206,34 @@ removeContact  = (contactId) => {
 
         try {
             // 1. Obtener los datos binarios (base64) de Odoo
-            const attachmentIds = notesToSend.map(note => note.id);
+            //const attachmentIds = notesToSend.map(note => note.id);
             
             // Buscar los adjuntos y seleccionar los campos que necesitamos
             // 'datas' es el campo binario (base64) que queremos enviar
-            const attachments = await this.orm.read("ir.attachment", attachmentIds, ["name", "datas", "mimetype", "res_id", "res_model"]);
+            //const attachments = await this.orm.read("ir.attachment", attachmentIds, ["name", "datas", "mimetype", "res_id", "res_model"]);
 
-            // 2. Formatear la data para n8n
-            const payload = {
-                // Información sobre el registro de Odoo
-                record_id: this.props.resId || null,
-                model: this.props.resModel || null,
-                // El array de audios
-                audios: attachments.map(att => ({
+            // 1. Obtener los datos binarios (base64) de los audios
+            let audios = [];
+            if (notesToSend.length > 0) {
+                const attachmentIds = notesToSend.map(note => note.id);
+                const attachments = await this.orm.read("ir.attachment", attachmentIds, ["name", "datas", "mimetype", "res_id", "res_model"]);
+                audios = attachments.map(att => ({
                     filename: att.name,
                     mimetype: att.mimetype,
-                    // Enviamos los datos binarios (base64) y el nombre/mimetype
-                    data: att.datas, 
+                    data: att.datas,
+                }));
+            }
+
+           // 2. Formatear la data para n8n, incluyendo los contactos seleccionados
+            const payload = {
+                record_id: this.props.resId || null,
+                model: this.props.resModel || null,
+                audios: audios,
+                contacts: this.state.selectedContacts.map(contact => ({
+                    id: contact.id,
+                    name: contact.name,
+                    email: contact.email || '',
+                    phone: contact.phone || '',
                 })),
             };
 
@@ -235,9 +248,11 @@ removeContact  = (contactId) => {
 
             if (response.ok) {
               //  this.notification.add(`Notas enviadas con éxito a n8n. (${notesToSend.length} archivos)`, { type: "success" });
-                alert(`Notas enviadas con éxito a n8n. (${notesToSend.length} archivos)`);
+               // alert(`Notas enviadas con éxito a n8n. (${notesToSend.length} archivos)`);
+               alert(`Datos enviados con éxito a n8n. (${notesToSend.length} audios, ${this.state.selectedContacts.length} contactos)`);
                 // OPCIONAL: Si quieres borrar las notas locales después de enviar
-                // this.state.notes = []; 
+                this.state.notes = []; 
+                this.state.selectedContacts = [];
             } else {
                 const errorText = await response.text();
                 alert(`Error al enviar a n8n: ${response.status} - ${errorText.substring(0, 100)}`);
