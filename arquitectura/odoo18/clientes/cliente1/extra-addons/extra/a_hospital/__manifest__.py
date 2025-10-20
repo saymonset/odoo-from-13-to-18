@@ -24,7 +24,6 @@
         "views/a_hospital_patient_views.xml",
         "views/a_hospital_specialty_views.xml",
         "views/a_hospital_visit_views.xml",
-        "views/remove_mark_whater_views.xml",
          "views/a_hospital_menu.xml",
         "report/a_hospital_doctor_report.xml",
         "wizard/a_hospital_disease_report_wizard_views.xml",
