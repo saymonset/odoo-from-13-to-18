@@ -5,14 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "LaunchChrome cliente1",
-      "request": "launch",
-      "type": "chrome",
-      "url": "https://jumpjibe.com/",
-      "webRoot": "./arquitectura/odoo18/clientes/cliente1/extra-addons/*"
-    },
-
-    {
       "name": "Python Debugger: cliente1",
       "type": "debugpy",
       "request": "launch",
@@ -21,6 +13,12 @@
       "args": ["--config=clientes/cliente1/conf/odoo.cfg"],
       "cwd": "${workspaceFolder}/arquitectura/odoo18"
     },
-   
+    {
+      "name": "LaunchChrome cliente1",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://jumpjibe.com/",
+      "webRoot": "./arquitectura/odoo18/clientes/cliente1/extra-addons/*"
+    },
   ]
 }
