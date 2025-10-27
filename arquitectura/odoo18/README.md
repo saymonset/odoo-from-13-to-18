@@ -125,7 +125,7 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' odo
 ```bash
 source .venv/bin/activate
 ```
-
+# Rn naturalmente
 ```bash
 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
 ```
