@@ -128,8 +128,16 @@ source .venv/bin/activate
 # Rn naturalmente
 ```bash
 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin  python -m debugpy --listen 5679 --wait-for-client ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+
 ```
 # Accedemos
 ```bash
 https://jumpjibe.com
 ```
+
+ source .venv/bin/activate
+  uv pip install debugpy
+  python -m debugpy --version
+  python -m debugpy --listen 5679 --wait-for-client ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+   python -m debugpy --listen 5679 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg

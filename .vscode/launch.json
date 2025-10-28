@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+    
     {
       "name": "Python Debugger: cliente1",
       "type": "debugpy",
@@ -11,7 +12,12 @@
       "program": "odoo/odoo-bin",
       "console": "integratedTerminal",
       "args": ["--config=clientes/cliente1/conf/odoo.cfg"],
-      "cwd": "${workspaceFolder}/arquitectura/odoo18"
+      "cwd": "${workspaceFolder}/arquitectura/odoo18",
+      "env": {
+        "GEVENT_SUPPORT": "True"
+      },
+      "justMyCode": false,
+      "subProcess": true
     },
     {
       "name": "LaunchChrome cliente1",
