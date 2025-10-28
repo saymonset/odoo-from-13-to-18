@@ -189,8 +189,8 @@ removeContact  = (contactId) => {
     /**
      * Envía todas las notas grabadas a la URL del webhook de n8n.
      */
-    async sendToN8N() {
-        const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook/audios";
+    async sendToN8N() {        
+        const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook-test/audios";
 
         // Filtrar solo las notas que se hayan subido correctamente (tienen un ID de Odoo)
         const notesToSend = this.state.notes.filter(note => note.id);

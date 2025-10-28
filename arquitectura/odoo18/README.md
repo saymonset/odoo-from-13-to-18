@@ -64,7 +64,8 @@ uv pip install -r odoo/requirements.txt
 # En postgres creamos el usuario odoo18
 
 ```bash
-   psql -U postgres -d postgres
+   docker exec -it odoo-db18 bash
+   psql -U odoo -d postgres
 ```
 
 ```bash
@@ -87,9 +88,13 @@ CREATE ROLE odoo18 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 # Abrir el puertoen el server para que pueda escuchar
 
 ```bash
-sudo ufw allow 8018/tcp
+#sudo ufw allow 8018/tcp
 ```
-
+```bash
+   docker exec -it odoo-db18 bash
+   psql -U odoo18 -d postgres
+   CREATE DATABASE dbcliente1_18;
+```
 # Instalamo la base de odoo en bd por primera vez
 
 # Ir a la ruta or path
@@ -103,32 +108,28 @@ sudo ufw allow 8018/tcp
 ```bash
 source .venv/bin/activate
 ```
+# SE obtiene la ip de ls bd de docker y se configura en el odoo.cfg, tambien se
+# coloca el puerto 18069 ue es el puertoq eu tiene nginx abierto para escucharlop a travez del 80
 
+```bash
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' odoo-db18
+```
+# Solo se corre para inicializar la base de datos y se apaga con ctrl + c
 ```bash
 ./odoo/odoo-bin -d dbcliente1_18 -i base -c clientes/cliente1/conf/odoo.cfg
 ```
 
 # Arrancamos odoo de manera regular
-
 # Si no esta activao el ambiente
 
 ```bash
 source .venv/bin/activate
 ```
-# si esta activo dl puero lo matamos
-```bash
-sudo lsof -i :8018
-```
-
+# Rn naturalmente
 ```bash
 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
 ```
 # Accedemos
 ```bash
-http://5.189.161.7:8020/
-```
-# Base de datos
-```bash
-psql -U panna18 -d dbpanna18
-password:odoo
+https://jumpjibe.com
 ```
