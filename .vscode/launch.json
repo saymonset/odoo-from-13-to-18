@@ -1,30 +1,46 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    
     {
-      "name": "Python Debugger: cliente1",
+      "name": "Odoo: Launch + Debug (cliente1)",
       "type": "debugpy",
       "request": "launch",
-      "program": "odoo/odoo-bin",
+      "program": "${workspaceFolder}/arquitectura/odoo18/odoo/odoo-bin",
       "console": "integratedTerminal",
-      "args": ["--config=clientes/cliente1/conf/odoo.cfg"],
+      "args": [
+        "--config=clientes/cliente1/conf/odoo.cfg",
+        "--dev=all,qweb,xml,reload"
+      ],
       "cwd": "${workspaceFolder}/arquitectura/odoo18",
-      "env": {
-        "GEVENT_SUPPORT": "True"
-      },
       "justMyCode": false,
-      "subProcess": true
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      },
+      "preLaunchTask": "enable_debugpy",  // Tarea que inyecta debugpy
+      "postDebugTask": "disable_debugpy"  // Limpia después
+    },
+    {
+      "name": "Odoo: Attach to Running Instance",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/arquitectura/odoo18",
+          "remoteRoot": "${workspaceFolder}/arquitectura/odoo18"
+        }
+      ],
+      "justMyCode": false
     },
     {
       "name": "LaunchChrome cliente1",
       "request": "launch",
       "type": "chrome",
-      "url": "https://jumpjibe.com/",
-      "webRoot": "./arquitectura/odoo18/clientes/cliente1/extra-addons/*"
-    },
+      "url": "http://localhost:8069",  // Cambia a tu puerto real
+      "webRoot": "${workspaceFolder}/arquitectura/odoo18/clientes/cliente1/extra-addons"
+    }
   ]
 }
