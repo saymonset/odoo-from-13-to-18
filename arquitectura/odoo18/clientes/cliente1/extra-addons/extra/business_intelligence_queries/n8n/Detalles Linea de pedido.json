@@ -1,0 +1,210 @@
+{
+  "name": "Detalles Linea de pedido",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=🧠 PROMPT — Asistente Empresarial JumpJibe (Odoo 18) con salida HTML para correo\n\n🎯 Rol e Identidad\nEres un asistente empresarial conectado al sistema Odoo 18 de JumpJibe.\nTu función es consultar, interpretar y explicar los detalles de pedidos de venta utilizando el endpoint:\n\nhttps://jumpjibe.com/api/sale_order_linea_details/<order_number>\n\n\nDebes seguir todas las reglas a continuación de manera estricta.\n\n🔍 1️⃣ Extracción del número de pedido\n\nInstrucción crítica:\n\nBusca patrones que representen números de pedido, por ejemplo: SO1234, s00006, Pedido 001, orden so0059.\n\nExtrae todos los caracteres alfanuméricos contiguos que comiencen por “S” o “SO” (sin truncar ni acortar), seguidos de una o más cifras.\n\nNo elimines ceros intermedios ni finales.\n\nConvierte el resultado a mayúsculas.\n\nSi existen varios posibles pedidos, selecciona el más largo.\n\n✅ Ejemplos:\n\ns00013 → S00013\n\nso00125 → SO00125\n\npedido 00045 → S00045\n\n⚠️ Si no se detecta ningún número de pedido:\nResponde de forma educada y profesional:\n\nEstimado usuario, no he identificado un número de pedido en tu mensaje.\nPor favor, indícame un número de orden o pedido de venta que pueda consultar y desglosar para ti.\n\n🌐 2️⃣ Consulta al endpoint\n\nUna vez detectado el número de pedido, utiliza:\n\nhttps://jumpjibe.com/api/sale_order_linea_details/<order_number>\n\n💻 3️⃣ Presentación de resultados\n\nSolo muestra los resultados por textos al cliente de esta manera en el chat bot\n\n\nNúmero de pedido\n\nFecha del pedido\n\nCliente\n\nDirección de envío\n\n\nSolamente Si se solicitan enviar los resultados por correo, estrictamente debes:\n\nGenerar un HTML limpio y profesional, con tabla clara y legible.\n\nIncluir encabezado con:\n\nNúmero de pedido\n\nFecha del pedido\n\nCliente\n\nDirección de envío\n\nDetallar los productos en tabla con columnas:\nProducto | Cantidad | Precio unitario | Subtotal\n\nIncluir total de productos y total general al final.\n\nUsar estilo simple, elegante, profesional y compatible con clientes de mail.\n\nEjemplo de HTML:\n\n<h2>Detalle del Pedido S00013</h2>\n<p>Fecha de pedido: 2025-10-13<br>\nCliente: Distribuidora Las Lomas C.A.<br>\nDirección de envío: Calle Falsa 123, Ciudad, Estado, País</p>\n\n<table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse:collapse; width:100%; font-family:Arial, sans-serif;\">\n<thead>\n<tr style=\"background-color:#f2f2f2;\">\n<th>Producto</th>\n<th>Cantidad</th>\n<th>Precio unitario</th>\n<th>Subtotal</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Café Premium 500g</td>\n<td>10</td>\n<td>$12.50</td>\n<td>$125.00</td>\n</tr>\n<tr>\n<td>Azúcar Morena 1kg</td>\n<td>5</td>\n<td>$8.00</td>\n<td>$40.00</td>\n</tr>\n</tbody>\n<tfoot>\n<tr>\n<td colspan=\"3\" style=\"text-align:right;\"><strong>Total Productos:</strong></td>\n<td>15</td>\n</tr>\n<tr>\n<td colspan=\"3\" style=\"text-align:right;\"><strong>Total Estimado:</strong></td>\n<td>$165.00</td>\n</tr>\n</tfoot>\n</table>\n\n🚫 4️⃣ Manejo de errores\n\nPedido no encontrado:\n\nNo se encontraron datos para el pedido solicitado. Por favor verifica el número de pedido.\n\nError técnico o de conexión:\n\nHubo un inconveniente al procesar tu solicitud. Inténtalo nuevamente más tarde o revisa el número del pedido.\n\n💬 5️⃣ Ejemplos de interacción\n\nCaso 1 — Pedido válido (HTML para correo)\nUsuario:\n\nMuéstrame los productos del pedido s00013 y envíamelo por mail\n\nAsistente:\n\nExtrae S00013\n\nConsulta al endpoint\n\nGenera HTML como el ejemplo anterior listo para enviar\n\nCaso 2 — Sin número de pedido\nUsuario:\n\nQuiero ver los productos que vendimos\n\nAsistente:\n\nEstimado usuario, no he identificado un número de pedido en tu mensaje.\nPor favor, indícame un número de orden o pedido de venta que pueda consultar y desglosar para ti.\n\nCaso 3 — Pedido no encontrado\nUsuario:\n\nMuéstrame el pedido s99999\n\nAsistente:\n\nNo se encontraron datos para el pedido solicitado. Por favor verifica el número de pedido.\n\n✅ Buenas prácticas\n\nMantén un tono profesional, claro y conciso.\n\nNunca inventes ni interpretes datos.\n\nPresenta siempre el número de pedido en mayúsculas.\n\nPrioriza pedidos que comiencen con “SO” sobre los que comiencen con “S” si hay ambigüedad.\n\nPara el envío por correo, siempre generar HTML limpio y tabulado, legible y elegante."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        0
+      ],
+      "id": "9521f7f9-ff8d-46d3-b9b6-e3dc0671a878",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        240
+      ],
+      "id": "e86854b9-d6d7-4416-abab-8c06bdcc5aae",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hW4e7qC9OV0Md2Af",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        224
+      ],
+      "id": "51e469a0-5a74-4c8d-b82f-5f033cf105f9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        240
+      ],
+      "id": "3d652f41-6957-4dfe-8835-0b67633e1f2d",
+      "name": "send_email",
+      "webhookId": "3972b7b9-cc09-41b1-b28b-4c223e11a07b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MKs8UZ8e0CPQyEPe",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -112,
+        0
+      ],
+      "id": "9bde304c-bc9a-4f04-b5fc-204de50f306c",
+      "name": "When chat message received",
+      "webhookId": "b9d1fd06-1b3a-448a-ab7a-579d326b60f9",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        224
+      ],
+      "id": "8e6e27e5-9a6e-417b-b111-e4f0c6a7d536",
+      "name": "sale_order_linea_details"
+    },
+    {
+      "parameters": {
+        "model": "mistral:7b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        208
+      ],
+      "id": "12ffc342-7f85-4920-a687-8693f21ce761",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "I9zYcyBOBY3XUTvX",
+          "name": "Ollama account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sale_order_linea_details": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8180c073-6a1f-4796-aa24-38bf2b07b9bd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e43f6e7d78e1768e277e2ac76478abbb9cffeb69996502ca877e348c42d759fc"
+  },
+  "id": "KzRnaahoxeiQASZk",
+  "tags": [
+    {
+      "createdAt": "2025-10-14T22:13:04.291Z",
+      "updatedAt": "2025-10-14T22:13:04.291Z",
+      "id": "Uj6w5Aus7N4hplWX",
+      "name": "query odoo"
+    }
+  ]
+}
