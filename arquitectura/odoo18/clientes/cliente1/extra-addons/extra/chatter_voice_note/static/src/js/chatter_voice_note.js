@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { Component, useState, onWillUnmount } from "@odoo/owl";
+import { Component, useState, onWillUnmount, onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 export class VoiceRecorder extends Component {
@@ -22,11 +22,40 @@ export class VoiceRecorder extends Component {
         });
 
         this.orm = useService("orm");
-        this.pollInterval = null;
+        this.busService = useService("bus_service");
+        // Escuchar canal
+        this.busService.addChannel("audio_to_text_channel");
+        this.busService.addEventListener("notification", this.onNewResponse);
 
-        // DETENER POLLING AL SALIR DEL COMPONENTE
-        onWillUnmount(() => this.stopPollingResponse());
+        onWillUnmount(() => {
+            this.busService.deleteChannel("audio_to_text_channel");
+            this.busService.removeEventListener("notification", this.onNewResponse);
+        });
+
+        onWillStart(() => {
+            this.state.final_message = '';
+            this.state.answer_ia = '';
+            this.state.loading_response = false;
+        });
+        // Indicar que se está esperando respuesta
+        this.state.loading_response = true;
     }
+
+    onNewResponse = (notifications) => {
+        for (const { type, payload } of notifications) {
+            if (type === "new_response" && payload.final_message !== undefined) {
+                console.log("✅ Recibido:", payload);
+                this.state.final_message = payload.final_message || '';
+                this.state.answer_ia = payload.answer_ia || '';
+                this.state.loading_response = false;
+
+                // Notificación opcional
+                this.env.services.notification.add("Respuesta de IA recibida", {
+                    type: "success",
+                });
+            }
+        }
+    };
 
     // === MÉTODOS DE CONTACTOS ===
     addContact(contact) {
@@ -159,6 +188,7 @@ export class VoiceRecorder extends Component {
         }
 
         this.state.isSending = true;
+        this.state.loading_response = true;  // ← AÑADE ESTO
 
         try {
             let audios = [];
@@ -195,9 +225,7 @@ export class VoiceRecorder extends Component {
                 this.state.notes = [];
                 this.state.selectedContacts = [];
 
-                // INICIAR POLLING
-                this.state.loading_response = true;
-                this.startPollingResponse();
+   
             } else {
                 const err = await response.text();
                 alert(`Error n8n: ${response.status} - ${err.substring(0, 100)}`);
@@ -210,33 +238,7 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // === POLLING ===
-    async checkForProcessedData() {
-        try {
-            const result = await this.orm.call('audio_to_text.service', 'get_processed_data', []);
-            if (result?.final_message && result?.answer_ia) {
-                this.state.final_message = result.final_message;
-                this.state.answer_ia = result.answer_ia;
-                this.state.loading_response = false;
-                this.stopPollingResponse();
-                // alert("Respuesta de IA recibida!");
-            }
-        } catch (error) {
-            console.warn("Polling: sin datos aún", error);
-        }
-    }
-
-    startPollingResponse() {
-        this.stopPollingResponse();
-        this.pollInterval = setInterval(() => this.checkForProcessedData(), 3000);
-    }
-
-    stopPollingResponse() {
-        if (this.pollInterval) {
-            clearInterval(this.pollInterval);
-            this.pollInterval = null;
-        }
-    }
+   
 }
 
 VoiceRecorder.template = "chatter_voice_note.VoiceRecorder";

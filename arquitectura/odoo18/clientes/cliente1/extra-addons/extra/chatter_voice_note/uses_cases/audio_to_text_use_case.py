@@ -7,6 +7,8 @@ from odoo.exceptions import ValidationError
 import os
 from pathlib import Path
 import time
+from odoo.addons.bus.models.bus import dispatch
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 
@@ -24,6 +26,15 @@ class AudioToTextUseCase(models.TransientModel):
                 'final_message': final_message,
                 'answer_ia': answer_ia,
             }
+            # === ENVIAR NOTIFICACIÓN EN TIEMPO REAL AL BUS ===
+            self.env['bus.bus']._sendone(
+                (request.env.user.partner_id, "audio_to_text_channel"),  # canal personalizado
+                'new_response',
+                {
+                    'final_message': final_message,
+                    'answer_ia': answer_ia,
+                }
+            )
             # Abre el archivo de audio en modo binario
             return response
         except Exception as e:
