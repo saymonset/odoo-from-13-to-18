@@ -92,6 +92,57 @@
                 </div>
             </t>
 
+
+
+<!-- Respuesta de n8n -->
+
+  <!-- Respuesta de n8n -->
+         <!-- Respuesta de n8n -->
+                <div class="row mt-4">
+                    <div class="col-sm-6 mb-3">
+                        <div class="card border-primary h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-primary">
+                                    Mensaje Final
+                                </h5>
+                                <p class="card-text flex-grow-1">
+                                    <t t-if="state.loading_response">
+                                        <i class="fa fa-spinner fa-spin"></i> Esperando respuesta...
+                                    </t>
+                                    <t t-elif="state.final_message">
+                                        <t t-esc="state.final_message"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="text-muted">(Aún no hay mensaje)</span>
+                                    </t>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 mb-3">
+                        <div class="card border-success h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-success">
+                                    Respuesta IA
+                                </h5>
+                                <p class="card-text flex-grow-1">
+                                    <t t-if="state.loading_response">
+                                        <i class="fa fa-spinner fa-spin"></i> Generando IA...
+                                    </t>
+                                    <t t-elif="state.answer_ia">
+                                        <t t-esc="state.answer_ia"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="text-muted">(Aún no hay respuesta)</span>
+                                    </t>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             <!-- Mensaje de error (fuera de la condición para mostrar errores en cualquier momento) -->
             <div t-if="state.error" class="mt-2 text-danger">
                 <t t-esc="state.error"/>
