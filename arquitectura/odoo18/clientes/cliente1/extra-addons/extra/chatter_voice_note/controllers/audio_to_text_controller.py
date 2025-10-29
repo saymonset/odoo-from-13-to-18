@@ -5,7 +5,7 @@ import json
 import logging
 from odoo import http
 from werkzeug.urls import url_decode
-
+from odoo.http import request       
 _logger = logging.getLogger(__name__)
 
 class AudioToTextController(http.Controller):
@@ -24,12 +24,16 @@ class AudioToTextController(http.Controller):
             # === ACCEDER A CAMPOS ===
             final_message = data.get('final_message')
             answer_ia = data.get('answer_ia')
+            
+            service = request.env['audio_to_text.service'].sudo()
+            #Informacion de evolution api ya procesada la info
+            info = service.getInfo(final_message, answer_ia)
 
-            print(f"final_message: {final_message}")
-            print(f"answer_ia: {answer_ia}")
+            print(f"final_message: {info.get('final_message')}")
+            print(f"answer_ia: {info.get('answer_ia')}")
 
             return http.request.make_response(
-                json.dumps({'success': True, 'received': data}),
+                json.dumps({'success': True, 'received': info}),
                 headers=[('Content-Type', 'application/json')]
             )
 
