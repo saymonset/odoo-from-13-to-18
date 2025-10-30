@@ -41,7 +41,7 @@
                     <div t-if="state.availableContacts.length > 0" class="mt-2">
                         <ul class="list-group">
                             <t t-foreach="state.availableContacts" t-as="contact" t-key="contact.id">
-                                <li t-on-click="() => addContact(contact)"
+                                <li t-on-click="() => this.addContact(contact)"
                                     class="list-group-item d-flex justify-content-between align-items-center"
                                     style="cursor: pointer; background-color: #e3f2fd;">
                                     <span t-esc="contact.name"/>
