@@ -242,4 +242,4 @@ export class VoiceRecorder extends Component {
 }
 
 VoiceRecorder.template = "chatter_voice_note.VoiceRecorder";
-registry.category("actions").add("chatter_voice_note.audio_to_text", VoiceRecorder);
+registry.category("actions").add("chatter_voice_note.audio_to_text0", VoiceRecorder);

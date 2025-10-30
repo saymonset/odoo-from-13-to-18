@@ -21,4 +21,4 @@
       }
   }
 
-  registry.category("actions").add("audio_to_text", Audio_to_text);
+  registry.category("actions").add("chatter_voice_note.audio_to_text", Audio_to_text);
