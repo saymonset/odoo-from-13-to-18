@@ -10,9 +10,9 @@
     "assets": {
         "web.assets_backend": [
              "chatter_voice_note/static/src/components/audio_to_text/audio_to_text.js",
-             "chatter_voice_note/static/src/js/chatter_voice_note.js",
+             "chatter_voice_note/static/src/components/audio_to_text/chatter_voice_note.js",
              "chatter_voice_note/static/src/components/audio_to_text/audio_to_text.xml",          
-             "chatter_voice_note/static/xml/templates.xml"           
+             "chatter_voice_note/static/src/components/audio_to_text/templates.xml"           
         ],
     },
     "installable": True,
