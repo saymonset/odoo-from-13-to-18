@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Nueva acción que llama directamente al componente Owl -->
+    <record id="action_unisa_sound_to_text" model="ir.actions.client">
+        <field name="name">Unisa_sound_to_text</field>
+        <field name="tag">chatter_voice_note.audio_to_text</field>
+        <field name="params">{'resModel': 'unisa_sound_to_text', 'resId': False}</field>
+        <field name="target">main</field>
+    </record>
+
+</odoo>
