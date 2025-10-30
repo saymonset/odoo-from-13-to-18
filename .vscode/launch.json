@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Odoo: Launch + Debug (cliente1)",
+      "name": "backend + Debug (cliente1)",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/arquitectura/odoo18/odoo/odoo-bin",
@@ -16,31 +16,15 @@
       "env": {
         "PYTHONUNBUFFERED": "1"
       },
-      "preLaunchTask": "enable_debugpy",  // Tarea que inyecta debugpy
-      "postDebugTask": "disable_debugpy"  // Limpia después
+      "preLaunchTask": "enable_debugpy", // Tarea que inyecta debugpy
+      "postDebugTask": "disable_debugpy" // Limpia después
     },
     {
-      "name": "Odoo: Attach to Running Instance",
-      "type": "python",
-      "request": "attach",
-      "connect": {
-        "host": "localhost",
-        "port": 5678
-      },
-      "pathMappings": [
-        {
-          "localRoot": "${workspaceFolder}/arquitectura/odoo18",
-          "remoteRoot": "${workspaceFolder}/arquitectura/odoo18"
-        }
-      ],
-      "justMyCode": false
-    },
-    {
-      "name": "LaunchChrome cliente1",
+      "name": "fronteEnd cliente1",
       "request": "launch",
       "type": "chrome",
-      "url": "http://localhost:8069",  // Cambia a tu puerto real
-      "webRoot": "${workspaceFolder}/arquitectura/odoo18/clientes/cliente1/extra-addons"
+      "url": "https://jumpjibe.com", // Cambia a tu puerto real
+      "webRoot": "${workspaceFolder}/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/"
     }
   ]
 }
