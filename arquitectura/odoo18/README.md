@@ -53,8 +53,8 @@ source .venv/bin/activate
     uv pip install pandas
     uv  pip install xmltodict
     uv    pip install gtts
-   uv pip install lxml
-
+     uv pip install lxml
+    uv pip install gevent psycogreen
      ``
 # Instalar los requirement
 ```bash
@@ -127,8 +127,19 @@ source .venv/bin/activate
 ```
 # Rn naturalmente
 ```bash
+# Corre normal
 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+
+# Debug, opero no se si sirve
 ./odoo/odoo-bin  python -m debugpy --listen 5679 --wait-for-client ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+
+# actualizqar un modulo
+./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u chatter_voice_note
+
+#Entrar al shell
+./odoo/odoo-bin shell -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin shell -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg < clientes/cliente1/tmp/bus.py
+
 
 ```
 # Accedemos
@@ -141,3 +152,61 @@ https://jumpjibe.com
   python -m debugpy --version
   python -m debugpy --listen 5679 --wait-for-client ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
    python -m debugpy --listen 5679 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+
+   # Matar puertos
+    _handleAudioResponse(ev) {
+        console.log('🎯 _handleAudioResponse EJECUTADO', ev);
+        
+        const message = ev.detail;
+        console.log('📨 Mensaje recibido en _handleAudioResponse:', message);
+        
+        if (message && message.type === 'new_response') {
+            console.log('✅ Mensaje new_response detectado en _handleAudioResponse');
+            
+            // ✅ ACTUALIZACIÓN DIRECTA DEL STATE
+            this.state.final_message = message.final_message || '';
+            this.state.answer_ia = message.answer_ia || '';
+            this.state.loading_response = false;
+            
+            console.log('🔄 Estado actualizado:', {
+                final_message: this.state.final_message,
+                answer_ia: this.state.answer_ia,
+                loading_response: this.state.loading_response
+            });
+            
+            // ✅ FORZAR ACTUALIZACIÓN
+            this.render();
+            
+            this.notification.add("✅ Respuesta de IA recibida", { 
+                type: "success", 
+                sticky: false 
+            });
+        } else {
+            console.log('❌ Mensaje no reconocido:', message);
+        }
+    }
+   netstat -tlnp | grep 8072  # Debe mostrar un proceso de Python/Odoo
+
+
+
+   ###############################EJECUTAR SCRIPT EN ODOO##############
+   ./odoo/odoo-bin shell -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg --shell-interface=python <<'EOF'
+print("=== INSPECCIONANDO EL MÉTODO REAL ===")
+
+from odoo.addons.bus.controllers.main import BusController
+import inspect
+
+# Ver la firma real del método
+method = getattr(BusController, 'has_missed_notifications', None)
+if method:
+    print(f"Firma del método: {inspect.signature(method)}")
+    print(f"Código fuente: {inspect.getsource(method) if hasattr(method, '__code__') else 'No disponible'}")
+else:
+    print("Método no encontrado")
+
+# Verificar decoradores
+if hasattr(method, 'routing'):
+    print(f"Decorador routing: {method.routing}")
+EOF
+
+   

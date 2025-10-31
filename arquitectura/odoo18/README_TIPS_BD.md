@@ -28,7 +28,7 @@ WHERE name = 'module_chatter_voice_note' AND module = 'base';
 
 -- 2. Elimina el registro conflictivo (usa el ID que aparece en el resultado anterior)
 DELETE FROM ir_model_data 
-WHERE id = 25814;  -- <-- Cambia 68 por el ID que te aparezca
+WHERE id = 25832;  -- <-- Cambia 68 por el ID que te aparezca
 
 -- 3. Confirma los cambios
 COMMIT;

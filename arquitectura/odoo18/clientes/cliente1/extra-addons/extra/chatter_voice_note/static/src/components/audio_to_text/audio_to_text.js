@@ -1,20 +1,15 @@
+/** @odoo-module **/
 import { registry } from "@web/core/registry";
 import { Layout } from "@web/search/layout";
-import { getDefaultConfig } from "@web/views/view";
-import { Component, useSubEnv } from "@odoo/owl";
-import { VoiceRecorder } from "./voice_recorder"; // Asegúrate de importar tu componente
+import { Component } from "@odoo/owl";
+import { VoiceRecorder } from "./voice_recorder";
 
 export class Audio_to_text extends Component {
     static template = "chatter_voice_note.Audio_to_text";
-    static components = { Layout, VoiceRecorder }; // Añade VoiceRecorder aquí
+    static components = { Layout, VoiceRecorder };
 
     setup() {
-        useSubEnv({
-            config: {
-                ...getDefaultConfig(),
-                ...this.env.config,
-            },
-        });
+        // NO HAGAS NADA AQUÍ → el entorno se hereda solo
     }
 }
 

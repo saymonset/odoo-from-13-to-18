@@ -1,4 +1,3 @@
-/** @odoo-module **/
 import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
 
@@ -6,28 +5,23 @@ export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
 
     setup() {
+        console.log('🔧 Iniciando setup de VoiceRecorder...');
+        
+        // SERVICIOS ESTÁNDAR
         this.orm = useService("orm");
         this.bus = useService("bus_service");
         this.notification = useService("notification");
 
-        // Manejo seguro del servicio user
-        let userService;
-        try {
-            userService = useService("user");
-        } catch (error) {
-            console.warn("Servicio 'user' no disponible, usando valor por defecto");
-            userService = null;
-        }
+        this.user = this.env.user;
+        this.userId = this.user?.id || 1;
+        
+        console.log('👤 Usuario ID:', this.userId);
 
-        this.user = userService;
-        this.userId = userService?.id || 1;
-        this.channel = null;
-        this.currentStream = null; // ← NUEVO: Para gestionar el stream del micrófono
+        this.currentStream = null;
 
         this.state = useState({
             recording: false,
             uploading: false,
-            mediaRecorder: null,
             notes: [],
             error: null,
             isSending: false,
@@ -37,26 +31,19 @@ export class VoiceRecorder extends Component {
             final_message: '',
             answer_ia: '',
             loading_response: false,
+            // ✅ AGREGAR ESTADO PARA CONTROLAR EL TEST MANUAL
+            isTesting: false,
         });
 
-        onWillStart(async () => {
-            // Inicialización si es necesaria
-            this.state.loading_response = false; // ← Mejor inicializar como false
+        // ✅ LISTENERS DEL BUS - CORREGIDOS
+        this._setupBusListeners();
+
+        onWillStart(() => {
+            console.log('🚀 onWillStart ejecutado');
+            this.state.loading_response = false;
         });
 
-        // ✅ CORREGIDO: Código completo y bien estructurado
-        this.channel = `audio_to_text_channel_${this.userId}`;
-        
-        // Suscribir el listener con useBus (limpieza automática)
-        useBus(this.bus, "notification", this._handleBusNotification.bind(this));
-        
-        // Agregar el canal
-        this.bus.addChannel(this.channel);
-
-        // Limpieza manual del canal
         onWillUnmount(() => {
-            this.bus.deleteChannel(this.channel);
-            // ✅ CORREGIDO: Liberar recursos del micrófono si está grabando
             if (this.state.recording && this.state.mediaRecorder) {
                 this.state.mediaRecorder.stop();
             }
@@ -66,32 +53,127 @@ export class VoiceRecorder extends Component {
         });
     }
 
-    // ✅ CORREGIDO: Handler unificado mejorado
-    _handleBusNotification(ev) {
-        const notifications = Array.isArray(ev.detail) ? ev.detail : [ev.detail];
-        notifications.forEach(notification => {
-            if (notification.type === "new_response") {
-                this._handleNewResponse(notification.payload);
+    _setupBusListeners() {
+        console.log('🔊 Configurando listeners del bus...');
+        
+        // ✅ LISTENER PRINCIPAL
+        useBus(
+            this.bus, 
+            "audio_to_text_response", 
+            (ev) => {
+                console.log('🎯 EVENTO audio_to_text_response RECIBIDO:', {
+                    eventoCompleto: ev,
+                    detail: ev.detail,
+                    type: ev.type,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // ✅ SI ESTAMOS EN MODO TEST, MANEJAR DE FORMA ESPECIAL
+                if (this.state.isTesting) {
+                    console.log('🧪 EVENTO RECIBIDO DURANTE TEST:', ev);
+                    this.state.isTesting = false; // Desactivar modo test
+                }
+                
+                this._handleAudioResponse(ev);
             }
-        });
+        );
+        
+        console.log('✅ Listeners del bus configurados correctamente');
     }
 
-    // ✅ CORREGIDO: Handler de reactividad
-    _handleNewResponse(payload) {
-        if (payload && payload.final_message !== undefined) {
-            // Actualizar estado reactivo correctamente
-            this.state.final_message = payload.final_message || '';
-            this.state.answer_ia = payload.answer_ia || '';
-            this.state.loading_response = false;
+    // ✅ MÉTODO SIMPLIFICADO - SIN USAR HOOKS
+    async testManualBus() {
+        console.log('🧪 Test manual del bus...');
+        
+        // ✅ ACTIVAR MODO TEST EN EL ESTADO
+        this.state.isTesting = true;
+        this.state.loading_response = true;
+        
+        console.log('🔍 Estado actualizado para test - isTesting:', this.state.isTesting);
+        
+        // Llamar al test después de 1 segundo para asegurar que los listeners están listos
+        setTimeout(() => {
+            this.testBus();
+        }, 1000);
+    }
+
+    async testBus() {
+        console.log('🔄 Iniciando testBus...');
+        this.state.loading_response = true;
+        this.state.final_message = '';
+        this.state.answer_ia = '';
+        
+        try {
+            console.log('📞 Llamando al método test del backend...');
+            const result = await this.orm.call('audio_to_text.use.case', 'test', []);
+            console.log('✅ Test ejecutado, resultado del servidor:', result);
             
-            this.notification.add(
-                "Respuesta de IA recibida en tiempo real",
-                { type: "success", sticky: false }
-            );
+            this.notification.add("✅ Prueba de notificación enviada", { 
+                type: "success",
+                sticky: false 
+            });
+            
+            // ✅ AGREGAR TIMEOUT PARA VER SI LLEGA EL EVENTO
+            setTimeout(() => {
+                console.log('⏰ Timeout - Estado actual:', {
+                    loading_response: this.state.loading_response,
+                    isTesting: this.state.isTesting
+                });
+                if (this.state.loading_response) {
+                    console.log('❌ El evento no llegó después de 3 segundos');
+                    this.state.loading_response = false;
+                    this.state.isTesting = false;
+                }
+            }, 3000);
+            
+        } catch (error) {
+            console.error('❌ Error en testBus:', error);
+            this.notification.add("❌ Error en prueba: " + error.message, { 
+                type: "danger" 
+            });
+            this.state.loading_response = false;
+            this.state.isTesting = false;
         }
     }
 
-    // === CONTACTOS ===
+    // ✅ MÉTODO MEJORADO CON MÁS LOGGING
+    _handleAudioResponse(ev) {
+        console.log('🎯 _handleAudioResponse EJECUTADO - Estado anterior:', {
+            final_message: this.state.final_message,
+            answer_ia: this.state.answer_ia,
+            loading_response: this.state.loading_response,
+            isTesting: this.state.isTesting
+        });
+        
+        const message = ev.detail;
+        console.log('📨 Mensaje recibido en _handleAudioResponse:', message);
+        
+        if (message && message.type === 'new_response') {
+            console.log('✅ Mensaje new_response detectado - Actualizando estado...');
+            
+            // ✅ ACTUALIZACIÓN EXPLÍCITA
+            this.state.final_message = message.final_message || 'MENSAJE VACÍO';
+            this.state.answer_ia = message.answer_ia || 'RESPUESTA VACÍA';
+            this.state.loading_response = false;
+            
+            console.log('🔄 Estado actualizado:', {
+                final_message: this.state.final_message,
+                answer_ia: this.state.answer_ia,
+                loading_response: this.state.loading_response
+            });
+            
+            this.notification.add("✅ Respuesta de IA recibida via Bus", { 
+                type: "success", 
+                sticky: true 
+            });
+            
+            console.log('✅ Notificación enviada y estado actualizado completamente');
+        } else {
+            console.log('❌ Mensaje no válido o tipo incorrecto:', message);
+        }
+    }
+
+    // === MÉTODOS DE CONTACTOS ===
     addContact(contact) {
         if (!this.state.selectedContacts.some(c => c.id === contact.id)) {
             this.state.selectedContacts.push(contact);
@@ -104,26 +186,46 @@ export class VoiceRecorder extends Component {
         this.state.selectedContacts = this.state.selectedContacts.filter(c => c.id !== contactId);
     }
 
+    // === NOTAS ===
+    get sortedNotes() {
+        return [...this.state.notes].sort((a, b) => (b.id || 0) - (a.id || 0));
+    }
+
+    async deleteNote(noteId) {
+        if (!noteId) {
+            this.state.notes = this.state.notes.filter(note => note.id !== noteId);
+            return;
+        }
+
+        if (!confirm("¿Eliminar esta nota de voz permanentemente?")) return;
+
+        try {
+            await this.orm.unlink("ir.attachment", [noteId]);
+            this.state.notes = this.state.notes.filter(note => note.id !== noteId);
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            this.state.error = "No se pudo eliminar la nota.";
+        }
+    }
+
+    // === BÚSQUEDA ===
     async searchContacts() {
         if (this.state.searchTerm.length < 2) {
             this.state.availableContacts = [];
             return;
         }
         try {
-            const contacts = await this.orm.searchRead(
-                "res.partner",
-                [["name", "ilike", this.state.searchTerm]],
-                ["name", "email", "phone"],
-                { limit: 20 }
-            );
+            const domain = [['name', 'ilike', this.state.searchTerm]];
+            const fields = ['name', 'email', 'phone'];
+            const contacts = await this.orm.searchRead('res.partner', domain, fields, { limit: 20 });
             this.state.availableContacts = contacts;
         } catch (error) {
             console.error("Error buscando contactos:", error);
-            this.state.availableContacts = [];
+            this.state.error = "Error al buscar contactos.";
         }
     }
 
-    // === GRABACIÓN - CORREGIDO ===
+    // === GRABACIÓN ===
     async toggleRecording() {
         if (this.state.recording) {
             this.state.mediaRecorder.stop();
@@ -132,45 +234,54 @@ export class VoiceRecorder extends Component {
         }
 
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: {
-                    channelCount: 1,
-                    sampleRate: 16000,
-                    sampleSize: 16
-                } 
-            });
-            
-            this.currentStream = stream; // Guardar referencia para limpiar después
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const recorder = new MediaRecorder(stream);
             const chunks = [];
 
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) {
-                    chunks.push(e.data);
-                }
-            };
-            
+            recorder.ondataavailable = e => e.data.size && chunks.push(e.data);
             recorder.onstop = async () => {
-                // ✅ CORREGIDO: Liberar recursos del micrófono
-                stream.getTracks().forEach(track => track.stop());
-                this.currentStream = null;
-                
                 const blob = new Blob(chunks, { type: "audio/webm" });
                 const url = URL.createObjectURL(blob);
                 const name = `voice_note_${new Date().toISOString()}.webm`;
-                const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const tempId = Date.now();
 
-                this.state.notes.push({ 
-                    id: null, 
-                    tempId, 
-                    name, 
-                    url, 
-                    uploading: true, 
-                    error: null 
+                this.state.notes.push({
+                    id: null,
+                    tempId,
+                    name,
+                    url,
+                    uploading: true,
+                    error: null,
                 });
-                
+
                 const noteIndex = this.state.notes.findIndex(n => n.tempId === tempId);
-                await this.uploadAudio(blob, name, noteIndex, tempId);
+                const reader = new FileReader();
+
+                reader.onload = async () => {
+                    const base64 = reader.result.split(",")[1];
+                    try {
+                        const [attachmentId] = await this.orm.create("ir.attachment", [{
+                            name,
+                            datas: base64,
+                            mimetype: "audio/webm",
+                            type: "binary",
+                            res_model: this.props.resModel || null,
+                            res_id: this.props.resId || null,
+                        }]);
+
+                        if (noteIndex !== -1) {
+                            this.state.notes[noteIndex].id = attachmentId;
+                            this.state.notes[noteIndex].uploading = false;
+                            delete this.state.notes[noteIndex].tempId;
+                        }
+                    } catch (rpcError) {
+                        const msg = rpcError.data?.message || rpcError.message || "Error al subir";
+                        this.state.notes[noteIndex].error = msg;
+                        this.state.notes[noteIndex].uploading = false;
+                    }
+                };
+
+                reader.readAsDataURL(blob);
             };
 
             recorder.start();
@@ -178,78 +289,17 @@ export class VoiceRecorder extends Component {
             this.state.recording = true;
             this.state.error = null;
         } catch (err) {
-            console.error("Error accediendo al micrófono:", err);
             this.state.error = `Micrófono no disponible: ${err.message}`;
-            this.state.recording = false;
         }
-    }
-
-    // ✅ NUEVO: Método separado para subir audio
-    async uploadAudio(blob, name, noteIndex, tempId) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const base64 = reader.result.split(",")[1];
-            try {
-                const [attachmentId] = await this.orm.create("ir.attachment", [{
-                    name,
-                    datas: base64,
-                    mimetype: "audio/webm",
-                    type: "binary",
-                    res_model: this.props.resModel || null,
-                    res_id: this.props.resId || null,
-                }]);
-                
-                if (noteIndex !== -1 && this.state.notes[noteIndex]?.tempId === tempId) {
-                    this.state.notes[noteIndex].id = attachmentId;
-                    this.state.notes[noteIndex].uploading = false;
-                    delete this.state.notes[noteIndex].tempId;
-                }
-            } catch (err) {
-                console.error("Error subiendo audio:", err);
-                const msg = err.data?.message || "Error al subir el audio";
-                if (noteIndex !== -1 && this.state.notes[noteIndex]?.tempId === tempId) {
-                    this.state.notes[noteIndex].error = msg;
-                    this.state.notes[noteIndex].uploading = false;
-                }
-            }
-        };
-        reader.onerror = () => {
-            if (noteIndex !== -1 && this.state.notes[noteIndex]?.tempId === tempId) {
-                this.state.notes[noteIndex].error = "Error leyendo el archivo de audio";
-                this.state.notes[noteIndex].uploading = false;
-            }
-        };
-        reader.readAsDataURL(blob);
-    }
-
-    async deleteNote(noteId) {
-        if (!confirm("¿Eliminar esta nota de voz permanentemente?")) {
-            return;
-        }
-        
-        try {
-            if (noteId) {
-                await this.orm.unlink("ir.attachment", [noteId]);
-            }
-            this.state.notes = this.state.notes.filter(n => n.id !== noteId);
-        } catch (err) {
-            console.error("Error eliminando nota:", err);
-            this.state.error = "No se pudo eliminar la nota.";
-            this.notification.add("Error al eliminar la nota", { type: "danger" });
-        }
-    }
-
-    get sortedNotes() {
-        return [...this.state.notes].sort((a, b) => (b.id || 0) - (a.id || 0));
     }
 
     // === ENVÍO A N8N ===
     async sendToN8N() {
         const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook-test/audios";
-        const notesToSend = this.state.notes.filter(n => n.id);
+        const notesToSend = this.state.notes.filter(note => note.id);
 
         if (notesToSend.length === 0 && this.state.selectedContacts.length === 0) {
-            this.notification.add("No hay datos para enviar.", { type: "warning" });
+            alert("No hay datos para enviar.");
             return;
         }
 
@@ -278,7 +328,6 @@ export class VoiceRecorder extends Component {
                     email: c.email || '',
                     phone: c.phone || '',
                 })),
-                user_id: this.userId,
             };
 
             const response = await fetch(N8N_WEBHOOK_URL, {
@@ -288,25 +337,16 @@ export class VoiceRecorder extends Component {
             });
 
             if (response.ok) {
-                this.notification.add(
-                    `Enviado: ${notesToSend.length} audios, ${this.state.selectedContacts.length} contactos`,
-                    { type: "success" }
-                );
+                alert(`Enviado: ${notesToSend.length} audios, ${this.state.selectedContacts.length} contactos`);
                 this.state.notes = [];
                 this.state.selectedContacts = [];
             } else {
-                const errorText = await response.text();
-                console.error("Error n8n:", response.status, errorText);
-                this.notification.add(
-                    `Error al enviar: ${response.status}`,
-                    { type: "danger" }
-                );
-                this.state.loading_response = false;
+                const err = await response.text();
+                alert(`Error n8n: ${response.status} - ${err.substring(0, 100)}`);
             }
         } catch (error) {
             console.error("Error de red:", error);
-            this.notification.add("Error de conexión al enviar.", { type: "danger" });
-            this.state.loading_response = false;
+            alert("Error de conexión al enviar.");
         } finally {
             this.state.isSending = false;
         }
