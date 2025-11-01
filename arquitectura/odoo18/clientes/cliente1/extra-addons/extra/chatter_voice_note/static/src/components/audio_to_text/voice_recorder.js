@@ -13,7 +13,7 @@ export class VoiceRecorder extends Component {
         this.notification = useService("notification");
 
         this.user = this.env.user;
-        this.userId = this.user?.id || 1;
+        this.userId = this.user?.id || 2;
         
         console.log('👤 Usuario ID:', this.userId);
 

@@ -15,6 +15,7 @@ class AudioToTextUseCase(models.TransientModel):
 
         try:
             user_id = self.env.uid
+            user_id = 2
             db_name = self.env.cr.dbname
 
             # ✅ CANAL CORRECTO: Canal del usuario (res.partner)
@@ -50,6 +51,7 @@ class AudioToTextUseCase(models.TransientModel):
     @api.model
     def test(self):
         user_id = self.env.uid
+        # user_id = 2
         db_name = self.env.cr.dbname
 
         # ✅ CANAL CORRECTO
