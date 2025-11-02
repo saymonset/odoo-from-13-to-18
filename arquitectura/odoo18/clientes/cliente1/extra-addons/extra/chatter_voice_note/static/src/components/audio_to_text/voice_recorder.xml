@@ -3,29 +3,25 @@
         <div class="o_container p-4">
 
             <!-- INFORMACIÓN DE DEBUG MEJORADA -->
-       <!-- ACTUALIZA la sección de debug en el template -->
-        <div class="alert alert-info mb-3">
-            <strong>Debug Info:</strong><br/>
-            User ID: <t t-esc="userId"/><br/>
-            Loading: <t t-esc="state.loading_response"/><br/>
-            Testing: <t t-esc="state.isTesting"/><br/>
-            Final Message: <t t-esc="state.final_message"/><br/>
-            Answer IA: <t t-esc="state.answer_ia"/><br/>
-            Estado: <t t-esc="state.debug_info"/>
-        </div>
-            <!-- BOTONES DE PRUEBA MEJORADOS -->
+            <div class="alert alert-warning mb-3">
+                <strong>🔧 MODO POLLING ACTIVADO</strong><br/>
+                <small>El bus de Odoo no está disponible, usando polling como alternativa</small><br/>
+                User ID: <t t-esc="userId"/><br/>
+                Estado: <t t-esc="state.debug_info"/><br/>
+                Intentos Polling: <t t-esc="state.polling_attempts"/><br/>
+                Loading: <t t-esc="state.loading_response"/>
+            </div>
+
+            <!-- BOTÓN DE PRUEBA -->
             <div class="mt-4 text-center">
-                <button class="btn btn-primary btn-lg me-2" t-on-click="testManualBus" t-att-disabled="state.loading_response">
+                <button class="btn btn-primary btn-lg" t-on-click="testManualBus" t-att-disabled="state.loading_response">
                     <t t-if="state.loading_response">
-                        <i class="fa fa-spinner fa-spin"></i> Procesando...
+                        <i class="fa fa-spinner fa-spin"></i> 
+                        Polling... (<t t-esc="state.polling_attempts"/> intentos)
                     </t>
                     <t t-else="">
-                        🧪 Test Manual BUS
+                        🧪 Test con POLLING
                     </t>
-                </button>
-                
-                <button class="btn btn-outline-secondary btn-lg" t-on-click="testBus">
-                    Test Simple Backend
                 </button>
             </div>
 
@@ -41,16 +37,11 @@
                                 </t>
                             </h5>
                             <p class="card-text flex-grow-1">
-                                <t t-if="state.loading_response">
-                                    <i class="fa fa-spinner fa-spin"></i> <t t-esc="state.debug_info"/>
+                                <t t-if="state.final_message">
+                                    <strong class="text-success" t-esc="state.final_message"/>
                                 </t>
                                 <t t-else="">
-                                    <t t-if="state.final_message">
-                                        <strong class="text-success" t-esc="state.final_message"/>
-                                    </t>
-                                    <t t-else="">
-                                        <span class="text-muted">(Aún no hay mensaje)</span>
-                                    </t>
+                                    <span class="text-muted">(Aún no hay mensaje)</span>
                                 </t>
                             </p>
                         </div>
@@ -66,16 +57,11 @@
                                 </t>
                             </h5>
                             <p class="card-text flex-grow-1">
-                                <t t-if="state.loading_response">
-                                    <i class="fa fa-spinner fa-spin"></i> <t t-esc="state.debug_info"/>
+                                <t t-if="state.answer_ia">
+                                    <strong class="text-success" t-esc="state.answer_ia"/>
                                 </t>
                                 <t t-else="">
-                                    <t t-if="state.answer_ia">
-                                        <strong class="text-success" t-esc="state.answer_ia"/>
-                                    </t>
-                                    <t t-else="">
-                                        <span class="text-muted">(Aún no hay respuesta)</span>
-                                    </t>
+                                    <span class="text-muted">(Aún no hay respuesta)</span>
                                 </t>
                             </p>
                         </div>
@@ -83,9 +69,6 @@
                 </div>
             </div>
 
-            <div t-if="state.error" class="mt-3 alert alert-danger">
-                <t t-esc="state.error"/>
-            </div>
         </div>
     </t>
 </templates>
