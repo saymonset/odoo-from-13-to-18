@@ -2,68 +2,99 @@
     <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
         <div class="o_container p-4">
 
-            <!-- INFORMACIÓN DE DEBUG MEJORADA -->
-            <div class="alert alert-warning mb-3">
-                <strong>🔧 MODO POLLING ACTIVADO</strong><br/>
-                <small>El bus de Odoo no está disponible, usando polling como alternativa</small><br/>
-                User ID: <t t-esc="userId"/><br/>
-                Estado: <t t-esc="state.debug_info"/><br/>
-                Intentos Polling: <t t-esc="state.polling_attempts"/><br/>
-                Loading: <t t-esc="state.loading_response"/>
+            <!-- PANEL DE CONTROL PRINCIPAL -->
+            <div class="card mb-4">
+                <div class="card-header" t-att-class="state.operational_mode === 'bus' ? 'bg-success text-white' : 'bg-primary text-white'">
+                    <h5 class="card-title mb-0">
+                        <i class="fa fa-satellite-dish me-2"></i>
+                        Sistema de Comunicación Híbrido
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- ESTADO DEL SISTEMA -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Modo Operativo:</strong>
+                            <span t-if="state.operational_mode === 'bus'" class="badge bg-success ms-2">BUS ACTIVO</span>
+                            <span t-else="" class="badge bg-primary ms-2">POLLING ACTIVO</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Bus Disponible:</strong>
+                            <span t-if="state.bus_available" class="badge bg-success ms-2">✅</span>
+                            <span t-else="" class="badge bg-danger ms-2">❌</span>
+                        </div>
+                    </div>
+
+                    <!-- MÉTRICAS -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <small>Tests Totales: <strong t-esc="state.total_tests"/></small>
+                        </div>
+                        <div class="col-md-4">
+                            <small>Éxito Bus: <strong t-esc="state.bus_success_rate"/>%</small>
+                        </div>
+                        <div class="col-md-4">
+                            <small>Eventos Bus: <strong t-esc="state.bus_events_received"/></small>
+                        </div>
+                    </div>
+
+                    <!-- DEBUG -->
+                    <div class="alert" t-att-class="state.last_method_used === 'bus' ? 'alert-success' : 'alert-info'">
+                        <strong>Estado:</strong> <span t-esc="state.debug_info"/><br/>
+                        <small>Último método: <span t-esc="state.last_method_used"/></small>
+                    </div>
+                </div>
             </div>
 
-            <!-- BOTÓN DE PRUEBA -->
-            <div class="mt-4 text-center">
-                <button class="btn btn-primary btn-lg" t-on-click="testManualBus" t-att-disabled="state.loading_response">
+            <!-- BOTONES DE CONTROL -->
+            <div class="text-center mb-4">
+                <button class="btn btn-success btn-lg me-2" t-on-click="testCommunication" t-att-disabled="state.loading_response">
                     <t t-if="state.loading_response">
                         <i class="fa fa-spinner fa-spin"></i> 
-                        Polling... (<t t-esc="state.polling_attempts"/> intentos)
+                        Procesando (<t t-esc="state.operational_mode"/>)
                     </t>
                     <t t-else="">
-                        🧪 Test con POLLING
+                        🚀 Test Comunicación Inteligente
                     </t>
+                </button>
+                
+                <button class="btn btn-outline-warning btn-sm" t-on-click="testBusForced" t-att-disabled="state.loading_response">
+                    🧪 Forzar Test Bus
                 </button>
             </div>
 
             <!-- RESULTADOS -->
-            <div class="row mt-4">
-                <div class="col-sm-6 mb-3">
-                    <div class="card border-primary h-100">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-primary">
-                                <i class="fa fa-message"></i> Mensaje Final
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header" t-att-class="state.final_message ? 'bg-success text-white' : 'bg-secondary text-white'">
+                            <h6 class="card-title mb-0">
+                                <i class="fa fa-message me-2"></i>
+                                Mensaje Final
                                 <t t-if="state.final_message">
-                                    <span class="badge bg-success ms-2">✓ Recibido</span>
+                                    <span class="badge bg-light text-success ms-2">✓</span>
                                 </t>
-                            </h5>
-                            <p class="card-text flex-grow-1">
-                                <t t-if="state.final_message">
-                                    <strong class="text-success" t-esc="state.final_message"/>
-                                </t>
-                                <t t-else="">
-                                    <span class="text-muted">(Aún no hay mensaje)</span>
-                                </t>
-                            </p>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text" t-esc="state.final_message || 'Esperando mensaje...'"/>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6 mb-3">
-                    <div class="card border-success h-100">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-success">
-                                <i class="fa fa-robot"></i> Respuesta IA
+                
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header" t-att-class="state.answer_ia ? 'bg-success text-white' : 'bg-secondary text-white'">
+                            <h6 class="card-title mb-0">
+                                <i class="fa fa-robot me-2"></i>
+                                Respuesta IA
                                 <t t-if="state.answer_ia">
-                                    <span class="badge bg-success ms-2">✓ Recibido</span>
+                                    <span class="badge bg-light text-success ms-2">✓</span>
                                 </t>
-                            </h5>
-                            <p class="card-text flex-grow-1">
-                                <t t-if="state.answer_ia">
-                                    <strong class="text-success" t-esc="state.answer_ia"/>
-                                </t>
-                                <t t-else="">
-                                    <span class="text-muted">(Aún no hay respuesta)</span>
-                                </t>
-                            </p>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text" t-esc="state.answer_ia || 'Esperando respuesta...'"/>
                         </div>
                     </div>
                 </div>
