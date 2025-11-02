@@ -3,15 +3,16 @@
         <div class="o_container p-4">
 
             <!-- INFORMACIÓN DE DEBUG MEJORADA -->
-            <div class="alert alert-info mb-3">
-                <strong>Debug Info:</strong><br/>
-                User ID: <t t-esc="userId"/><br/>
-                Loading: <t t-esc="state.loading_response"/><br/>
-                Final Message: <t t-esc="state.final_message"/><br/>
-                Answer IA: <t t-esc="state.answer_ia"/><br/>
-                Estado: <t t-esc="state.debug_info"/>
-            </div>
-
+       <!-- ACTUALIZA la sección de debug en el template -->
+        <div class="alert alert-info mb-3">
+            <strong>Debug Info:</strong><br/>
+            User ID: <t t-esc="userId"/><br/>
+            Loading: <t t-esc="state.loading_response"/><br/>
+            Testing: <t t-esc="state.isTesting"/><br/>
+            Final Message: <t t-esc="state.final_message"/><br/>
+            Answer IA: <t t-esc="state.answer_ia"/><br/>
+            Estado: <t t-esc="state.debug_info"/>
+        </div>
             <!-- BOTONES DE PRUEBA MEJORADOS -->
             <div class="mt-4 text-center">
                 <button class="btn btn-primary btn-lg me-2" t-on-click="testManualBus" t-att-disabled="state.loading_response">

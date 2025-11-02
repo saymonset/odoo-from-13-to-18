@@ -86,76 +86,110 @@ export class VoiceRecorder extends Component {
     }
 
     _setupBusListeners() {
-        console.log('🔊 Configurando listeners del bus...');
+    console.log('🔊 Configurando listeners del bus...');
+    
+    try {
+        // ✅ SUSCRIPCIÓN EXPLÍCITA AL CANAL DEL USUARIO
+        const userChannel = `["${this.env.session.db}","res.partner",${this.userId}]`;
+        console.log('🎯 Suscribiendo al canal:', userChannel);
         
-        try {
-            // ✅ LISTENER PRINCIPAL CON PROTECCIÓN
-            useBus(
-                this.bus, 
-                "audio_to_text_response", 
-                (ev) => {
-                    console.log('🎯 EVENTO audio_to_text_response RECIBIDO');
-                    
-                    // ✅ MODO TEST
-                    if (this.state.isTesting) {
-                        console.log('🧪 EVENTO RECIBIDO DURANTE TEST');
-                        this.state.isTesting = false;
-                    }
-                    
-                    this._handleAudioResponse(ev);
-                }
-            );
-            
-            console.log('✅ Listeners del bus configurados correctamente');
-            this.state.debug_info = 'Listeners activos';
-            
-        } catch (error) {
-            console.error('❌ Error configurando listeners:', error);
-            this.state.debug_info = 'Error en listeners';
-        }
-    }
-
-    // ✅ MÉTODO TEST MEJORADO Y SEGURO
-    async testManualBus() {
-        console.log('🧪 Test manual del bus...');
+        // ✅ SUSCRIBIRSE AL CANAL ESPECÍFICO
+        this.bus.addChannel(userChannel);
         
-        try {
-            this.state.isTesting = true;
-            this.state.loading_response = true;
-            this.state.final_message = '';
-            this.state.answer_ia = '';
-            this.state.debug_info = 'Iniciando test...';
-            
-            // ✅ LIMPIAR TIMEOUT ANTERIOR
-            if (this._timeoutId) {
-                clearTimeout(this._timeoutId);
-            }
-            
-            // ✅ TIMEOUT DE SEGURIDAD
-            this._timeoutId = setTimeout(() => {
-                if (this.state.loading_response) {
-                    console.log('⏰ Timeout - No llegó notificación');
-                    this.state.loading_response = false;
+        // ✅ LISTENER PARA EL CANAL ESPECÍFICO
+        useBus(
+            this.bus, 
+            userChannel,  // ✅ ESCUCHAR EN EL CANAL ESPECÍFICO, NO EN EL EVENTO GENERAL
+            (ev) => {
+                console.log('🎯 EVENTO RECIBIDO EN CANAL ESPECÍFICO:', {
+                    canal: userChannel,
+                    evento: ev
+                });
+                
+                if (this.state.isTesting) {
+                    console.log('🧪 EVENTO RECIBIDO DURANTE TEST');
                     this.state.isTesting = false;
-                    this.state.debug_info = 'Timeout - Sin notificación';
-                    
-                    this.notification.add("⚠️ No se recibió notificación en 5s", { 
-                        type: "warning" 
-                    });
                 }
-            }, 5000);
-            
-            // ✅ LLAMADA AL BACKEND
-            await this.testBus();
-            
-        } catch (error) {
-            console.error('❌ Error en testManualBus:', error);
-            this.state.loading_response = false;
-            this.state.isTesting = false;
-            this.state.debug_info = 'Error en test manual';
-        }
+                
+                this._handleAudioResponse(ev);
+            }
+        );
+        
+        // ✅ LISTENER ALTERNATIVO PARA EL TIPO DE EVENTO (como backup)
+        useBus(
+            this.bus, 
+            "audio_to_text_response", 
+            (ev) => {
+                console.log('🎯 EVENTO RECIBIDO POR TIPO:', ev);
+                
+                if (this.state.isTesting) {
+                    console.log('🧪 EVENTO RECIBIDO DURANTE TEST (por tipo)');
+                    this.state.isTesting = false;
+                }
+                
+                this._handleAudioResponse(ev);
+            }
+        );
+        
+        console.log('✅ Listeners del bus configurados correctamente');
+        this.state.debug_info = `Listeners activos - Canal: ${userChannel}`;
+        
+    } catch (error) {
+        console.error('❌ Error configurando listeners:', error);
+        this.state.debug_info = 'Error en listeners';
     }
+}
 
+   async testManualBus() {
+    console.log('🧪 Test manual del bus...');
+    
+    try {
+        // ✅ RESET COMPLETO
+        this.state.isTesting = true;
+        this.state.loading_response = true;
+        this.state.final_message = '';
+        this.state.answer_ia = '';
+        this.state.debug_info = 'Iniciando test manual...';
+        
+        console.log('🔄 Estado resetado para test');
+        
+        // ✅ LIMPIAR TIMEOUT ANTERIOR
+        if (this._timeoutId) {
+            clearTimeout(this._timeoutId);
+        }
+        
+        // ✅ TIMEOUT DE SEGURIDAD (aumentado a 15 segundos)
+        this._timeoutId = setTimeout(() => {
+            if (this.state.loading_response) {
+                console.log('⏰ Timeout - No llegó notificación después de 15s');
+                this.state.loading_response = false;
+                this.state.isTesting = false;
+                this.state.debug_info = 'Timeout - Verificar configuración del bus';
+                
+                this.notification.add("⚠️ Timeout - No se recibió notificación en 15 segundos", { 
+                    type: "warning",
+                    sticky: true 
+                });
+            }
+        }, 15000); // 15 segundos
+        
+        // ✅ ESPERAR UN MOMENTO PARA QUE LOS LISTENERS ESTÉN LISTOS
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // ✅ LLAMADA AL BACKEND
+        await this.testBus();
+        
+    } catch (error) {
+        console.error('❌ Error en testManualBus:', error);
+        this.state.loading_response = false;
+        this.state.isTesting = false;
+        this.state.debug_info = 'Error en test manual';
+        
+        this.notification.add("❌ Error en test manual: " + error.message, { 
+            type: "danger" 
+        });
+    }
+}
     async testBus() {
         console.log('🔄 Iniciando testBus...');
         
@@ -182,45 +216,56 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // ✅ MÉTODO MEJORADO CON MÁS SEGURIDAD
-    _handleAudioResponse(ev) {
-        try {
-            console.log('🎯 _handleAudioResponse ejecutado');
+   _handleAudioResponse(ev) {
+    try {
+        console.log('🎯 _handleAudioResponse ejecutado - Evento completo:', ev);
+        
+        // ✅ EXTRAER MENSAJE DE DIFERENTES FORMATOS
+        let message = ev.detail;
+        
+        // Si el evento viene en formato de notificación Odoo
+        if (ev.detail && Array.isArray(ev.detail)) {
+            message = ev.detail[0];
+        }
+        
+        console.log('📨 Mensaje procesado:', message);
+        
+        if (message && message.type === 'new_response') {
+            console.log('✅ Mensaje new_response detectado - Actualizando estado...');
             
-            const message = ev.detail;
-            console.log('📨 Mensaje recibido:', message);
+            // ✅ ACTUALIZACIÓN SEGURA DEL ESTADO
+            this.state.final_message = message.final_message || 'Mensaje recibido sin contenido';
+            this.state.answer_ia = message.answer_ia || 'Respuesta IA sin contenido';
+            this.state.loading_response = false;
+            this.state.debug_info = 'Notificación recibida ✅';
             
-            if (message && message.type === 'new_response') {
-                console.log('✅ Mensaje new_response detectado');
-                
-                // ✅ ACTUALIZACIÓN SEGURA DEL ESTADO
-                this.state.final_message = message.final_message || 'Sin mensaje';
-                this.state.answer_ia = message.answer_ia || 'Sin respuesta';
-                this.state.loading_response = false;
-                this.state.debug_info = 'Notificación recibida ✅';
-                
-                console.log('🔄 Estado actualizado exitosamente');
-                
-                // ✅ LIMPIAR TIMEOUT SI EXISTE
-                if (this._timeoutId) {
-                    clearTimeout(this._timeoutId);
-                    this._timeoutId = null;
-                }
-                
-                this.notification.add("✅ Notificación BUS recibida", { 
-                    type: "success"
-                });
-                
-            } else {
-                console.log('⚠️ Mensaje con formato no esperado:', message);
-                this.state.debug_info = 'Formato de mensaje no reconocido';
+            console.log('🔄 Estado actualizado:', {
+                final_message: this.state.final_message,
+                answer_ia: this.state.answer_ia
+            });
+            
+            // ✅ LIMPIAR TIMEOUT SI EXISTE
+            if (this._timeoutId) {
+                clearTimeout(this._timeoutId);
+                this._timeoutId = null;
             }
             
-        } catch (error) {
-            console.error('❌ Error en _handleAudioResponse:', error);
-            this.state.debug_info = 'Error procesando notificación';
+            this.notification.add("✅ Notificación BUS recibida correctamente", { 
+                type: "success",
+                sticky: true
+            });
+            
+        } else {
+            console.log('⚠️ Mensaje con formato no esperado:', message);
+            this.state.debug_info = `Formato no reconocido: ${message ? message.type : 'sin tipo'}`;
         }
+        
+    } catch (error) {
+        console.error('❌ Error en _handleAudioResponse:', error);
+        this.state.debug_info = 'Error procesando notificación';
+        this.state.loading_response = false;
     }
+}
 
     // === MÉTODOS DE CONTACTOS (SE MANTIENEN IGUAL) ===
     addContact(contact) {
