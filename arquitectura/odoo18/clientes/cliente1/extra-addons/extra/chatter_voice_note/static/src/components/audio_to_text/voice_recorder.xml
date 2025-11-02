@@ -2,29 +2,33 @@
     <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
         <div class="o_container p-4">
 
-            <!-- INFORMACIÓN DE DEBUG -->
+            <!-- INFORMACIÓN DE DEBUG MEJORADA -->
             <div class="alert alert-info mb-3">
                 <strong>Debug Info:</strong><br/>
                 User ID: <t t-esc="userId"/><br/>
                 Loading: <t t-esc="state.loading_response"/><br/>
                 Final Message: <t t-esc="state.final_message"/><br/>
-                Answer IA: <t t-esc="state.answer_ia"/>
+                Answer IA: <t t-esc="state.answer_ia"/><br/>
+                Estado: <t t-esc="state.debug_info"/>
             </div>
 
-            <!-- BOTÓN DE PRUEBA -->
+            <!-- BOTONES DE PRUEBA MEJORADOS -->
             <div class="mt-4 text-center">
-                <button class="btn btn-warning btn-lg" t-on-click="testBus">
-                    <i class="fa fa-bell"></i>
-                    PROBAR NOTIFICACIÓN BUS
+                <button class="btn btn-primary btn-lg me-2" t-on-click="testManualBus" t-att-disabled="state.loading_response">
+                    <t t-if="state.loading_response">
+                        <i class="fa fa-spinner fa-spin"></i> Procesando...
+                    </t>
+                    <t t-else="">
+                        🧪 Test Manual BUS
+                    </t>
                 </button>
-                <button class="btn btn-info btn-lg" t-on-click="testManualBus">
-                    TEST MANUAL BUS
+                
+                <button class="btn btn-outline-secondary btn-lg" t-on-click="testBus">
+                    Test Simple Backend
                 </button>
             </div>
 
-            <!-- ... (el resto del template se mantiene igual) ... -->
-
-            <!-- Respuesta en tiempo real MEJORADA -->
+            <!-- RESULTADOS -->
             <div class="row mt-4">
                 <div class="col-sm-6 mb-3">
                     <div class="card border-primary h-100">
@@ -37,13 +41,15 @@
                             </h5>
                             <p class="card-text flex-grow-1">
                                 <t t-if="state.loading_response">
-                                    <i class="fa fa-spinner fa-spin"></i> Esperando respuesta del servidor...
+                                    <i class="fa fa-spinner fa-spin"></i> <t t-esc="state.debug_info"/>
                                 </t>
                                 <t t-else="">
                                     <t t-if="state.final_message">
                                         <strong class="text-success" t-esc="state.final_message"/>
                                     </t>
-                                    <t t-else=""><span class="text-muted">(Aún no hay mensaje)</span></t>
+                                    <t t-else="">
+                                        <span class="text-muted">(Aún no hay mensaje)</span>
+                                    </t>
                                 </t>
                             </p>
                         </div>
@@ -60,13 +66,15 @@
                             </h5>
                             <p class="card-text flex-grow-1">
                                 <t t-if="state.loading_response">
-                                    <i class="fa fa-spinner fa-spin"></i> Generando respuesta de IA...
+                                    <i class="fa fa-spinner fa-spin"></i> <t t-esc="state.debug_info"/>
                                 </t>
                                 <t t-else="">
                                     <t t-if="state.answer_ia">
                                         <strong class="text-success" t-esc="state.answer_ia"/>
                                     </t>
-                                    <t t-else=""><span class="text-muted">(Aún no hay respuesta)</span></t>
+                                    <t t-else="">
+                                        <span class="text-muted">(Aún no hay respuesta)</span>
+                                    </t>
                                 </t>
                             </p>
                         </div>
@@ -74,7 +82,7 @@
                 </div>
             </div>
 
-            <div t-if="state.error" class="mt-3 text-danger">
+            <div t-if="state.error" class="mt-3 alert alert-danger">
                 <t t-esc="state.error"/>
             </div>
         </div>
