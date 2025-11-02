@@ -55,6 +55,8 @@ source .venv/bin/activate
     uv    pip install gtts
      uv pip install lxml
     uv pip install gevent psycogreen
+    uv pip install  greenlet
+
      ``
 # Instalar los requirement
 ```bash
@@ -130,8 +132,9 @@ source .venv/bin/activate
 # Corre normal
 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
 
-# Debug, opero no se si sirve
-./odoo/odoo-bin  python -m debugpy --listen 5679 --wait-for-client ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin gevent -c clientes/cliente1/conf/odoo.cfg
+
+
 
 # actualizqar un modulo
 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u chatter_voice_note
@@ -140,7 +143,16 @@ source .venv/bin/activate
 ./odoo/odoo-bin shell -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
 ./odoo/odoo-bin shell -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg < clientes/cliente1/tmp/bus.py
 
+# Desinstala un modulo por shell
+# Antes, entrar a la shell '#Entrar al shell'
+1-) ./odoo/odoo-bin shell -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+2-) env['ir.module.module'].search([('name', '=', 'chatter_voice_note')]).button_immediate_uninstall()
 
+# en tu navegador por console, limpiar cache
+localStorage.clear();
+sessionStorage.clear();
+indexedDB.deleteDatabase('odoo');
+caches.keys().then(names => names.forEach(name => caches.delete(name)));
 ```
 # Accedemos
 ```bash
