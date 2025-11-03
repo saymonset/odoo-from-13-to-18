@@ -18,8 +18,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Puerto por defecto de Odoo
-PORT=8069
+# Puerto de Odoo
+PORT=18069
 
 # Base de datos
 DB="dbcliente1_18"

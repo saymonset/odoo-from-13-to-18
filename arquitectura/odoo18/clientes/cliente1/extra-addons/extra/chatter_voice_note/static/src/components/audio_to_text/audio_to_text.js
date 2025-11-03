@@ -13,4 +13,9 @@ export class Audio_to_text extends Component {
     }
 }
 
+<<<<<<< HEAD
 registry.category("actions").add("chatter_voice_note.audio_to_text", Audio_to_text);
+=======
+// Registrar el servicio
+registry.category("actions").add("chatter_voice_note.audio_to_text", Audio_to_text);
+>>>>>>> audio_to_text_bus
