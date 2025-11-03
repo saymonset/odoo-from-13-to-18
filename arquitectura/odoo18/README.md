@@ -128,6 +128,7 @@ source .venv/bin/activate
 # Rn naturalmente
 ```bash
 ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbcliente1_18  -u chatter_voice_note -c clientes/cliente1/conf/odoo.cfg
 ./odoo/odoo-bin  python -m debugpy --listen 5679 --wait-for-client ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
 
 ```

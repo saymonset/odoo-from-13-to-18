@@ -18,4 +18,5 @@ export class Audio_to_text extends Component {
     }
 }
 
+// Registrar el servicio
 registry.category("actions").add("chatter_voice_note.audio_to_text", Audio_to_text);

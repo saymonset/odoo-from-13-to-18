@@ -6,11 +6,20 @@ export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
 
     setup() {
+        // ✅ CORREGIDO: Obtener servicios de forma segura
         this.orm = useService("orm");
-        this.bus = useService("bus_service");
         this.notification = useService("notification");
+        
+        // ✅ CORREGIDO: Obtener bus_service de forma segura
+        this.busService = this.getServiceSafely("bus_service");
+        
+        // ✅ CORREGIDO: Obtener user service de forma segura
+        this.userService = this.getServiceSafely("user") || { userId: null };
+        
+        // ✅ CORREGIDO: Obtener audio_text_bus_service de forma segura
+        this.audioTextBusService = this.getServiceSafely("audio_text_bus_service");
 
-        this.currentStream = null; // ← NUEVO: Para gestionar el stream del micrófono
+        this.currentStream = null;
 
         this.state = useState({
             recording: false,
@@ -28,21 +37,56 @@ export class VoiceRecorder extends Component {
         });
 
         onWillStart(async () => {
-            // Inicialización si es necesaria
-            this.state.loading_response = false; // ← Mejor inicializar como false
+            this.state.loading_response = false;
+            if (this.busService && this.busService.addChannel) {
+                this.busService.addChannel("audio_to_text_channel_1");
+            }
         });
 
+        // ✅ CORREGIDO: Asegurar que el handler esté correctamente vinculado
+        this.handleAudioResponse = this.handleAudioResponse.bind(this);
+        useBus(this.env.bus, "AUDIO_TEXT_RESPONSE", this.handleAudioResponse);
         
-    
-        // Limpieza manual del canal
         onWillUnmount(() => {
-    
+            if (this.busService && this.busService.leave) {
+                this.busService.leave("audio_to_text_channel_1");
+            }
         });
     }
 
-    
+    // ✅ NUEVO: Método para obtener servicios de forma segura
+    getServiceSafely(serviceName) {
+        try {
+            return useService(serviceName);
+        } catch (error) {
+            console.warn(`Servicio ${serviceName} no disponible:`, error.message);
+            return null;
+        }
+    }
 
-    
+    // ✅ NUEVO: Método separado para manejar respuestas de audio
+    handleAudioResponse(ev) {
+        const payload = ev.detail;
+        console.log("Evento AUDIO_TEXT_RESPONSE recibido:", payload);
+        
+        if (payload.final_message) {
+            this.state.final_message = payload.final_message;
+        }
+        if (payload.answer_ia) {
+            this.state.answer_ia = payload.answer_ia;
+        }
+        
+        this.state.loading_response = false;
+        this.state.notes = [];
+        this.state.selectedContacts = [];
+        
+        if (payload.final_message) {
+            this.notification.add(
+                "Respuesta de audio recibida y procesada", 
+                { type: "success" }
+            );
+        }
+    }
 
     // === CONTACTOS ===
     addContact(contact) {
@@ -76,7 +120,7 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // === GRABACIÓN - CORREGIDO ===
+    // === GRABACIÓN ===
     async toggleRecording() {
         if (this.state.recording) {
             this.state.mediaRecorder.stop();
@@ -93,7 +137,7 @@ export class VoiceRecorder extends Component {
                 } 
             });
             
-            this.currentStream = stream; // Guardar referencia para limpiar después
+            this.currentStream = stream;
             const recorder = new MediaRecorder(stream);
             const chunks = [];
 
@@ -104,7 +148,6 @@ export class VoiceRecorder extends Component {
             };
             
             recorder.onstop = async () => {
-                // ✅ CORREGIDO: Liberar recursos del micrófono
                 stream.getTracks().forEach(track => track.stop());
                 this.currentStream = null;
                 
@@ -137,7 +180,7 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // ✅ NUEVO: Método separado para subir audio
+    // Método para subir audio
     async uploadAudio(blob, name, noteIndex, tempId) {
         const reader = new FileReader();
         reader.onload = async () => {
@@ -208,6 +251,8 @@ export class VoiceRecorder extends Component {
 
         this.state.isSending = true;
         this.state.loading_response = true;
+        this.state.final_message = '';
+        this.state.answer_ia = '';
 
         try {
             let audios = [];
@@ -231,7 +276,8 @@ export class VoiceRecorder extends Component {
                     email: c.email || '',
                     phone: c.phone || '',
                 })),
-                user_id: this.userId,
+                user_id: this.userService.userId,
+                bus_channel: "audio_to_text_channel_1"
             };
 
             const response = await fetch(N8N_WEBHOOK_URL, {
@@ -242,11 +288,9 @@ export class VoiceRecorder extends Component {
 
             if (response.ok) {
                 this.notification.add(
-                    `Enviado: ${notesToSend.length} audios, ${this.state.selectedContacts.length} contactos`,
-                    { type: "success" }
+                    `Enviado: ${notesToSend.length} audios, ${this.state.selectedContacts.length} contactos. Esperando respuesta...`,
+                    { type: "info" }
                 );
-                this.state.notes = [];
-                this.state.selectedContacts = [];
             } else {
                 const errorText = await response.text();
                 console.error("Error n8n:", response.status, errorText);
