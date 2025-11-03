@@ -10,18 +10,6 @@ export class VoiceRecorder extends Component {
         this.bus = useService("bus_service");
         this.notification = useService("notification");
 
-        // Manejo seguro del servicio user
-        let userService;
-        try {
-            userService = useService("user");
-        } catch (error) {
-            console.warn("Servicio 'user' no disponible, usando valor por defecto");
-            userService = null;
-        }
-
-        this.user = userService;
-        this.userId = userService?.id || 1;
-        this.channel = null;
         this.currentStream = null; // ← NUEVO: Para gestionar el stream del micrófono
 
         this.state = useState({
@@ -44,52 +32,17 @@ export class VoiceRecorder extends Component {
             this.state.loading_response = false; // ← Mejor inicializar como false
         });
 
-        // ✅ CORREGIDO: Código completo y bien estructurado
-        this.channel = `audio_to_text_channel_${this.userId}`;
         
-        // Suscribir el listener con useBus (limpieza automática)
-        useBus(this.bus, "notification", this._handleBusNotification.bind(this));
-        
-        // Agregar el canal
-        this.bus.addChannel(this.channel);
-
+    
         // Limpieza manual del canal
         onWillUnmount(() => {
-            this.bus.deleteChannel(this.channel);
-            // ✅ CORREGIDO: Liberar recursos del micrófono si está grabando
-            if (this.state.recording && this.state.mediaRecorder) {
-                this.state.mediaRecorder.stop();
-            }
-            if (this.currentStream) {
-                this.currentStream.getTracks().forEach(track => track.stop());
-            }
+    
         });
     }
 
-    // ✅ CORREGIDO: Handler unificado mejorado
-    _handleBusNotification(ev) {
-        const notifications = Array.isArray(ev.detail) ? ev.detail : [ev.detail];
-        notifications.forEach(notification => {
-            if (notification.type === "new_response") {
-                this._handleNewResponse(notification.payload);
-            }
-        });
-    }
+    
 
-    // ✅ CORREGIDO: Handler de reactividad
-    _handleNewResponse(payload) {
-        if (payload && payload.final_message !== undefined) {
-            // Actualizar estado reactivo correctamente
-            this.state.final_message = payload.final_message || '';
-            this.state.answer_ia = payload.answer_ia || '';
-            this.state.loading_response = false;
-            
-            this.notification.add(
-                "Respuesta de IA recibida en tiempo real",
-                { type: "success", sticky: false }
-            );
-        }
-    }
+    
 
     // === CONTACTOS ===
     addContact(contact) {
