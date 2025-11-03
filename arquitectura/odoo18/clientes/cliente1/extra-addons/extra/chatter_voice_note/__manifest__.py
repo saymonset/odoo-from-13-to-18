@@ -3,7 +3,7 @@
     "name": "Chatter Voice Note",
     "version": "18.0.1.0.0",
     "category": "Tools",
-    "depends": ["web","base"],
+    "depends": ["web","base","bus"],
     "data": [
         "views/menu.xml",
     ],

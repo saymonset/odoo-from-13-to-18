@@ -1,3 +1,4 @@
+ docker exec -it odoo-db18 bash
 psql -U odoo -d dbcliente1_18
 DELETE FROM ir_module_module WHERE name = 'chatter_voice_note';
 DELETE FROM ir_model_data WHERE name = 'module_chatter_voice_note' 

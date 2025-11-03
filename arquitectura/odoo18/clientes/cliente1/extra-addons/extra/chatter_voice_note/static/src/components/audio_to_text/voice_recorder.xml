@@ -1,105 +1,141 @@
 <templates id="template" xml:space="preserve">
-    <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
-        <div class="o_container p-4">
+   <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
+    <div class="o_container p-4">
 
-            <!-- PANEL DE CONTROL PRINCIPAL -->
-            <div class="card mb-4">
-                <div class="card-header" t-att-class="state.operational_mode === 'bus' ? 'bg-success text-white' : 'bg-primary text-white'">
-                    <h5 class="card-title mb-0">
-                        <i class="fa fa-satellite-dish me-2"></i>
-                        Sistema de Comunicación Híbrido
-                    </h5>
+        <!-- PANEL DE DIAGNÓSTICO BUS -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fa fa-search me-2"></i>
+                    Diagnóstico Completo del BUS
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- ESTADO GENERAL -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <strong>Estado Conexión:</strong>
+                        <!-- ✅ USAR MÉTODOS SEGUROS -->
+                        <span class="badge ms-2" 
+                              t-att-class="getSafeConnectionClass()"
+                              t-esc="getSafeWebSocketState()"/>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Eventos Recibidos:</strong>
+                        <span class="badge bg-info ms-2" t-esc="state.bus_events_received"/>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>WebSocket:</strong>
+                        <!-- ✅ USAR MÉTODO SEGURO -->
+                        <span t-if="getSafeWebSocketStatus()" class="badge bg-success ms-2">✅</span>
+                        <span t-else="" class="badge bg-danger ms-2">❌</span>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-sm btn-outline-info" t-on-click="showCurrentState">
+                            🔍 Estado Actual
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DETALLES DIAGNÓSTICO -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="alert alert-secondary">
+                            <strong>Detalles BUS:</strong><br/>
+                            <small>
+                                <!-- ✅ VERIFICACIONES SEGURAS EN TEMPLATE -->
+                                URL: <span t-esc="state.bus_diagnostic ? (state.bus_diagnostic.url || 'No disponible') : 'No disponible'"/><br/>
+                                Canales: <span t-esc="state.bus_diagnostic ? ((state.bus_diagnostic.channels || []).length) : 0"/><br/>
+                                Último evento: 
+                                <t t-if="state.bus_diagnostic &amp;&amp; state.bus_diagnostic.lastEvent">
+                                    <span t-esc="state.bus_diagnostic.lastEvent.source"/> - 
+                                    <span t-esc="state.bus_diagnostic.lastEvent.type"/>
+                                </t>
+                                <t t-else="">Ninguno</t>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DEBUG -->
+                <div class="alert" t-att-class="state.bus_events_received &gt; 0 ? 'alert-success' : 'alert-warning'">
+                    <strong>Diagnóstico:</strong> <span t-esc="state.debug_info"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÓN DIAGNÓSTICO -->
+        <div class="text-center mb-4">
+            <button class="btn btn-warning btn-lg" 
+                    t-on-click="testBusDiagnostic" 
+                    t-att-disabled="state.loading_response"
+                    style="min-width: 350px;">
+                <t t-if="state.loading_response">
+                    <i class="fa fa-spinner fa-spin"></i> 
+                    Diagnóstico... (<t t-esc="state.bus_events_received"/> eventos)
+                </t>
+                <t t-else="">
+                    🔧 Ejecutar Diagnóstico BUS
+                </t>
+            </button>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header" t-att-class="state.final_message ? 'bg-success text-white' : 'bg-secondary text-white'">
+                        <h6 class="card-title mb-0">
+                            <i class="fa fa-message me-2"></i>
+                            Mensaje Final
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text" t-esc="state.final_message || 'Esperando mensaje de diagnóstico...'"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header" t-att-class="state.answer_ia ? 'bg-success text-white' : 'bg-secondary text-white'">
+                        <h6 class="card-title mb-0">
+                            <i class="fa fa-robot me-2"></i>
+                            Respuesta IA
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text" t-esc="state.answer_ia || 'Esperando respuesta de diagnóstico...'"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVENTOS RECIBIDOS (DEBUG) -->
+        <t t-if="state.all_events &amp;&amp; state.all_events.length &gt; 0">
+            <div class="card mt-4">
+                <div class="card-header bg-dark text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fa fa-list me-2"></i>
+                        Eventos Recibidos (<t t-esc="state.all_events.length"/>)
+                    </h6>
                 </div>
                 <div class="card-body">
-                    <!-- ESTADO DEL SISTEMA -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Modo Operativo:</strong>
-                            <span t-if="state.operational_mode === 'bus'" class="badge bg-success ms-2">BUS ACTIVO</span>
-                            <span t-else="" class="badge bg-primary ms-2">POLLING ACTIVO</span>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Bus Disponible:</strong>
-                            <span t-if="state.bus_available" class="badge bg-success ms-2">✅</span>
-                            <span t-else="" class="badge bg-danger ms-2">❌</span>
-                        </div>
-                    </div>
-
-                    <!-- MÉTRICAS -->
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <small>Tests Totales: <strong t-esc="state.total_tests"/></small>
-                        </div>
-                        <div class="col-md-4">
-                            <small>Éxito Bus: <strong t-esc="state.bus_success_rate"/>%</small>
-                        </div>
-                        <div class="col-md-4">
-                            <small>Eventos Bus: <strong t-esc="state.bus_events_received"/></small>
-                        </div>
-                    </div>
-
-                    <!-- DEBUG -->
-                    <div class="alert" t-att-class="state.last_method_used === 'bus' ? 'alert-success' : 'alert-info'">
-                        <strong>Estado:</strong> <span t-esc="state.debug_info"/><br/>
-                        <small>Último método: <span t-esc="state.last_method_used"/></small>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        <t t-foreach="state.all_events" t-as="event" t-key="event_index">
+                            <div class="mb-2 p-2 border rounded">
+                                <small>
+                                    <strong t-esc="event.source || 'Desconocido'"/> - 
+                                    <span t-esc="event.type || 'Sin tipo'"/> - 
+                                    <span t-esc="event.timestamp || 'Sin timestamp'"/>
+                                </small>
+                            </div>
+                        </t>
                     </div>
                 </div>
             </div>
+        </t>
 
-            <!-- BOTONES DE CONTROL -->
-            <div class="text-center mb-4">
-                <button class="btn btn-success btn-lg me-2" t-on-click="testCommunication" t-att-disabled="state.loading_response">
-                    <t t-if="state.loading_response">
-                        <i class="fa fa-spinner fa-spin"></i> 
-                        Procesando (<t t-esc="state.operational_mode"/>)
-                    </t>
-                    <t t-else="">
-                        🚀 Test Comunicación Inteligente
-                    </t>
-                </button>
-                
-                <button class="btn btn-outline-warning btn-sm" t-on-click="testBusForced" t-att-disabled="state.loading_response">
-                    🧪 Forzar Test Bus
-                </button>
-            </div>
-
-            <!-- RESULTADOS -->
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header" t-att-class="state.final_message ? 'bg-success text-white' : 'bg-secondary text-white'">
-                            <h6 class="card-title mb-0">
-                                <i class="fa fa-message me-2"></i>
-                                Mensaje Final
-                                <t t-if="state.final_message">
-                                    <span class="badge bg-light text-success ms-2">✓</span>
-                                </t>
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text" t-esc="state.final_message || 'Esperando mensaje...'"/>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header" t-att-class="state.answer_ia ? 'bg-success text-white' : 'bg-secondary text-white'">
-                            <h6 class="card-title mb-0">
-                                <i class="fa fa-robot me-2"></i>
-                                Respuesta IA
-                                <t t-if="state.answer_ia">
-                                    <span class="badge bg-light text-success ms-2">✓</span>
-                                </t>
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text" t-esc="state.answer_ia || 'Esperando respuesta...'"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </t>
+    </div>
+</t>
 </templates>

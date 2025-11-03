@@ -1,126 +1,126 @@
 # -*- coding: utf-8 -*-
 import logging
 from odoo import models, api, fields
-from datetime import datetime, timedelta
-import json
 
 _logger = logging.getLogger(__name__)
 
-class AudioToTextUseCase(models.TransientModel):
+class AudioToTextUseCase(models.Model):
     _name = 'audio_to_text.use.case'
     _description = 'Audio to text Use Case'
-    
-    # ✅ ALMACENAR RESPUESTAS TEMPORALES
-    _response_cache = {}
+
+    name = fields.Char(string="Name", default="Diagnostic Tool")
+
     
     @api.model
-    def check_for_response(self, params):
-        """Método para polling - verificar si hay respuesta"""
+    def test_bus_diagnostic(self):
+        """Método de diagnóstico completo del BUS - CORREGIDO"""
         try:
-            user_id = params.get('user_id', self.env.uid)
+            user_id = self.env.uid
             db_name = self.env.cr.dbname
-            cache_key = f"{db_name}_{user_id}"
+
+            # ✅ CANALES CORRECTOS PARA ODOO 18
+            channels = [
+                f'["{db_name}","res.partner",{user_id}]',  # Canal de usuario estándar
+                f'["{db_name}","audio_to_text.use.case",{user_id}]',  # Canal específico
+                '["broadcast"]'  # Canal de broadcast general
+            ]
             
-            _logger.info(f"🔍 Polling check para: {cache_key}")
-            
-            # ✅ SIMULAR RESPUESTA PARA PRUEBAS
-            # En producción, esto vendría de una base de datos o cache real
-            response = {
-                'status': 'response_available',
-                'final_message': f'RESPUESTA DE PRUEBA via POLLING - Usuario: {user_id}',
-                'answer_ia': f'Esta es una respuesta simulada - Hora: {fields.Datetime.now()}',
-                'timestamp': fields.Datetime.now().isoformat()
+            message = {
+                'type': 'audio_to_text_response',
+                'final_message': f'🚀 DIAGNÓSTICO BUS EXITOSO - Usuario: {user_id}',
+                'answer_ia': f'Prueba de diagnóstico completada - {fields.Datetime.now()}',
+                'user_id': user_id,
+                'timestamp': fields.Datetime.now().isoformat(),
+                'diagnostic': True,
+                'status': 'success'
             }
+
+            _logger.info("🎯 DIAGNÓSTICO BUS INICIADO:")
+            _logger.info(f"   Usuario: {user_id}")
+            _logger.info(f"   Base de datos: {db_name}")
+
+            # ✅ ENVIAR A MÚLTIPLES CANALES
+            bus_env = self.env['bus.bus'].sudo()
+            success_count = 0
             
-            _logger.info(f"✅ Respuesta simulada enviada: {cache_key}")
-            return response
-                
-        except Exception as e:
-            _logger.error(f"❌ Error en check_for_response: {str(e)}")
-            return {
-                'status': 'error',
-                'message': str(e)
-            }
-        @api.model
-        def test(self):
-            """Método de prueba que también guarda en cache"""
-            try:
-                user_id = self.env.uid
-                db_name = self.env.cr.dbname
-
-                channel = f'["{db_name}","res.partner",{user_id}]'
-
-                message = {
-                    'type': 'new_response',
-                    'final_message': f'PRUEBA EXITOSA DESDE MÉTODO TEST! Usuario: {user_id} - Hora: {fields.Datetime.now()}',
-                    'answer_ia': f'Notificación enviada desde test() - Usuario: {user_id} - DB: {db_name}'
-                }
-
-                _logger.info(f"🎯 ENVIANDO TEST BUS:")
-                _logger.info(f"   Canal: {channel}")
-                _logger.info(f"   Mensaje: {message}")
-
-                # ✅ GUARDAR EN CACHE PARA POLLING
-                cache_key = f"{db_name}_{user_id}"
-                self._response_cache[cache_key] = {
-                    'status': 'response_available',
-                    'final_message': message['final_message'],
-                    'answer_ia': message['answer_ia'],
-                    'timestamp': fields.Datetime.now().isoformat()
-                }
-                
-                _logger.info(f"✅ Respuesta guardada en cache: {cache_key}")
-
-                # ✅ INTENTAR ENVÍO POR BUS (puede fallar)
+            for channel in channels:
                 try:
-                    self.env['bus.bus']._sendone(channel, 'audio_to_text_response', message)
-                    _logger.info(f"✅ Notificación enviada por BUS")
-                except Exception as bus_error:
-                    _logger.warning(f"⚠️ Bus no disponible: {bus_error}")
+                    bus_env._sendone(channel, 'audio_to_text_response', message)
+                    _logger.info(f"✅ Mensaje enviado a canal: {channel}")
+                    success_count += 1
+                except Exception as e:
+                    _logger.error(f"❌ Error enviando a {channel}: {str(e)}")
 
+            if success_count > 0:
                 return {
                     'status': 'success',
-                    'message': 'Notificación enviada (bus + cache)',
+                    'message': f'Mensajes enviados a {success_count} canales',
+                    'user_id': user_id,
+                    'channels': channels,
+                    'diagnostic': 'completed'
+                }
+            else:
+                return {
+                    'status': 'error', 
+                    'message': 'No se pudo enviar a ningún canal'
+                }
+
+        except Exception as e:
+            _logger.error(f"❌ Error crítico en diagnóstico BUS: {str(e)}")
+            return {
+                'status': 'error',
+                'message': f'Error crítico: {str(e)}'
+            }
+        """Método de diagnóstico completo del BUS - CORREGIDO"""
+        try:
+            user_id = self.env.uid
+            db_name = self.env.cr.dbname
+
+            # ✅ CANAL CORREGIDO - usar el modelo correcto
+            channel = f'["{db_name}","audio_to_text.use.case",{user_id}]'
+            
+            message = {
+                'type': 'audio_to_text_response',
+                'final_message': f'🚀 DIAGNÓSTICO BUS EXITOSO - Usuario: {user_id}',
+                'answer_ia': f'Prueba de diagnóstico completada - {fields.Datetime.now()}',
+                'user_id': user_id,
+                'timestamp': fields.Datetime.now().isoformat(),
+                'diagnostic': True,
+                'status': 'success'
+            }
+
+            _logger.info("🎯 DIAGNÓSTICO BUS INICIADO:")
+            _logger.info(f"   Usuario: {user_id}")
+            _logger.info(f"   Base de datos: {db_name}")
+            _logger.info(f"   Canal: {channel}")
+
+            # ✅ USAR SUPERUSER PARA OPERACIONES BUS
+            bus_env = self.env['bus.bus'].sudo()
+            
+            # ✅ SOLO USAR _sendone (método recomendado)
+            try:
+                bus_env._sendone(channel, 'audio_to_text_response', message)
+                _logger.info("✅ _sendone ejecutado correctamente con SUPERUSER")
+                
+                return {
+                    'status': 'success',
+                    'message': 'Mensaje enviado por BUS correctamente',
                     'user_id': user_id,
                     'channel': channel,
-                    'cache_key': cache_key,
+                    'diagnostic': 'completed',
                     'timestamp': fields.Datetime.now().isoformat()
                 }
                 
             except Exception as e:
-                _logger.error(f"❌ Error en test: {str(e)}", exc_info=True)
+                _logger.error(f"❌ _sendone falló: {str(e)}")
                 return {
-                    'status': 'error',
-                    'message': str(e)
+                    'status': 'error', 
+                    'message': f'Error enviando mensaje BUS: {str(e)}'
                 }
 
-    @api.model
-    def check_for_response(self, params):
-        """Método para polling - verificar si hay respuesta"""
-        try:
-            user_id = params.get('user_id', self.env.uid)
-            db_name = self.env.cr.dbname
-            cache_key = f"{db_name}_{user_id}"
-            
-            _logger.info(f"🔍 Polling check para: {cache_key}")
-            
-            response = self._response_cache.get(cache_key)
-            
-            if response:
-                _logger.info(f"✅ Respuesta encontrada en cache: {cache_key}")
-                # Limpiar cache después de enviar
-                del self._response_cache[cache_key]
-                return response
-            else:
-                _logger.info(f"⏳ No hay respuesta aún para: {cache_key}")
-                return {
-                    'status': 'no_response',
-                    'message': 'Aún no hay respuesta disponible'
-                }
-                
         except Exception as e:
-            _logger.error(f"❌ Error en check_for_response: {str(e)}")
+            _logger.error(f"❌ Error crítico en diagnóstico BUS: {str(e)}")
             return {
                 'status': 'error',
-                'message': str(e)
+                'message': f'Error crítico: {str(e)}'
             }
