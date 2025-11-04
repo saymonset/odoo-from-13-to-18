@@ -1,14 +1,17 @@
-<t t-name="chatter_voice_note.Audio_to_text" owl="1">
-    <div class="o_action">
-        <Layout display="{
-            controlPanel: {
-                'top-right' : false,
-                'top-left' : false,
-                'bottom-right': false,
-                'bottom-left': false,
-            }
-        }">
-            <VoiceRecorder/>
-        </Layout>
-    </div>
-</t>
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="chatter_voice_note.Audio_to_text" owl="1">
+        <div class="o_action">
+            <Layout display="{
+                controlPanel: {
+                    'top-right': false,
+                    'top-left': false,
+                    'bottom-right': false,
+                    'bottom-left': false,
+                }
+            }">
+                <VoiceRecorder/>
+            </Layout>
+        </div>
+    </t>
+</templates>

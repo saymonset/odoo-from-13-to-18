@@ -1,22 +1,18 @@
 /** @odoo-module **/
 import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
-
-// Constantes            https://n8n.jumpjibe.com/webhook/audios
-const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook/audios";
-const AUDIO_CONSTRAINTS = {
-    audio: {
-        channelCount: 1,
-        sampleRate: 16000,
-        sampleSize: 16
-    }
-};
+import { ContactManager } from "./contact_manager";
+import { AudioRecorder } from "./audio_recorder";
+import { AudioNoteManager } from "./audio_note_manager";
+import { N8NService } from "./n8n_service";
+import { BUS_CHANNELS } from "./constants";
 
 export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
 
     setup() {
         this.initServices();
+        this.initManagers();
         this.state = useState(this.getInitialState());
         this.setupEventListeners();
         
@@ -24,30 +20,29 @@ export class VoiceRecorder extends Component {
         onWillUnmount(() => this.onComponentUnmount());
     }
 
-    // === INICIALIZACIÓN ===
     initServices() {
         this.orm = useService("orm");
         this.notification = useService("notification");
         this.busService = this.getServiceSafely("bus_service");
         this.userService = this.getServiceSafely("user") || { userId: null };
-        
-        this.currentStream = null;
+    }
+
+    initManagers() {
+        this.contactManager = new ContactManager(this.orm);
+        this.audioRecorder = new AudioRecorder();
+        this.audioNoteManager = new AudioNoteManager(this.orm, this.notification);
+        this.n8nService = new N8NService(this.orm, this.notification, this.userService);
     }
 
     getInitialState() {
         return {
             recording: false,
             uploading: false,
-            mediaRecorder: null,
-            notes: [],
-            error: null,
             isSending: false,
-            searchTerm: '',
-            availableContacts: [],
-            selectedContacts: [],
             final_message: '',
             answer_ia: '',
             loading_response: false,
+            error: null
         };
     }
 
@@ -60,14 +55,16 @@ export class VoiceRecorder extends Component {
     async onComponentStart() {
         this.state.loading_response = false;
         if (this.busService?.addChannel) {
-            this.busService.addChannel("audio_to_text_channel_1");
+            this.busService.addChannel(BUS_CHANNELS.AUDIO_TEXT);
         }
     }
 
     onComponentUnmount() {
-        this.cleanupStream();
+        if (this.state.recording) {
+            this.audioRecorder.cleanup();
+        }
         if (this.busService?.leave) {
-            this.busService.leave("audio_to_text_channel_1");
+            this.busService.leave(BUS_CHANNELS.AUDIO_TEXT);
         }
     }
 
@@ -107,52 +104,16 @@ export class VoiceRecorder extends Component {
     }
 
     resetAfterResponse() {
+        this.state.isSending = false;
         this.state.loading_response = false;
-        this.state.notes = [];
-        this.state.selectedContacts = [];
-    }
-
-    // === GESTIÓN DE CONTACTOS ===
-    addContact(contact) {
-        if (!this.state.selectedContacts.some(c => c.id === contact.id)) {
-            this.state.selectedContacts.push(contact);
-        }
-        this.clearSearch();
-    }
-
-    removeContact(contactId) {
-        this.state.selectedContacts = this.state.selectedContacts.filter(c => c.id !== contactId);
-    }
-
-    clearSearch() {
-        this.state.searchTerm = '';
-        this.state.availableContacts = [];
-    }
-
-    async searchContacts() {
-        if (this.state.searchTerm.length < 2) {
-            this.state.availableContacts = [];
-            return;
-        }
-        
-        try {
-            const contacts = await this.orm.searchRead(
-                "res.partner",
-                [["name", "ilike", this.state.searchTerm]],
-                ["name", "email", "phone"],
-                { limit: 20 }
-            );
-            this.state.availableContacts = contacts;
-        } catch (error) {
-            console.error("Error buscando contactos:", error);
-            this.state.availableContacts = [];
-        }
+        this.audioNoteManager.reset();
+        this.contactManager.reset();
     }
 
     // === GRABACIÓN DE AUDIO ===
     async toggleRecording() {
         if (this.state.recording) {
-            this.stopRecording();
+            await this.stopRecording();
         } else {
             await this.startRecording();
         }
@@ -160,8 +121,7 @@ export class VoiceRecorder extends Component {
 
     async startRecording() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia(AUDIO_CONSTRAINTS);
-            this.setupMediaRecorder(stream);
+            await this.audioRecorder.startRecording();
             this.state.recording = true;
             this.state.error = null;
         } catch (err) {
@@ -169,149 +129,42 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    setupMediaRecorder(stream) {
-        this.currentStream = stream;
-        const recorder = new MediaRecorder(stream);
-        const chunks = [];
-
-        recorder.ondataavailable = (e) => {
-            if (e.data.size > 0) chunks.push(e.data);
-        };
-        
-        recorder.onstop = () => this.handleRecordingStop(chunks);
-        recorder.start();
-        this.state.mediaRecorder = recorder;
-    }
-
-    stopRecording() {
-        if (this.state.mediaRecorder) {
-            this.state.mediaRecorder.stop();
-        }
-        this.state.recording = false;
-    }
-
-    async handleRecordingStop(chunks) {
-        this.cleanupStream();
-        
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        await this.createAudioNote(blob);
-    }
-
-    cleanupStream() {
-        if (this.currentStream) {
-            this.currentStream.getTracks().forEach(track => track.stop());
-            this.currentStream = null;
+    async stopRecording() {
+        try {
+            const blob = await this.audioRecorder.stopRecording();
+            this.state.recording = false;
+            if (blob && blob.size > 0) {
+                await this.audioNoteManager.createAudioNote(blob);
+            } else {
+                this.state.error = "No se capturó audio. Por favor, intenta de nuevo.";
+            }
+        } catch (err) {
+            console.error("Error en la grabación:", err);
+            this.state.error = err.message;
         }
     }
 
     handleRecordingError(err) {
         console.error("Error accediendo al micrófono:", err);
-        this.state.error = `Micrófono no disponible: ${err.message}`;
+        this.state.error = err.message;
         this.state.recording = false;
     }
 
-    // === GESTIÓN DE NOTAS DE AUDIO ===
-    async createAudioNote(blob) {
-        const url = URL.createObjectURL(blob);
-        const name = `voice_note_${new Date().toISOString()}.webm`;
-        const tempId = this.generateTempId();
-
-        const newNote = {
-            id: null,
-            tempId,
-            name,
-            url,
-            uploading: true,
-            error: null
-        };
-
-        this.state.notes.push(newNote);
-        await this.uploadAudio(blob, name, tempId);
-    }
-
-    generateTempId() {
-        return `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    }
-
-    async uploadAudio(blob, name, tempId) {
-        const noteIndex = this.state.notes.findIndex(n => n.tempId === tempId);
-        if (noteIndex === -1) return;
-
-        try {
-            const base64 = await this.blobToBase64(blob);
-            const attachmentId = await this.createAttachment(name, base64);
-            
-            this.updateNoteAfterUpload(noteIndex, tempId, attachmentId);
-        } catch (err) {
-            this.handleUploadError(noteIndex, tempId, err);
-        }
-    }
-
-    blobToBase64(blob) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(",")[1]);
-            reader.onerror = () => reject(new Error("Error leyendo el archivo de audio"));
-            reader.readAsDataURL(blob);
-        });
-    }
-
-    async createAttachment(name, base64Data) {
-        const [attachmentId] = await this.orm.create("ir.attachment", [{
-            name,
-            datas: base64Data,
-            mimetype: "audio/webm",
-            type: "binary",
-            res_model: this.props.resModel || null,
-            res_id: this.props.resId || null,
-        }]);
-        return attachmentId;
-    }
-
-    updateNoteAfterUpload(noteIndex, tempId, attachmentId) {
-        if (this.state.notes[noteIndex]?.tempId === tempId) {
-            this.state.notes[noteIndex].id = attachmentId;
-            this.state.notes[noteIndex].uploading = false;
-            delete this.state.notes[noteIndex].tempId;
-        }
-    }
-
-    handleUploadError(noteIndex, tempId, err) {
-        console.error("Error subiendo audio:", err);
-        const errorMsg = err.data?.message || "Error al subir el audio";
-        
-        if (this.state.notes[noteIndex]?.tempId === tempId) {
-            this.state.notes[noteIndex].error = errorMsg;
-            this.state.notes[noteIndex].uploading = false;
-        }
+    // === DELEGACIÓN A LOS MANAGERS ===
+    get sortedNotes() {
+        return this.audioNoteManager.sortedNotes;
     }
 
     async deleteNote(noteId) {
-        if (!confirm("¿Eliminar esta nota de voz permanentemente?")) {
-            return;
-        }
-        
-        try {
-            if (noteId) {
-                await this.orm.unlink("ir.attachment", [noteId]);
-            }
-            this.state.notes = this.state.notes.filter(n => n.id !== noteId);
-        } catch (err) {
-            console.error("Error eliminando nota:", err);
-            this.state.error = "No se pudo eliminar la nota.";
-            this.notification.add("Error al eliminar la nota", { type: "danger" });
-        }
+        await this.audioNoteManager.deleteNote(noteId);
     }
 
-    get sortedNotes() {
-        return [...this.state.notes].sort((a, b) => (b.id || 0) - (a.id || 0));
-    }
-
-    // === ENVÍO A N8N ===
+    // === ENVÍO A N8N CORREGIDO ===
     async sendToN8N() {
-        const notesToSend = this.state.notes.filter(n => n.id);
+        const notesToSend = this.audioNoteManager.getNotesForSending();
+        const contactsToSend = this.contactManager.getSelectedContacts();
 
-        if (notesToSend.length === 0 && this.state.selectedContacts.length === 0) {
+        if (notesToSend.length === 0 && contactsToSend.length === 0) {
             this.notification.add("No hay datos para enviar.", { type: "warning" });
             return;
         }
@@ -319,12 +172,23 @@ export class VoiceRecorder extends Component {
         this.prepareForSending();
 
         try {
-            const payload = await this.buildPayload(notesToSend);
-            await this.sendPayload(payload);
+            const success = await this.n8nService.sendToN8N(
+                notesToSend,
+                contactsToSend,
+                null,
+                null
+            );
+
+            // SIEMPRE reiniciamos el estado después del envío
+            // La respuesta vendrá por el bus service
+            if (!success) {
+                this.resetSendingState();
+            }
+            // Si success es true, los estados se reiniciarán cuando llegue handleAudioResponse
+
         } catch (error) {
-            this.handleSendError(error);
-        } finally {
-            this.state.isSending = false;
+            console.error("Error inesperado en sendToN8N:", error);
+            this.resetSendingState();
         }
     }
 
@@ -335,66 +199,8 @@ export class VoiceRecorder extends Component {
         this.state.answer_ia = '';
     }
 
-    async buildPayload(notesToSend) {
-        const audios = notesToSend.length > 0 ? await this.getAudioData(notesToSend) : [];
-        
-        return {
-            record_id: this.props.resId || null,
-            model: this.props.resModel || null,
-            audios,
-            contacts: this.state.selectedContacts.map(contact => ({
-                id: contact.id,
-                name: contact.name,
-                email: contact.email || '',
-                phone: contact.phone || '',
-            })),
-            user_id: this.userService.userId,
-            bus_channel: "audio_to_text_channel_1"
-        };
-    }
-
-    async getAudioData(notesToSend) {
-        const attachmentIds = notesToSend.map(n => n.id);
-        const attachments = await this.orm.read(
-            "ir.attachment", 
-            attachmentIds, 
-            ["name", "datas", "mimetype"]
-        );
-        
-        return attachments.map(attachment => ({
-            filename: attachment.name,
-            mimetype: attachment.mimetype,
-            data: attachment.datas,
-        }));
-    }
-
-    async sendPayload(payload) {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
-            const noteCount = payload.audios.length;
-            const contactCount = payload.contacts.length;
-            this.notification.add(
-                `Enviado: ${noteCount} audios, ${contactCount} contactos. Esperando respuesta...`,
-                { type: "info" }
-            );
-        } else {
-            throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-        }
-    }
-
-    handleSendError(error) {
-        console.error("Error enviando a n8n:", error);
+    resetSendingState() {
+        this.state.isSending = false;
         this.state.loading_response = false;
-        
-        const errorMessage = error.message.includes('HTTP') 
-            ? `Error al enviar: ${error.message}`
-            : "Error de conexión al enviar.";
-            
-        this.notification.add(errorMessage, { type: "danger" });
     }
 }
