@@ -1,105 +1,131 @@
 <templates id="template" xml:space="preserve">
     <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
         <div class="o_container p-4">
-
-            <!-- PANEL DE CONTROL PRINCIPAL -->
-            <div class="card mb-4">
-                <div class="card-header" t-att-class="state.operational_mode === 'bus' ? 'bg-success text-white' : 'bg-primary text-white'">
-                    <h5 class="card-title mb-0">
-                        <i class="fa fa-satellite-dish me-2"></i>
-                        Sistema de Comunicación Híbrido
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <!-- ESTADO DEL SISTEMA -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Modo Operativo:</strong>
-                            <span t-if="state.operational_mode === 'bus'" class="badge bg-success ms-2">BUS ACTIVO</span>
-                            <span t-else="" class="badge bg-primary ms-2">POLLING ACTIVO</span>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Bus Disponible:</strong>
-                            <span t-if="state.bus_available" class="badge bg-success ms-2">✅</span>
-                            <span t-else="" class="badge bg-danger ms-2">❌</span>
-                        </div>
-                    </div>
-
-                    <!-- MÉTRICAS -->
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <small>Tests Totales: <strong t-esc="state.total_tests"/></small>
-                        </div>
-                        <div class="col-md-4">
-                            <small>Éxito Bus: <strong t-esc="state.bus_success_rate"/>%</small>
-                        </div>
-                        <div class="col-md-4">
-                            <small>Eventos Bus: <strong t-esc="state.bus_events_received"/></small>
-                        </div>
-                    </div>
-
-                    <!-- DEBUG -->
-                    <div class="alert" t-att-class="state.last_method_used === 'bus' ? 'alert-success' : 'alert-info'">
-                        <strong>Estado:</strong> <span t-esc="state.debug_info"/><br/>
-                        <small>Último método: <span t-esc="state.last_method_used"/></small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BOTONES DE CONTROL -->
-            <div class="text-center mb-4">
-                <button class="btn btn-success btn-lg me-2" t-on-click="testCommunication" t-att-disabled="state.loading_response">
-                    <t t-if="state.loading_response">
-                        <i class="fa fa-spinner fa-spin"></i> 
-                        Procesando (<t t-esc="state.operational_mode"/>)
-                    </t>
-                    <t t-else="">
-                        🚀 Test Comunicación Inteligente
-                    </t>
+            <!-- Grabación inicial -->
+            <t t-if="state.notes.length === 0">
+                <h2>Voice Recorder</h2>
+                <button t-on-click="toggleRecording"
+                        t-att-class="'btn btn-lg ' + (state.recording ? 'btn-warning' : 'btn-primary')">
+                    <i t-att-class="'fa ' + (state.recording ? 'fa-stop' : 'fa-microphone')"></i>
+                    <t t-esc="state.recording ? ' Stop Recording' : ' Start Recording'"/>
                 </button>
-                
-                <button class="btn btn-outline-warning btn-sm" t-on-click="testBusForced" t-att-disabled="state.loading_response">
-                    🧪 Forzar Test Bus
-                </button>
-            </div>
+            </t>
 
-            <!-- RESULTADOS -->
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header" t-att-class="state.final_message ? 'bg-success text-white' : 'bg-secondary text-white'">
-                            <h6 class="card-title mb-0">
-                                <i class="fa fa-message me-2"></i>
-                                Mensaje Final
-                                <t t-if="state.final_message">
-                                    <span class="badge bg-light text-success ms-2">✓</span>
-                                </t>
-                            </h6>
+            <!-- Contenido cuando hay notas -->
+            <t t-if="state.notes.length > 0">
+                <!-- Notas grabadas -->
+                <div class="mt-3">
+                    <h4>Notas grabadas:</h4>
+                    <t t-foreach="sortedNotes" t-as="note" t-key="note.id || note.tempId">
+                        <div class="mb-2 p-2 border rounded d-flex align-items-center justify-content-between">
+                            <div class="flex-grow-1 me-3">
+                                <strong t-esc="note.name"/>
+                                <audio t-att-src="note.url" controls="true" class="d-block mt-1"></audio>
+                                <div t-if="note.uploading" class="text-info">Subiendo...</div>
+                                <div t-if="note.error" class="text-danger" t-esc="note.error"/>
+                            </div>
+                            <button t-on-click="() => deleteNote(note.id)"
+                                    class="btn btn-sm btn-danger" aria-label="Eliminar">
+                                <i class="fa fa-trash"/>
+                            </button>
                         </div>
-                        <div class="card-body">
-                            <p class="card-text" t-esc="state.final_message || 'Esperando mensaje...'"/>
+                    </t>
+                </div>
+
+                <!-- Búsqueda de contactos -->
+                <div class="mt-3">
+                    <h4>Seleccionar contactos:</h4>
+                    <input t-model="state.searchTerm" t-on-input="searchContacts"
+                           type="text" class="form-control"
+                           placeholder="Buscar contactos por nombre..."/>
+                    <div t-if="state.availableContacts.length > 0" class="mt-2">
+                        <ul class="list-group">
+                            <t t-foreach="state.availableContacts" t-as="contact" t-key="contact.id">
+                                <li t-on-click="() => this.addContact(contact)"
+                                    class="list-group-item d-flex justify-content-between align-items-center"
+                                    style="cursor: pointer; background-color: #e3f2fd;">
+                                    <span t-esc="contact.name"/>
+                                    <span class="badge bg-primary rounded-pill">+</span>
+                                </li>
+                            </t>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contactos seleccionados -->
+                <div t-if="state.selectedContacts.length > 0" class="mt-3">
+                    <h4>Contactos seleccionados:</h4>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr><th>#</th><th>Nombre</th></tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.selectedContacts" t-as="contact" t-key="contact.id">
+                                <tr>
+                                    <th t-esc="contact_index + 1"/>
+                                    <td t-on-click="() => removeContact(contact.id)" style="cursor: pointer;">
+                                        <t t-esc="contact.name"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Botón enviar -->
+                <div t-if="state.selectedContacts.length > 0">
+                    <button t-on-click="sendToN8N"
+                            t-att-disabled="state.isSending || state.recording || state.notes.length === 0"
+                            class="btn btn-lg btn-success mt-3">
+                        <span t-if="state.isSending" class="spinner-border spinner-border-sm me-2"/>
+                        <t t-esc="state.isSending ? 'Enviando...' : 'Enviar a n8n'"/>
+                    </button>
+                </div>
+            </t>
+
+            <!-- Respuesta en tiempo real -->
+            <div class="row mt-4">
+                <div class="col-sm-6 mb-3">
+                    <div class="card border-primary h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-primary">Mensaje Final</h5>
+                            <p class="card-text flex-grow-1">
+                                <t t-if="state.loading_response">
+                                    <i class="fa fa-spinner fa-spin"></i> Esperando respuesta...
+                                </t>
+                                <t t-else="">
+                                    <t t-if="state.final_message">
+                                        <t t-esc="state.final_message"/>
+                                    </t>
+                                    <t t-else=""><span class="text-muted">(Aún no hay mensaje)</span></t>
+                                </t>
+                            </p>
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header" t-att-class="state.answer_ia ? 'bg-success text-white' : 'bg-secondary text-white'">
-                            <h6 class="card-title mb-0">
-                                <i class="fa fa-robot me-2"></i>
-                                Respuesta IA
-                                <t t-if="state.answer_ia">
-                                    <span class="badge bg-light text-success ms-2">✓</span>
+                <div class="col-sm-6 mb-3">
+                    <div class="card border-success h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-success">Respuesta IA</h5>
+                            <p class="card-text flex-grow-1">
+                                <t t-if="state.loading_response">
+                                    <i class="fa fa-spinner fa-spin"></i> Generando IA...
                                 </t>
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text" t-esc="state.answer_ia || 'Esperando respuesta...'"/>
+                                <t t-else="">
+                                    <t t-if="state.answer_ia">
+                                        <t t-esc="state.answer_ia"/>
+                                    </t>
+                                    <t t-else=""><span class="text-muted">(Aún no hay respuesta)</span></t>
+                                </t>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <div t-if="state.error" class="mt-3 text-danger">
+                <t t-esc="state.error"/>
+            </div>
         </div>
     </t>
 </templates>
