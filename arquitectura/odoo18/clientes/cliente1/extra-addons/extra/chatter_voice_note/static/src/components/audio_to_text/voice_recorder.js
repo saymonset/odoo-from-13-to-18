@@ -2,26 +2,40 @@
 import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
 
+// Constantes
+const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook-test/audios";
+const AUDIO_CONSTRAINTS = {
+    audio: {
+        channelCount: 1,
+        sampleRate: 16000,
+        sampleSize: 16
+    }
+};
+
 export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
 
     setup() {
-        // ✅ CORREGIDO: Obtener servicios de forma segura
+        this.initServices();
+        this.state = useState(this.getInitialState());
+        this.setupEventListeners();
+        
+        onWillStart(() => this.onComponentStart());
+        onWillUnmount(() => this.onComponentUnmount());
+    }
+
+    // === INICIALIZACIÓN ===
+    initServices() {
         this.orm = useService("orm");
         this.notification = useService("notification");
-        
-        // ✅ CORREGIDO: Obtener bus_service de forma segura
         this.busService = this.getServiceSafely("bus_service");
-        
-        // ✅ CORREGIDO: Obtener user service de forma segura
         this.userService = this.getServiceSafely("user") || { userId: null };
         
-        // ✅ CORREGIDO: Obtener audio_text_bus_service de forma segura
-        this.audioTextBusService = this.getServiceSafely("audio_text_bus_service");
-
         this.currentStream = null;
+    }
 
-        this.state = useState({
+    getInitialState() {
+        return {
             recording: false,
             uploading: false,
             mediaRecorder: null,
@@ -34,27 +48,30 @@ export class VoiceRecorder extends Component {
             final_message: '',
             answer_ia: '',
             loading_response: false,
-        });
-
-        onWillStart(async () => {
-            this.state.loading_response = false;
-            if (this.busService && this.busService.addChannel) {
-                this.busService.addChannel("audio_to_text_channel_1");
-            }
-        });
-
-        // ✅ CORREGIDO: Asegurar que el handler esté correctamente vinculado
-        this.handleAudioResponse = this.handleAudioResponse.bind(this);
-        useBus(this.env.bus, "AUDIO_TEXT_RESPONSE", this.handleAudioResponse);
-        
-        onWillUnmount(() => {
-            if (this.busService && this.busService.leave) {
-                this.busService.leave("audio_to_text_channel_1");
-            }
-        });
+        };
     }
 
-    // ✅ NUEVO: Método para obtener servicios de forma segura
+    setupEventListeners() {
+        this.handleAudioResponse = this.handleAudioResponse.bind(this);
+        useBus(this.env.bus, "AUDIO_TEXT_RESPONSE", this.handleAudioResponse);
+    }
+
+    // === MANEJO DEL CICLO DE VIDA ===
+    async onComponentStart() {
+        this.state.loading_response = false;
+        if (this.busService?.addChannel) {
+            this.busService.addChannel("audio_to_text_channel_1");
+        }
+    }
+
+    onComponentUnmount() {
+        this.cleanupStream();
+        if (this.busService?.leave) {
+            this.busService.leave("audio_to_text_channel_1");
+        }
+    }
+
+    // === SERVICIOS ===
     getServiceSafely(serviceName) {
         try {
             return useService(serviceName);
@@ -64,21 +81,13 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // ✅ NUEVO: Método separado para manejar respuestas de audio
+    // === MANEJO DE RESPUESTAS DE AUDIO ===
     handleAudioResponse(ev) {
         const payload = ev.detail;
         console.log("Evento AUDIO_TEXT_RESPONSE recibido:", payload);
         
-        if (payload.final_message) {
-            this.state.final_message = payload.final_message;
-        }
-        if (payload.answer_ia) {
-            this.state.answer_ia = payload.answer_ia;
-        }
-        
-        this.state.loading_response = false;
-        this.state.notes = [];
-        this.state.selectedContacts = [];
+        this.updateResponseState(payload);
+        this.resetAfterResponse();
         
         if (payload.final_message) {
             this.notification.add(
@@ -88,17 +97,36 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // === CONTACTOS ===
+    updateResponseState(payload) {
+        if (payload.final_message) {
+            this.state.final_message = payload.final_message;
+        }
+        if (payload.answer_ia) {
+            this.state.answer_ia = payload.answer_ia;
+        }
+    }
+
+    resetAfterResponse() {
+        this.state.loading_response = false;
+        this.state.notes = [];
+        this.state.selectedContacts = [];
+    }
+
+    // === GESTIÓN DE CONTACTOS ===
     addContact(contact) {
         if (!this.state.selectedContacts.some(c => c.id === contact.id)) {
             this.state.selectedContacts.push(contact);
         }
-        this.state.searchTerm = '';
-        this.state.availableContacts = [];
+        this.clearSearch();
     }
 
     removeContact(contactId) {
         this.state.selectedContacts = this.state.selectedContacts.filter(c => c.id !== contactId);
+    }
+
+    clearSearch() {
+        this.state.searchTerm = '';
+        this.state.availableContacts = [];
     }
 
     async searchContacts() {
@@ -106,6 +134,7 @@ export class VoiceRecorder extends Component {
             this.state.availableContacts = [];
             return;
         }
+        
         try {
             const contacts = await this.orm.searchRead(
                 "res.partner",
@@ -120,102 +149,141 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // === GRABACIÓN ===
+    // === GRABACIÓN DE AUDIO ===
     async toggleRecording() {
         if (this.state.recording) {
-            this.state.mediaRecorder.stop();
-            this.state.recording = false;
-            return;
-        }
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: {
-                    channelCount: 1,
-                    sampleRate: 16000,
-                    sampleSize: 16
-                } 
-            });
-            
-            this.currentStream = stream;
-            const recorder = new MediaRecorder(stream);
-            const chunks = [];
-
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) {
-                    chunks.push(e.data);
-                }
-            };
-            
-            recorder.onstop = async () => {
-                stream.getTracks().forEach(track => track.stop());
-                this.currentStream = null;
-                
-                const blob = new Blob(chunks, { type: "audio/webm" });
-                const url = URL.createObjectURL(blob);
-                const name = `voice_note_${new Date().toISOString()}.webm`;
-                const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-                this.state.notes.push({ 
-                    id: null, 
-                    tempId, 
-                    name, 
-                    url, 
-                    uploading: true, 
-                    error: null 
-                });
-                
-                const noteIndex = this.state.notes.findIndex(n => n.tempId === tempId);
-                await this.uploadAudio(blob, name, noteIndex, tempId);
-            };
-
-            recorder.start();
-            this.state.mediaRecorder = recorder;
-            this.state.recording = true;
-            this.state.error = null;
-        } catch (err) {
-            console.error("Error accediendo al micrófono:", err);
-            this.state.error = `Micrófono no disponible: ${err.message}`;
-            this.state.recording = false;
+            this.stopRecording();
+        } else {
+            await this.startRecording();
         }
     }
 
-    // Método para subir audio
-    async uploadAudio(blob, name, noteIndex, tempId) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const base64 = reader.result.split(",")[1];
-            try {
-                const [attachmentId] = await this.orm.create("ir.attachment", [{
-                    name,
-                    datas: base64,
-                    mimetype: "audio/webm",
-                    type: "binary",
-                    res_model: this.props.resModel || null,
-                    res_id: this.props.resId || null,
-                }]);
-                
-                if (noteIndex !== -1 && this.state.notes[noteIndex]?.tempId === tempId) {
-                    this.state.notes[noteIndex].id = attachmentId;
-                    this.state.notes[noteIndex].uploading = false;
-                    delete this.state.notes[noteIndex].tempId;
-                }
-            } catch (err) {
-                console.error("Error subiendo audio:", err);
-                const msg = err.data?.message || "Error al subir el audio";
-                if (noteIndex !== -1 && this.state.notes[noteIndex]?.tempId === tempId) {
-                    this.state.notes[noteIndex].error = msg;
-                    this.state.notes[noteIndex].uploading = false;
-                }
-            }
+    async startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia(AUDIO_CONSTRAINTS);
+            this.setupMediaRecorder(stream);
+            this.state.recording = true;
+            this.state.error = null;
+        } catch (err) {
+            this.handleRecordingError(err);
+        }
+    }
+
+    setupMediaRecorder(stream) {
+        this.currentStream = stream;
+        const recorder = new MediaRecorder(stream);
+        const chunks = [];
+
+        recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) chunks.push(e.data);
         };
-        reader.onerror = () => {
-            if (noteIndex !== -1 && this.state.notes[noteIndex]?.tempId === tempId) {
-                this.state.notes[noteIndex].error = "Error leyendo el archivo de audio";
-                this.state.notes[noteIndex].uploading = false;
-            }
+        
+        recorder.onstop = () => this.handleRecordingStop(chunks);
+        recorder.start();
+        this.state.mediaRecorder = recorder;
+    }
+
+    stopRecording() {
+        if (this.state.mediaRecorder) {
+            this.state.mediaRecorder.stop();
+        }
+        this.state.recording = false;
+    }
+
+    async handleRecordingStop(chunks) {
+        this.cleanupStream();
+        
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        await this.createAudioNote(blob);
+    }
+
+    cleanupStream() {
+        if (this.currentStream) {
+            this.currentStream.getTracks().forEach(track => track.stop());
+            this.currentStream = null;
+        }
+    }
+
+    handleRecordingError(err) {
+        console.error("Error accediendo al micrófono:", err);
+        this.state.error = `Micrófono no disponible: ${err.message}`;
+        this.state.recording = false;
+    }
+
+    // === GESTIÓN DE NOTAS DE AUDIO ===
+    async createAudioNote(blob) {
+        const url = URL.createObjectURL(blob);
+        const name = `voice_note_${new Date().toISOString()}.webm`;
+        const tempId = this.generateTempId();
+
+        const newNote = {
+            id: null,
+            tempId,
+            name,
+            url,
+            uploading: true,
+            error: null
         };
-        reader.readAsDataURL(blob);
+
+        this.state.notes.push(newNote);
+        await this.uploadAudio(blob, name, tempId);
+    }
+
+    generateTempId() {
+        return `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    async uploadAudio(blob, name, tempId) {
+        const noteIndex = this.state.notes.findIndex(n => n.tempId === tempId);
+        if (noteIndex === -1) return;
+
+        try {
+            const base64 = await this.blobToBase64(blob);
+            const attachmentId = await this.createAttachment(name, base64);
+            
+            this.updateNoteAfterUpload(noteIndex, tempId, attachmentId);
+        } catch (err) {
+            this.handleUploadError(noteIndex, tempId, err);
+        }
+    }
+
+    blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(",")[1]);
+            reader.onerror = () => reject(new Error("Error leyendo el archivo de audio"));
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async createAttachment(name, base64Data) {
+        const [attachmentId] = await this.orm.create("ir.attachment", [{
+            name,
+            datas: base64Data,
+            mimetype: "audio/webm",
+            type: "binary",
+            res_model: this.props.resModel || null,
+            res_id: this.props.resId || null,
+        }]);
+        return attachmentId;
+    }
+
+    updateNoteAfterUpload(noteIndex, tempId, attachmentId) {
+        if (this.state.notes[noteIndex]?.tempId === tempId) {
+            this.state.notes[noteIndex].id = attachmentId;
+            this.state.notes[noteIndex].uploading = false;
+            delete this.state.notes[noteIndex].tempId;
+        }
+    }
+
+    handleUploadError(noteIndex, tempId, err) {
+        console.error("Error subiendo audio:", err);
+        const errorMsg = err.data?.message || "Error al subir el audio";
+        
+        if (this.state.notes[noteIndex]?.tempId === tempId) {
+            this.state.notes[noteIndex].error = errorMsg;
+            this.state.notes[noteIndex].uploading = false;
+        }
     }
 
     async deleteNote(noteId) {
@@ -241,7 +309,6 @@ export class VoiceRecorder extends Component {
 
     // === ENVÍO A N8N ===
     async sendToN8N() {
-        const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook-test/audios";
         const notesToSend = this.state.notes.filter(n => n.id);
 
         if (notesToSend.length === 0 && this.state.selectedContacts.length === 0) {
@@ -249,63 +316,85 @@ export class VoiceRecorder extends Component {
             return;
         }
 
+        this.prepareForSending();
+
+        try {
+            const payload = await this.buildPayload(notesToSend);
+            await this.sendPayload(payload);
+        } catch (error) {
+            this.handleSendError(error);
+        } finally {
+            this.state.isSending = false;
+        }
+    }
+
+    prepareForSending() {
         this.state.isSending = true;
         this.state.loading_response = true;
         this.state.final_message = '';
         this.state.answer_ia = '';
+    }
 
-        try {
-            let audios = [];
-            if (notesToSend.length > 0) {
-                const attachmentIds = notesToSend.map(n => n.id);
-                const attachments = await this.orm.read("ir.attachment", attachmentIds, ["name", "datas", "mimetype"]);
-                audios = attachments.map(a => ({
-                    filename: a.name,
-                    mimetype: a.mimetype,
-                    data: a.datas,
-                }));
-            }
+    async buildPayload(notesToSend) {
+        const audios = notesToSend.length > 0 ? await this.getAudioData(notesToSend) : [];
+        
+        return {
+            record_id: this.props.resId || null,
+            model: this.props.resModel || null,
+            audios,
+            contacts: this.state.selectedContacts.map(contact => ({
+                id: contact.id,
+                name: contact.name,
+                email: contact.email || '',
+                phone: contact.phone || '',
+            })),
+            user_id: this.userService.userId,
+            bus_channel: "audio_to_text_channel_1"
+        };
+    }
 
-            const payload = {
-                record_id: this.props.resId || null,
-                model: this.props.resModel || null,
-                audios,
-                contacts: this.state.selectedContacts.map(c => ({
-                    id: c.id,
-                    name: c.name,
-                    email: c.email || '',
-                    phone: c.phone || '',
-                })),
-                user_id: this.userService.userId,
-                bus_channel: "audio_to_text_channel_1"
-            };
+    async getAudioData(notesToSend) {
+        const attachmentIds = notesToSend.map(n => n.id);
+        const attachments = await this.orm.read(
+            "ir.attachment", 
+            attachmentIds, 
+            ["name", "datas", "mimetype"]
+        );
+        
+        return attachments.map(attachment => ({
+            filename: attachment.name,
+            mimetype: attachment.mimetype,
+            data: attachment.datas,
+        }));
+    }
 
-            const response = await fetch(N8N_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
+    async sendPayload(payload) {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
 
-            if (response.ok) {
-                this.notification.add(
-                    `Enviado: ${notesToSend.length} audios, ${this.state.selectedContacts.length} contactos. Esperando respuesta...`,
-                    { type: "info" }
-                );
-            } else {
-                const errorText = await response.text();
-                console.error("Error n8n:", response.status, errorText);
-                this.notification.add(
-                    `Error al enviar: ${response.status}`,
-                    { type: "danger" }
-                );
-                this.state.loading_response = false;
-            }
-        } catch (error) {
-            console.error("Error de red:", error);
-            this.notification.add("Error de conexión al enviar.", { type: "danger" });
-            this.state.loading_response = false;
-        } finally {
-            this.state.isSending = false;
+        if (response.ok) {
+            const noteCount = payload.audios.length;
+            const contactCount = payload.contacts.length;
+            this.notification.add(
+                `Enviado: ${noteCount} audios, ${contactCount} contactos. Esperando respuesta...`,
+                { type: "info" }
+            );
+        } else {
+            throw new Error(`HTTP ${response.status}: ${await response.text()}`);
         }
+    }
+
+    handleSendError(error) {
+        console.error("Error enviando a n8n:", error);
+        this.state.loading_response = false;
+        
+        const errorMessage = error.message.includes('HTTP') 
+            ? `Error al enviar: ${error.message}`
+            : "Error de conexión al enviar.";
+            
+        this.notification.add(errorMessage, { type: "danger" });
     }
 }
