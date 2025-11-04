@@ -2,8 +2,8 @@
 import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
 
-// Constantes
-const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook-test/audios";
+// Constantes            https://n8n.jumpjibe.com/webhook/audios
+const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook/audios";
 const AUDIO_CONSTRAINTS = {
     audio: {
         channelCount: 1,

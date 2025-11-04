@@ -24,7 +24,7 @@
                                 <div t-if="note.uploading" class="text-info">Subiendo...</div>
                                 <div t-if="note.error" class="text-danger" t-esc="note.error"/>
                             </div>
-                            <button t-on-click="() => deleteNote(note.id)"
+                            <button t-on-click="() => this.deleteNote(note.id)"
                                     class="btn btn-sm btn-danger" aria-label="Eliminar">
                                 <i class="fa fa-trash"/>
                             </button>
@@ -63,7 +63,7 @@
                             <t t-foreach="state.selectedContacts" t-as="contact" t-key="contact.id">
                                 <tr>
                                     <th t-esc="contact_index + 1"/>
-                                    <td t-on-click="() => removeContact(contact.id)" style="cursor: pointer;">
+                                    <td t-on-click="() => this.removeContact(contact.id)" style="cursor: pointer;">
                                         <t t-esc="contact.name"/>
                                     </td>
                                 </tr>
