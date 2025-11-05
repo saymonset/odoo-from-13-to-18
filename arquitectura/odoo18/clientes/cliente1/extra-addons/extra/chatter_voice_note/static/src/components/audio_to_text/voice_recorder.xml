@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
+ 
     <div class="o_container p-4">
-        <!-- Debug info -->
-        <div class="alert alert-warning">
-            <strong>DEBUG:</strong> 
-            Update Count: <t t-esc="state._updateCount"/> |
-            isSending: <t t-esc="state.isSending"/> |
-            Method: <t t-esc="state.responseMethod"/>
-        </div>
+      <!-- Sección de Estado del Sistema -->
+            <div class="alert alert-info mt-3">
+                <strong>ESTADO DEL SISTEMA:</strong>
+                <div>Info: <t t-esc="state.debugInfo"/></div>
+                <div>Método: <t t-esc="state.responseMethod"/></div>
+                <div>Render Count: <t t-esc="state._updateCount"/></div>
+            </div>
 
+            <!-- Botones de Control -->
+            <div class="alert alert-warning mt-3">
+                <button class="btn btn-warning" t-on-click="testBusReception">
+                    🧪 Test Recepción
+                </button>
+                <button class="btn btn-info ml-2" t-on-click="checkBusStatus">
+                    🔍 Ver Estado
+                </button>
+                <small class="text-muted d-block mt-1">Sistema: Polling + Bus</small>
+            </div>
         <!-- Grabación inicial -->
         <t t-if="audioNoteManager.state.notes.length === 0">
             <h2>Voice Recorder</h2>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from odoo import models, api
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -11,46 +12,44 @@ class AudioToTextUseCase(models.TransientModel):
     @api.model
     def execute(self, options) -> dict:
         try:
-            # 🔥 OBTENER DATOS REALES DE LA SOLICITUD
-            notes = options.get('notes', [])
-            contacts = options.get('contacts', [])
-            request_id = options.get('request_id', 'unknown')
-            
-            _logger.info(f"📥 Procesando solicitud {request_id}")
-            _logger.info(f"📝 Notas recibidas: {len(notes)}")
-            _logger.info(f"👥 Contactos recibidos: {len(contacts)}")
-            
-            # 🔥 SIMULAR PROCESAMIENTO (reemplaza con tu lógica real)
-            import time
-            time.sleep(2)  # Simular procesamiento
-            
-            # 🔥 GENERAR RESPUESTAS DE PRUEBA REALES
-            final_message = f"Mensaje procesado para {len(contacts)} contactos"
-            answer_ia = f"Análisis IA completado para {len(notes)} notas de audio"
+            # 🔥 SOLO LOS DOS PARÁMETROS DE LA IA
             final_message = options.get('final_message', '')
             answer_ia = options.get('answer_ia', '')
+            
+            _logger.info("=== USE CASE: DATOS DE IA ===")
+            _logger.info(f"final_message: {final_message}")
+            _logger.info(f"answer_ia: {answer_ia}")
+            
+            # 🔥 VERIFICAR DATOS DE LA IA
+            if not final_message and not answer_ia:
+                _logger.error("❌ USE CASE: Ambos campos de IA están vacíos")
+                return {
+                    'status': 'error',
+                    'message': 'Datos de IA vacíos'
+                }
+            
+            # 🔥 GENERAR REQUEST_ID ÚNICO (para el bus)
+            request_id = f"ia_{self.env.uid}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
             
             channel_name = "audio_to_text_channel_1"
             
             payload = {
                 'final_message': final_message,
                 'answer_ia': answer_ia,
-                'request_id': request_id,
-                'notes_count': len(notes),
-                'contacts_count': len(contacts)
+                'request_id': request_id
             }
             
             # 🔥 ENVIAR AL BUS
             self.env['bus.bus']._sendone(channel_name, 'new_response', payload)
-            _logger.info(f"✅ Enviado a bus: {channel_name} - {payload}")
+            _logger.info(f"✅✅✅ USE CASE: ENVIADO AL BUS - {payload}")
             
-            # 🔥 RETORNAR RESPUESTA INMEDIATA
+            # 🔥 RETORNAR RESPUESTA
             return {
-                'status': 'processing',
-                'message': 'Solicitud recibida y en procesamiento',
+                'status': 'success',
+                'message': 'Datos de IA procesados y enviados al bus',
                 'request_id': request_id,
-                'final_message': final_message,  # 🔥 NO null
-                'answer_ia': answer_ia  # 🔥 NO null
+                'final_message': final_message,
+                'answer_ia': answer_ia
             }
             
         except Exception as e:

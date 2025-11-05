@@ -25,3 +25,4 @@ export const MEDIA_RECORDER_OPTIONS = {
 export const BUS_CHANNELS = {
     AUDIO_TEXT: 'audio_to_text_channel_1'  // ✅ Mismo canal que el backend
 };
+
