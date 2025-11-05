@@ -10,10 +10,13 @@ export class N8NService {
 
     async sendToN8N(audioNotes, contacts, resModel, resId) {
         try {
+            console.log("📤 Iniciando envío a N8N...");
             const payload = await this.buildPayload(audioNotes, contacts, resModel, resId);
-            await this.sendPayload(payload);
+            const response = await this.sendPayload(payload);
+            console.log("✅ Envío a N8N completado");
             return true;
         } catch (error) {
+            console.error("❌ Error en envío a N8N:", error);
             this.handleSendError(error);
             return false;
         }
@@ -54,24 +57,28 @@ export class N8NService {
             body: JSON.stringify(payload),
         });
 
-        if (response.ok) {
-            const noteCount = payload.audios.length;
-            const contactCount = payload.contacts.length;
-            this.notification.add(
-                `Enviado: ${noteCount} audios, ${contactCount} contactos. Esperando respuesta...`,
-                { type: "info" }
-            );
-        } else {
+        if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${await response.text()}`);
         }
+
+        const noteCount = payload.audios.length;
+        const contactCount = payload.contacts.length;
+        this.notification.add(
+            `Enviado: ${noteCount} audios, ${contactCount} contactos`,
+            { type: "info" }
+        );
+
+        return response;
     }
 
     handleSendError(error) {
-        console.error("Error enviando a n8n:", error);
-        const errorMessage = error.message.includes('HTTP') 
-            ? `Error al enviar: ${error.message}`
-            : "Error de conexión al enviar.";
-            
+        let errorMessage = "Error al enviar";
+        if (error.message.includes('HTTP')) {
+            errorMessage = `Error del servidor: ${error.message}`;
+        } else if (error.name === 'TypeError') {
+            errorMessage = "Error de conexión. Verifica tu internet.";
+        }
+        
         this.notification.add(errorMessage, { type: "danger" });
     }
 }

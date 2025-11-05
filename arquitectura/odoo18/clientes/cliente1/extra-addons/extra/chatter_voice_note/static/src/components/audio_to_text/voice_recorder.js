@@ -16,6 +16,9 @@ export class VoiceRecorder extends Component {
         this.state = useState(this.getInitialState());
         this.setupEventListeners();
         
+        // Inicializar timeout de seguridad
+        this.safetyTimeout = null;
+        
         onWillStart(() => this.onComponentStart());
         onWillUnmount(() => this.onComponentUnmount());
     }
@@ -51,7 +54,6 @@ export class VoiceRecorder extends Component {
         useBus(this.env.bus, "AUDIO_TEXT_RESPONSE", this.handleAudioResponse);
     }
 
-    // === MANEJO DEL CICLO DE VIDA ===
     async onComponentStart() {
         this.state.loading_response = false;
         if (this.busService?.addChannel) {
@@ -66,9 +68,13 @@ export class VoiceRecorder extends Component {
         if (this.busService?.leave) {
             this.busService.leave(BUS_CHANNELS.AUDIO_TEXT);
         }
+        // Limpiar timeout al desmontar el componente
+        if (this.safetyTimeout) {
+            clearTimeout(this.safetyTimeout);
+            this.safetyTimeout = null;
+        }
     }
 
-    // === SERVICIOS ===
     getServiceSafely(serviceName) {
         try {
             return useService(serviceName);
@@ -78,19 +84,30 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    // === MANEJO DE RESPUESTAS DE AUDIO ===
+    // === MANEJO DE RESPUESTAS DE AUDIO CON TIMEOUT ===
     handleAudioResponse(ev) {
         const payload = ev.detail;
-        console.log("Evento AUDIO_TEXT_RESPONSE recibido:", payload);
+        console.log("✅ Evento AUDIO_TEXT_RESPONSE recibido:", payload);
         
+        // Limpiar timeout de seguridad
+        if (this.safetyTimeout) {
+            clearTimeout(this.safetyTimeout);
+            this.safetyTimeout = null;
+        }
+        
+        // PRIMERO reiniciar el estado de envío
+        this.state.isSending = false;
+        this.state.loading_response = false;
+        
+        // LUEGO actualizar con la respuesta
         this.updateResponseState(payload);
-        this.resetAfterResponse();
+        
+        // FINALMENTE resetear managers
+        this.audioNoteManager.reset();
+        this.contactManager.reset();
         
         if (payload.final_message) {
-            this.notification.add(
-                "Respuesta de audio recibida y procesada", 
-                { type: "success" }
-            );
+            this.notification.add("Respuesta recibida", { type: "success" });
         }
     }
 
@@ -103,14 +120,6 @@ export class VoiceRecorder extends Component {
         }
     }
 
-    resetAfterResponse() {
-        this.state.isSending = false;
-        this.state.loading_response = false;
-        this.audioNoteManager.reset();
-        this.contactManager.reset();
-    }
-
-    // === GRABACIÓN DE AUDIO ===
     async toggleRecording() {
         if (this.state.recording) {
             await this.stopRecording();
@@ -136,21 +145,18 @@ export class VoiceRecorder extends Component {
             if (blob && blob.size > 0) {
                 await this.audioNoteManager.createAudioNote(blob);
             } else {
-                this.state.error = "No se capturó audio. Por favor, intenta de nuevo.";
+                this.state.error = "No se capturó audio";
             }
         } catch (err) {
-            console.error("Error en la grabación:", err);
             this.state.error = err.message;
         }
     }
 
     handleRecordingError(err) {
-        console.error("Error accediendo al micrófono:", err);
         this.state.error = err.message;
         this.state.recording = false;
     }
 
-    // === DELEGACIÓN A LOS MANAGERS ===
     get sortedNotes() {
         return this.audioNoteManager.sortedNotes;
     }
@@ -159,17 +165,29 @@ export class VoiceRecorder extends Component {
         await this.audioNoteManager.deleteNote(noteId);
     }
 
-    // === ENVÍO A N8N CORREGIDO ===
+    // === ENVÍO A N8N CON REINICIO GARANTIZADO ===
     async sendToN8N() {
         const notesToSend = this.audioNoteManager.getNotesForSending();
         const contactsToSend = this.contactManager.getSelectedContacts();
 
         if (notesToSend.length === 0 && contactsToSend.length === 0) {
-            this.notification.add("No hay datos para enviar.", { type: "warning" });
+            this.notification.add("No hay datos para enviar", { type: "warning" });
             return;
         }
 
-        this.prepareForSending();
+        // Activar estado de envío
+        this.state.isSending = true;
+        this.state.loading_response = true;
+        this.state.final_message = '';
+        this.state.answer_ia = '';
+
+        // Configurar timeout de seguridad - 30 segundos
+        this.safetyTimeout = setTimeout(() => {
+            console.warn("⏰ TIMEOUT: Forzando reinicio del estado de envío");
+            this.state.isSending = false;
+            this.state.loading_response = false;
+            this.notification.add("Proceso completado (timeout)", { type: "info" });
+        }, 30000); // 30 segundos
 
         try {
             const success = await this.n8nService.sendToN8N(
@@ -179,28 +197,30 @@ export class VoiceRecorder extends Component {
                 null
             );
 
-            // SIEMPRE reiniciamos el estado después del envío
-            // La respuesta vendrá por el bus service
-            if (!success) {
-                this.resetSendingState();
-            }
-            // Si success es true, los estados se reiniciarán cuando llegue handleAudioResponse
+            // SIEMPRE reiniciar después de 2 segundos (incluso si fue exitoso)
+            // Esto es por si el evento del bus nunca llega
+            setTimeout(() => {
+                if (this.state.isSending) {
+                    console.log("🔄 Reinicio automático después del envío");
+                    this.state.isSending = false;
+                    this.state.loading_response = false;
+                    
+                    // Limpiar el timeout principal si aún existe
+                    if (this.safetyTimeout) {
+                        clearTimeout(this.safetyTimeout);
+                        this.safetyTimeout = null;
+                    }
+                }
+            }, 2000);
 
         } catch (error) {
-            console.error("Error inesperado en sendToN8N:", error);
-            this.resetSendingState();
+            // Error inmediato - reiniciar estados y limpiar timeout
+            if (this.safetyTimeout) {
+                clearTimeout(this.safetyTimeout);
+                this.safetyTimeout = null;
+            }
+            this.state.isSending = false;
+            this.state.loading_response = false;
         }
-    }
-
-    prepareForSending() {
-        this.state.isSending = true;
-        this.state.loading_response = true;
-        this.state.final_message = '';
-        this.state.answer_ia = '';
-    }
-
-    resetSendingState() {
-        this.state.isSending = false;
-        this.state.loading_response = false;
     }
 }
