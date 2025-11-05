@@ -22,5 +22,5 @@ export const MEDIA_RECORDER_OPTIONS = {
 
 // Asegúrate de que el canal coincida exactamente con el del backend
 export const BUS_CHANNELS = {
-    AUDIO_TEXT: "audio_to_text_channel_1"  // Debe coincidir con el canal del Python
+    AUDIO_TEXT: 'audio_to_text_channel_1'  // ✅ Mismo canal que el backend
 };

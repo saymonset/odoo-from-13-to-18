@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, onWillStart, onWillUnmount, useRef } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
 import { ContactManager } from "./contact_manager";
 import { AudioRecorder } from "./audio_recorder";
@@ -11,22 +11,28 @@ export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
 
     setup() {
-        console.log("🔧 Setup VoiceRecorder - Modo DUAL (Bus + Polling)");
+        console.log("🔧 Setup VoiceRecorder - COMUNICACIÓN CON BUS CORREGIDA");
+        
         this.initServices();
         this.initManagers();
-        this.state = useState(this.getInitialState());
         
-        // Referencia para forzar actualizaciones
-        this.forceUpdateRef = useRef(0);
+        this.state = useState({
+            recording: false,
+            isSending: false,
+            final_message: '',
+            answer_ia: '',
+            loading_response: false,
+            error: null,
+            responseMethod: 'none',
+            _updateCount: 0
+        });
         
-        // Variables para el sistema dual
         this.pollingInterval = null;
-        this.pollingAttempts = 0;
-        this.maxPollingAttempts = 30; // 30 intentos = 60 segundos
-        this.lastRequestId = null;
+        this.safetyTimeout = null;
+        this.currentRequestId = null;
+        this.busNotificationCallback = null;
         
         this.setupEventListeners();
-        this.safetyTimeout = null;
         
         onWillStart(() => this.onComponentStart());
         onWillUnmount(() => this.onComponentUnmount());
@@ -36,165 +42,151 @@ export class VoiceRecorder extends Component {
         this.orm = useService("orm");
         this.notification = useService("notification");
         this.busService = useService("bus_service");
-        this.userService = { userId: null };
+        
+        this.userService = { 
+            userId: null,
+            getUserId: async () => {
+                try {
+                    const user_id = await this.orm.call("res.users", "get_user_id", []);
+                    return user_id;
+                } catch (error) {
+                    console.warn("No se pudo obtener user_id:", error);
+                    return null;
+                }
+            }
+        };
     }
 
     initManagers() {
         this.contactManager = new ContactManager(this.orm);
         this.audioRecorder = new AudioRecorder();
         this.audioNoteManager = new AudioNoteManager(this.orm, this.notification);
-        this.n8nService = new N8NService(this.orm, this.notification, this.userService);
+        this.n8nService = new N8NService(this.orm, this.notification);
     }
 
-    getInitialState() {
-        return {
-            recording: false,
-            uploading: false,
-            isSending: false,
-            final_message: '',
-            answer_ia: '',
-            loading_response: false,
-            error: null,
-            responseMethod: 'none' // 'bus', 'polling', 'none'
-        };
+    forceRender() {
+        this.state._updateCount++;
+        console.log("🔄 Forzando re-render, count:", this.state._updateCount);
     }
 
     setupEventListeners() {
-        console.log("🔧 Configurando sistema DUAL: Bus + Polling");
-        
-        // Handler para eventos del bus (Método preferido)
-        const handleBusResponse = (ev) => {
-            console.log("🎯 EVENTO BUS RECIBIDO:", ev.detail);
-            
-            const payload = ev.detail;
-            this.processResponse(payload, 'bus');
-        };
+        console.log("🔧 Configurando listeners del bus");
 
-        // Escuchar el evento del bus
-        useBus(this.env.bus, "new_response", handleBusResponse);
-        
-        console.log("🎧 Escuchando evento del bus: new_response");
+        if (this.busService) {
+            // ✅ SOLUCIÓN: Usar useBus con el bus service (forma correcta)
+            useBus(this.busService, "notification", (ev) => {
+                const notifications = ev.detail;
+                console.log("📨 Notificaciones del bus recibidas:", notifications);
+                
+                notifications.forEach(notification => {
+                    const [channel, message] = notification;
+                    
+                    if (channel === BUS_CHANNELS.AUDIO_TEXT && message.type === 'new_response') {
+                        console.log("🎯 MENSAJE REAL DEL BACKEND:", message);
+                        
+                        // ✅ ACEPTAR RESPUESTAS CON O SIN request_id
+                        const shouldProcess = !this.currentRequestId || 
+                                            message.payload.request_id === this.currentRequestId;
+                        
+                        if (shouldProcess) {
+                            console.log("✅ PROCESANDO RESPUESTA VÁLIDA");
+                            this.processResponse(message.payload, 'bus_real');
+                        } else {
+                            console.log("⚠️ Respuesta para otra solicitud:", {
+                                current: this.currentRequestId,
+                                received: message.payload.request_id
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Suscribirse al canal
+            this.busService.addChannel(BUS_CHANNELS.AUDIO_TEXT);
+            
+            console.log("✅ Suscrito correctamente al canal:", BUS_CHANNELS.AUDIO_TEXT);
+        } else {
+            console.warn("⚠️ bus_service no disponible - usando solo polling");
+        }
     }
 
-    // Procesar respuesta (común para bus y polling)
     processResponse(payload, method) {
         console.log(`✅ Respuesta recibida por ${method}:`, payload);
         
-        // Limpiar timeouts e intervals
         this.cleanupTimers();
+        this.currentRequestId = null;
         
-        // Actualizar estados
         this.state.isSending = false;
         this.state.loading_response = false;
-        this.state.final_message = payload.final_message || '';
-        this.state.answer_ia = payload.answer_ia || '';
+        this.state.final_message = payload.final_message || 'No message received';
+        this.state.answer_ia = payload.answer_ia || 'No AI response';
         this.state.responseMethod = method;
         
-        // Forzar actualización de la vista
-        this.forceUpdateRef.value++;
+        this.forceRender();
         
-        // Resetear managers
-        this.audioNoteManager.reset();
-        this.contactManager.reset();
+        if (payload.final_message && payload.answer_ia) {
+            setTimeout(() => {
+                this.audioNoteManager.reset();
+                this.contactManager.reset();
+                this.forceRender();
+            }, 2000);
+        }
         
-        console.log("🔄 Estados actualizados:", {
-            final_message: this.state.final_message,
-            answer_ia: this.state.answer_ia,
-            method: method
-        });
+        console.log("🔄 Estados actualizados con datos del backend");
         
         if (payload.final_message) {
-            this.notification.add(`✅ Respuesta recibida (vía ${method})`, { type: "success" });
+            this.notification.add(`✅ Respuesta recibida: ${payload.final_message}`, { 
+                type: "success" 
+            });
         }
     }
 
-    // Iniciar polling como fallback
     startPolling(requestId) {
-        console.log("🔄 Iniciando polling como fallback...");
-        this.lastRequestId = requestId;
-        this.pollingAttempts = 0;
+        console.log("🔄 Iniciando polling de respaldo...");
+        let pollingCount = 0;
+        const maxPollingAttempts = 3;
         
-        this.pollingInterval = setInterval(async () => {
-            this.pollingAttempts++;
-            console.log(`📡 Polling intento ${this.pollingAttempts}/${this.maxPollingAttempts}`);
+        this.pollingInterval = setInterval(() => {
+            pollingCount++;
+            console.log(`📡 Polling (${pollingCount}/${maxPollingAttempts}) para: ${requestId}`);
             
-            if (this.pollingAttempts >= this.maxPollingAttempts) {
-                console.warn("⏰ Polling timeout - demasiados intentos");
+            if (pollingCount >= maxPollingAttempts) {
+                console.log("🛑 Polling agotado - esperando solo bus");
                 this.stopPolling();
-                this.state.isSending = false;
-                this.state.loading_response = false;
-                this.notification.add("❌ No se pudo obtener respuesta", { type: "warning" });
+                this.notification.add("⏳ Procesamiento en segundo plano...", { 
+                    type: "info" 
+                });
                 return;
             }
-            
-            await this.checkForResponse();
-            
-        }, 2000); // Polling cada 2 segundos
+        }, 3000);
     }
 
-    // Verificar respuestas (simulación - adaptar según tu backend)
-    async checkForResponse() {
-        try {
-            console.log("🔍 Verificando respuesta del backend...");
-            
-            // SIMULACIÓN: Aquí deberías hacer una llamada real a tu backend
-            // para verificar si hay respuesta para lastRequestId
-            // Por ahora simulamos una respuesta después de 3 intentos
-            
-            if (this.pollingAttempts === 3) {
-                console.log("🎯 Simulando respuesta del polling");
-                const simulatedResponse = {
-                    final_message: "Este es un mensaje final simulado via polling",
-                    answer_ia: "Esta es una respuesta IA simulada via polling"
-                };
-                this.processResponse(simulatedResponse, 'polling');
-            }
-            
-        } catch (error) {
-            console.error("❌ Error en polling:", error);
-        }
-    }
-
-    // Detener polling
     stopPolling() {
         if (this.pollingInterval) {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
-            console.log("🛑 Polling detenido");
         }
     }
 
-    // Limpiar todos los timers
     cleanupTimers() {
-        // Limpiar timeout de seguridad
         if (this.safetyTimeout) {
             clearTimeout(this.safetyTimeout);
             this.safetyTimeout = null;
         }
-        
-        // Limpiar polling
         this.stopPolling();
     }
 
     async onComponentStart() {
         this.state.loading_response = false;
-        if (this.busService?.addChannel) {
-            console.log("📡 Suscribiéndose al canal del bus:", BUS_CHANNELS.AUDIO_TEXT);
-            this.busService.addChannel(BUS_CHANNELS.AUDIO_TEXT);
-        }
+        console.log("🚀 Componente iniciado - Listo para recibir mensajes del bus");
     }
 
     onComponentUnmount() {
-        console.log("🔧 Componente desmontado - limpiando recursos");
         if (this.state.recording) {
             this.audioRecorder.cleanup();
         }
-        if (this.busService?.leave) {
-            this.busService.leave(BUS_CHANNELS.AUDIO_TEXT);
-        }
-        
-        // Limpiar todos los timers
         this.cleanupTimers();
+        this.currentRequestId = null;
     }
 
     async toggleRecording() {
@@ -210,11 +202,11 @@ export class VoiceRecorder extends Component {
             await this.audioRecorder.startRecording();
             this.state.recording = true;
             this.state.error = null;
-            this.forceUpdateRef.value++;
+            this.forceRender();
         } catch (err) {
             this.state.error = err.message;
             this.state.recording = false;
-            this.forceUpdateRef.value++;
+            this.forceRender();
         }
     }
 
@@ -222,17 +214,18 @@ export class VoiceRecorder extends Component {
         try {
             const blob = await this.audioRecorder.stopRecording();
             this.state.recording = false;
-            this.forceUpdateRef.value++;
+            this.forceRender();
             
             if (blob && blob.size > 0) {
                 await this.audioNoteManager.createAudioNote(blob);
+                this.forceRender();
             } else {
                 this.state.error = "No se capturó audio";
-                this.forceUpdateRef.value++;
+                this.forceRender();
             }
         } catch (err) {
             this.state.error = err.message;
-            this.forceUpdateRef.value++;
+            this.forceRender();
         }
     }
 
@@ -242,6 +235,7 @@ export class VoiceRecorder extends Component {
 
     async deleteNote(noteId) {
         await this.audioNoteManager.deleteNote(noteId);
+        this.forceRender();
     }
 
     async sendToN8N() {
@@ -253,66 +247,58 @@ export class VoiceRecorder extends Component {
             return;
         }
 
-        // Generar ID único para esta solicitud
-        const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        this.currentRequestId = `req_${Date.now()}`;
         
-        // Activar estado de envío
         this.state.isSending = true;
         this.state.loading_response = true;
         this.state.final_message = '';
         this.state.answer_ia = '';
         this.state.responseMethod = 'none';
-        this.forceUpdateRef.value++;
+        this.forceRender();
 
-        console.log("📤 Enviando a N8N...", { requestId });
+        console.log("📤 Enviando a backend...", {
+            requestId: this.currentRequestId,
+            notes: notesToSend.length,
+            contacts: contactsToSend.length
+        });
 
-        // Timeout de seguridad principal - 60 segundos
         this.safetyTimeout = setTimeout(() => {
-            console.warn("⏰ TIMEOUT PRINCIPAL: Forzando reinicio");
+            console.warn("⏰ TIMEOUT: Procesamiento tomando más tiempo del esperado");
             this.cleanupTimers();
             this.state.isSending = false;
             this.state.loading_response = false;
-            this.forceUpdateRef.value++;
-            this.notification.add("⏰ Tiempo de espera agotado", { type: "warning" });
-        }, 60000);
+            this.forceRender();
+            this.notification.add("⏳ El procesamiento continúa en segundo plano...", { 
+                type: "info" 
+            });
+        }, 20000);
 
         try {
-            // Enviar a N8N (incluyendo el requestId en el payload si es posible)
-            await this.n8nService.sendToN8N(
-                notesToSend,
-                contactsToSend,
-                null,
-                null,
-                requestId // Pasar el requestId si tu N8N service lo soporta
+            const immediateResponse = await this.n8nService.sendToN8N(
+                notesToSend, 
+                contactsToSend, 
+                null, 
+                null, 
+                this.currentRequestId
             );
 
-            console.log("✅ Envío a N8N completado - Iniciando sistema dual");
+            console.log("✅ Respuesta inmediata del backend:", immediateResponse);
             
-            // Iniciar polling como fallback después de 5 segundos
-            setTimeout(() => {
-                if (this.state.isSending) {
-                    console.log("🔄 Bus no respondió en 5s - Activando polling");
-                    this.startPolling(requestId);
-                }
-            }, 5000);
-
-            // Reinicio automático después de 10 segundos (último recurso)
-            setTimeout(() => {
-                if (this.state.isSending) {
-                    console.log("🔄 Reinicio automático de seguridad");
-                    this.cleanupTimers();
-                    this.state.isSending = false;
-                    this.state.loading_response = false;
-                    this.forceUpdateRef.value++;
-                }
-            }, 10000);
+            if (immediateResponse.final_message && immediateResponse.answer_ia) {
+                console.log("🎯 Procesando respuesta inmediata");
+                this.processResponse(immediateResponse, 'immediate');
+            } else {
+                console.log("🔄 Esperando respuesta por bus...");
+                this.startPolling(this.currentRequestId);
+            }
 
         } catch (error) {
             console.error("❌ Error en envío:", error);
             this.cleanupTimers();
+            this.currentRequestId = null;
             this.state.isSending = false;
             this.state.loading_response = false;
-            this.forceUpdateRef.value++;
+            this.forceRender();
         }
     }
 }

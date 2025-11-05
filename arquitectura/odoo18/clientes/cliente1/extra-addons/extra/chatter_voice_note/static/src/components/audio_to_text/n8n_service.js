@@ -1,5 +1,6 @@
 /** @odoo-module **/
 import { N8N_WEBHOOK_URL, BUS_CHANNELS } from "./constants";
+import { _t } from "@web/core/l10n/translation";
 
 export class N8NService {
     constructor(orm, notification, userService) {
@@ -8,20 +9,49 @@ export class N8NService {
         this.userService = userService;
     }
 
-    async sendToN8N(audioNotes, contacts, resModel, resId, requestId = null) {
+     
+ async sendToN8N(notes, contacts, finalMessage = null, answerIa = null, requestId = null) {
+        console.log("📤 Iniciando envío a N8N...", { 
+            requestId, 
+            notesCount: notes.length, 
+            contactsCount: contacts.length 
+        });
+
         try {
-            console.log("📤 Iniciando envío a N8N...", { requestId });
-            const payload = await this.buildPayload(audioNotes, contacts, resModel, resId, requestId);
-            const response = await this.sendPayload(payload);
-            console.log("✅ Envío a N8N completado");
-            return true;
+            const result = await this.orm.call(
+                'audio_to_text.use.case',
+                'execute',
+                [{
+                    notes: notes,
+                    contacts: contacts,
+                    final_message: finalMessage,
+                    answer_ia: answerIa,
+                    request_id: requestId,
+                    timestamp: new Date().toISOString()
+                }]
+            );
+
+            console.log("✅ Respuesta del backend:", result);
+            
+            if (result.status === 'processing') {
+                this.notification.add(
+                    _t("✅ Procesamiento iniciado: ") + result.message,
+                    { type: "info" }
+                );
+            }
+            
+            return result;
+
         } catch (error) {
-            console.error("❌ Error en envío a N8N:", error);
-            this.handleSendError(error);
-            return false;
+            console.error("❌ Error en N8NService:", error);
+            this.notification.add(
+                _t("❌ Error al enviar datos: ") + error.message, 
+                { type: "danger" }
+            );
+            throw error;
         }
     }
-
+    
     async buildPayload(audioNotes, contacts, resModel, resId, requestId) {
         const audios = audioNotes.length > 0 ? await this.getAudioData(audioNotes) : [];
         
