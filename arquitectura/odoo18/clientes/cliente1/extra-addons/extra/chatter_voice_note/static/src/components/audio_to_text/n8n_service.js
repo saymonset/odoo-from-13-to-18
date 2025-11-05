@@ -8,10 +8,10 @@ export class N8NService {
         this.userService = userService;
     }
 
-    async sendToN8N(audioNotes, contacts, resModel, resId) {
+    async sendToN8N(audioNotes, contacts, resModel, resId, requestId = null) {
         try {
-            console.log("📤 Iniciando envío a N8N...");
-            const payload = await this.buildPayload(audioNotes, contacts, resModel, resId);
+            console.log("📤 Iniciando envío a N8N...", { requestId });
+            const payload = await this.buildPayload(audioNotes, contacts, resModel, resId, requestId);
             const response = await this.sendPayload(payload);
             console.log("✅ Envío a N8N completado");
             return true;
@@ -22,10 +22,10 @@ export class N8NService {
         }
     }
 
-    async buildPayload(audioNotes, contacts, resModel, resId) {
+    async buildPayload(audioNotes, contacts, resModel, resId, requestId) {
         const audios = audioNotes.length > 0 ? await this.getAudioData(audioNotes) : [];
         
-        return {
+        const payload = {
             record_id: resId || null,
             model: resModel || null,
             audios,
@@ -33,6 +33,13 @@ export class N8NService {
             user_id: this.userService.userId,
             bus_channel: BUS_CHANNELS.AUDIO_TEXT
         };
+
+        // Agregar request_id si está disponible
+        if (requestId) {
+            payload.request_id = requestId;
+        }
+        
+        return payload;
     }
 
     async getAudioData(notes) {
@@ -64,7 +71,7 @@ export class N8NService {
         const noteCount = payload.audios.length;
         const contactCount = payload.contacts.length;
         this.notification.add(
-            `Enviado: ${noteCount} audios, ${contactCount} contactos`,
+            `📤 Enviado: ${noteCount} audios, ${contactCount} contactos. Esperando respuesta...`,
             { type: "info" }
         );
 

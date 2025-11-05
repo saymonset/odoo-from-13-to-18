@@ -2,14 +2,30 @@
 <templates id="template" xml:space="preserve">
     <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
         <div class="o_container p-4">
+            <!-- Indicador del método de respuesta -->
+            <div t-if="state.responseMethod !== 'none'" class="alert alert-info">
+                <small>
+                    <i class="fa fa-info-circle me-1"></i>
+                    Respuesta recibida via: 
+                    <t t-if="state.responseMethod === 'bus'">Bus en tiempo real ✅</t>
+                    <t t-if="state.responseMethod === 'polling'">Polling (fallback) 🔄</t>
+                </small>
+            </div>
+
             <!-- Grabación inicial -->
             <t t-if="audioNoteManager.state.notes.length === 0">
                 <h2>Voice Recorder</h2>
                 <button t-on-click="toggleRecording"
-                        t-att-class="'btn btn-lg ' + (state.recording ? 'btn-warning' : 'btn-primary')">
+                        t-att-class="'btn btn-lg ' + (state.recording ? 'btn-warning' : 'btn-primary')"
+                        t-att-disabled="state.isSending">
                     <i t-att-class="'fa ' + (state.recording ? 'fa-stop' : 'fa-microphone')"></i>
                     <t t-esc="state.recording ? ' Stop Recording' : ' Start Recording'"/>
                 </button>
+                
+                <div t-if="state.recording" class="mt-2 text-warning">
+                    <i class="fa fa-circle fa-beat-fade me-1"></i>
+                    <strong>Grabando...</strong> Habla ahora
+                </div>
             </t>
 
             <!-- Contenido cuando hay notas -->
@@ -21,12 +37,20 @@
                         <div class="mb-2 p-2 border rounded d-flex align-items-center justify-content-between">
                             <div class="flex-grow-1 me-3">
                                 <strong t-esc="note.name"/>
-                                <audio t-att-src="note.url" controls="true" class="d-block mt-1"></audio>
-                                <div t-if="note.uploading" class="text-info">Subiendo...</div>
+                                <div class="small text-muted">
+                                    <t t-if="note.size" t-esc="'Tamaño: ' + note.size + ' bytes'"/>
+                                    <t t-else="" t-esc="'Tamaño: calculando...'"/>
+                                </div>
+                                <audio t-att-src="note.url" controls="true" class="d-block mt-1 w-100"></audio>
+                                <div t-if="note.uploading" class="text-info">
+                                    <i class="fa fa-spinner fa-spin me-1"></i>Subiendo...
+                                </div>
                                 <div t-if="note.error" class="text-danger" t-esc="note.error"/>
                             </div>
                             <button t-on-click="() => deleteNote(note.id)"
-                                    class="btn btn-sm btn-danger" aria-label="Eliminar">
+                                    class="btn btn-sm btn-danger" 
+                                    t-att-disabled="state.isSending"
+                                    aria-label="Eliminar">
                                 <i class="fa fa-trash"/>
                             </button>
                         </div>
@@ -39,13 +63,15 @@
                     <input t-model="contactManager.state.searchTerm" 
                            t-on-input="() => contactManager.searchContacts()"
                            type="text" class="form-control"
-                           placeholder="Buscar contactos por nombre..."/>
+                           placeholder="Buscar contactos por nombre..."
+                           t-att-disabled="state.isSending"/>
                     <div t-if="contactManager.state.availableContacts.length > 0" class="mt-2">
                         <ul class="list-group">
                             <t t-foreach="contactManager.state.availableContacts" t-as="contact" t-key="contact.id">
                                 <li t-on-click="() => contactManager.addContact(contact)"
                                     class="list-group-item d-flex justify-content-between align-items-center"
-                                    style="cursor: pointer; background-color: #e3f2fd;">
+                                    style="cursor: pointer; background-color: #e3f2fd;"
+                                    t-att-disabled="state.isSending">
                                     <span t-esc="contact.name"/>
                                     <span class="badge bg-primary rounded-pill">+</span>
                                 </li>
@@ -59,16 +85,19 @@
                     <h4>Contactos seleccionados:</h4>
                     <table class="table table-hover">
                         <thead>
-                            <tr><th>#</th><th>Nombre</th><th>Acción</th></tr>
+                            <tr><th>#</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Acción</th></tr>
                         </thead>
                         <tbody>
                             <t t-foreach="contactManager.state.selectedContacts" t-as="contact" t-key="contact.id">
                                 <tr>
                                     <th t-esc="contact_index + 1"/>
                                     <td t-esc="contact.name"/>
+                                    <td t-esc="contact.email || 'N/A'"/>
+                                    <td t-esc="contact.phone || 'N/A'"/>
                                     <td>
                                         <button t-on-click="() => contactManager.removeContact(contact.id)" 
-                                                class="btn btn-sm btn-danger">
+                                                class="btn btn-sm btn-danger"
+                                                t-att-disabled="state.isSending">
                                             <i class="fa fa-times"/>
                                         </button>
                                     </td>
@@ -79,13 +108,34 @@
                 </div>
 
                 <!-- Botón enviar -->
-                <div t-if="contactManager.state.selectedContacts.length > 0">
+                <div t-if="contactManager.state.selectedContacts.length > 0" class="mt-3">
                     <button t-on-click="sendToN8N"
                             t-att-disabled="state.isSending || state.recording || audioNoteManager.state.notes.length === 0"
-                            class="btn btn-lg btn-success mt-3">
-                        <span t-if="state.isSending" class="spinner-border spinner-border-sm me-2"/>
-                        <t t-esc="state.isSending ? 'Enviando...' : 'Enviar'"/>
+                            t-att-class="'btn btn-lg ' + (state.isSending ? 'btn-secondary' : 'btn-success')">
+                        <t t-if="state.isSending">
+                            <span class="spinner-border spinner-border-sm me-2" role="status">
+                                <span class="visually-hidden">Enviando...</span>
+                            </span>
+                            Enviando...
+                        </t>
+                        <t t-else="">
+                            <i class="fa fa-paper-plane me-2"></i>Enviar a N8N
+                        </t>
                     </button>
+                    
+                    <!-- Indicador del sistema dual -->
+                    <div t-if="state.isSending" class="mt-2 text-info">
+                        <small>
+                            <i class="fa fa-sync-alt me-1"></i>
+                            Sistema dual activo: Esperando respuesta (Bus + Polling)
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Mensaje si no hay contactos seleccionados -->
+                <div t-else="" class="mt-3 alert alert-warning">
+                    <i class="fa fa-exclamation-triangle me-2"></i>
+                    Selecciona al menos un contacto para poder enviar
                 </div>
             </t>
 
@@ -101,7 +151,7 @@
                                 </t>
                                 <t t-else="">
                                     <t t-if="state.final_message">
-                                        <t t-esc="state.final_message"/>
+                                        <div style="white-space: pre-wrap;" t-esc="state.final_message"/>
                                     </t>
                                     <t t-else=""><span class="text-muted">(Aún no hay mensaje)</span></t>
                                 </t>
@@ -119,7 +169,7 @@
                                 </t>
                                 <t t-else="">
                                     <t t-if="state.answer_ia">
-                                        <t t-esc="state.answer_ia"/>
+                                        <div style="white-space: pre-wrap;" t-esc="state.answer_ia"/>
                                     </t>
                                     <t t-else=""><span class="text-muted">(Aún no hay respuesta)</span></t>
                                 </t>
@@ -129,7 +179,42 @@
                 </div>
             </div>
 
-            <div t-if="state.error" class="mt-3 text-danger">
+            <!-- Estado del sistema -->
+            <div class="mt-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Estado del Sistema</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted">Notas grabadas:</small>
+                                <strong t-esc="audioNoteManager.state.notes.length"/>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">Contactos seleccionados:</small>
+                                <strong t-esc="contactManager.state.selectedContacts.length"/>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <small class="text-muted">Estado grabación:</small>
+                                <span t-if="state.recording" class="badge bg-warning">Grabando</span>
+                                <span t-else="" class="badge bg-secondary">Inactivo</span>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">Estado envío:</small>
+                                <span t-if="state.isSending" class="badge bg-info">Enviando</span>
+                                <span t-else="" class="badge bg-success">Listo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensajes de error -->
+            <div t-if="state.error" class="mt-3 alert alert-danger">
+                <i class="fa fa-exclamation-circle me-2"></i>
                 <t t-esc="state.error"/>
             </div>
         </div>

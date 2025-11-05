@@ -20,6 +20,7 @@ export const MEDIA_RECORDER_OPTIONS = {
     audioBitsPerSecond: 128000
 };
 
+// Asegúrate de que el canal coincida exactamente con el del backend
 export const BUS_CHANNELS = {
-    AUDIO_TEXT: "audio_to_text_channel_1"
+    AUDIO_TEXT: "audio_to_text_channel_1"  // Debe coincidir con el canal del Python
 };
