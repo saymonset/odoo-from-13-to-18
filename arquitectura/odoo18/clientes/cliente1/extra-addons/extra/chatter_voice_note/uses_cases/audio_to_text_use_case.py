@@ -27,6 +27,8 @@ class AudioToTextUseCase(models.TransientModel):
             # 🔥 GENERAR RESPUESTAS DE PRUEBA REALES
             final_message = f"Mensaje procesado para {len(contacts)} contactos"
             answer_ia = f"Análisis IA completado para {len(notes)} notas de audio"
+            final_message = options.get('final_message', '')
+            answer_ia = options.get('answer_ia', '')
             
             channel_name = "audio_to_text_channel_1"
             

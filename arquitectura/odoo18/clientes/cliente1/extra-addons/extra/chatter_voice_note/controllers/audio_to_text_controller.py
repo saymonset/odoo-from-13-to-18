@@ -7,7 +7,7 @@ from odoo.http import request
 _logger = logging.getLogger(__name__)
 
 class AudioToTextController(http.Controller):
-    
+    #https://jumpjibe.com/chatter_voice_note/audio_to_text
     @http.route('/chatter_voice_note/audio_to_text', auth='public', 
                 methods=['POST'], type='http', cors='*', csrf=False)
     def get_daily_summary_queries(self, **kw):
