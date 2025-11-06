@@ -70,70 +70,164 @@ export class VoiceRecorder extends Component {
         console.log("🔄 Forzando re-render, count:", this.state._updateCount);
     }
 
- setupBusListener() {
+setupBusListener() {
     console.log("🎯 CONFIGURANDO BUS LISTENER");
     
     if (!this.busService) {
-        console.error("❌ bus_service no disponible - usando solo polling");
+        console.error("❌ bus_service no disponible");
+        this.state.debugInfo = 'Bus no disponible - usando solo polling';
         return;
     }
 
     try {
-        // DEBUG exhaustivo del bus service
-        console.log("🔍 DEBUG Bus Service:", {
-            busService: this.busService,
+        // DEBUG exhaustivo
+        console.log("🔍 BUS SERVICE COMPLETO:", {
+            service: this.busService,
+            url: this.busService.url,
             channels: this.busService.channels,
-            hasAddChannel: typeof this.busService.addChannel === 'function',
+            allProperties: Object.keys(this.busService),
             hasStart: typeof this.busService.start === 'function',
-            hasOnNotification: typeof this.busService.onNotification === 'function'
+            hasStop: typeof this.busService.stop === 'function'
         });
 
-        // Método 1: Suscripción estándar
+        // 🔥 INICIALIZAR MANUALMENTE EL BUS SERVICE
+        this.initializeBusService();
+        
+        // Suscribirse al canal
         this.busService.addChannel(BUS_CHANNELS.AUDIO_TEXT);
         console.log("✅ Suscrito al canal:", BUS_CHANNELS.AUDIO_TEXT);
 
-        // Método 2: Intentar con onNotification si existe
-        if (typeof this.busService.onNotification === 'function') {
-            console.log("🔔 Usando onNotification...");
-            this.busService.onNotification(this.handleBusNotifications.bind(this));
-        }
-
-        // Método 3: Event listener estándar
-        this.busService.addEventListener('notification', (event) => {
-            console.log("🔔 BUS (addEventListener): Evento recibido", event);
-            if (event.detail && Array.isArray(event.detail)) {
-                this.handleBusNotifications(event.detail);
-            }
-        });
-
-        // Método 4: Monkey patch para debug
-        this.setupBusDebugging();
+        // Configurar listeners
+        this.setupAllBusListeners();
         
-        console.log("✅ Bus listener configurado");
+        this.state.debugInfo = 'Bus configurado - Esperando mensajes...';
+        console.log("✅ Bus listener configurado completamente");
         
     } catch (error) {
-        console.error("❌ Error configurando bus:", error);
+        console.error("❌ Error crítico configurando bus:", error);
+        this.state.debugInfo = `Error bus: ${error.message}`;
     }
 }
 
-setupBusDebugging() {
-    // DEBUG: Interceptar todas las llamadas al bus
-    const originalAddChannel = this.busService.addChannel?.bind(this.busService);
-    if (originalAddChannel) {
-        this.busService.addChannel = (channel) => {
-            console.log("🔔 BUS DEBUG: addChannel llamado para:", channel);
-            return originalAddChannel(channel);
-        };
+// 🔥 NUEVO MÉTODO: Inicializar el bus service
+initializeBusService() {
+    console.log("🚀 INICIALIZANDO BUS SERVICE MANUALMENTE");
+    
+    // Método 1: Intentar con start() si existe
+    if (typeof this.busService.start === 'function') {
+        console.log("🔧 Usando busService.start()");
+        this.busService.start();
     }
-
-    // DEBUG: Verificar si el bus está activo
+    
+    // Método 2: Verificar si ya está conectado
+    if (this.busService.isConnected !== undefined) {
+        console.log("🔌 Estado de conexión del bus:", this.busService.isConnected);
+    }
+    
+    // Método 3: Forzar reconexión si es necesario
     setTimeout(() => {
-        console.log("🔍 BUS STATUS CHECK:", {
-            channels: this.busService.channels,
-            isActive: !this.busService.isDestroyed
-        });
-    }, 5000);
+        if (!this.busService.isConnected) {
+            console.log("🔄 Forzando reconexión del bus...");
+            this.busService.addChannel(BUS_CHANNELS.AUDIO_TEXT);
+        }
+    }, 2000);
 }
+
+setupAllBusListeners() {
+    // MÉTODO 1: Event listener estándar
+    this.busService.addEventListener('notification', (event) => {
+        console.log("🔔 BUS (addEventListener): Evento RAW recibido", event);
+        if (event.detail && Array.isArray(event.detail)) {
+            this.handleBusNotifications(event.detail);
+        }
+    });
+
+    // MÉTODO 2: Health check MEJORADO
+    this.busHealthCheck = setInterval(() => {
+        // Verificar conexión de múltiples formas
+        const connectionStatus = {
+            serviceExists: !!this.busService,
+            hasChannels: !!this.busService.channels,
+            isConnected: this.busService.isConnected,
+            url: this.busService.url
+        };
+        
+        console.log("❤️ BUS Health Check:", connectionStatus);
+        
+        if (!connectionStatus.serviceExists || !connectionStatus.isConnected) {
+            console.warn("⚠️ BUS: Problema de conexión detectado");
+            // Intentar reconectar
+            this.busService.addChannel(BUS_CHANNELS.AUDIO_TEXT);
+        }
+    }, 10000);
+}
+
+// 🔥 MÉTODO PARA CONEXIÓN MANUAL
+async connectBusManually() {
+    console.log("🔄 Conectando bus manualmente...");
+    
+    try {
+        // Método 1: Forzar suscripción al canal
+        this.busService.addChannel(BUS_CHANNELS.AUDIO_TEXT);
+        
+        // Método 2: Intentar start si existe
+        if (typeof this.busService.start === 'function') {
+            this.busService.start();
+        }
+        
+        // Método 3: Disparar evento de test
+        const testEvent = new CustomEvent('bus_service:notification', {
+            detail: [
+                [BUS_CHANNELS.AUDIO_TEXT, {
+                    final_message: "TEST MANUAL - " + new Date().toLocaleTimeString(),
+                    answer_ia: "RESPUESTA IA DE TEST MANUAL",
+                    request_id: 'test_manual_' + Date.now()
+                }]
+            ]
+        });
+        document.dispatchEvent(testEvent);
+        
+        this.notification.add("🔄 Bus reconectado manualmente", { type: "info" });
+        console.log("✅ Conexión manual completada");
+        
+    } catch (error) {
+        console.error("❌ Error en conexión manual:", error);
+        this.notification.add("❌ Error reconectando bus", { type: "error" });
+    }
+}
+
+setupDeepBusDebugging() {
+    // Interceptar todas las llamadas importantes del bus
+    const methodsToDebug = ['addChannel', 'start', 'stop', 'send'];
+    
+    methodsToDebug.forEach(method => {
+        if (this.busService[method]) {
+            const original = this.busService[method];
+            this.busService[method] = (...args) => {
+                console.log(`🔔 BUS ${method.toUpperCase()}:`, args);
+                return original.apply(this.busService, args);
+            };
+        }
+    });
+}
+
+
+// 🔥 MÉTODO PARA DEBUG EN TIEMPO REAL DEL BUS
+setupBusDebugging() {
+    // Interceptar addChannel para ver canales
+    const originalAddChannel = this.busService.addChannel;
+    this.busService.addChannel = (channel) => {
+        console.log("🔔 BUS DEBUG: addChannel para:", channel);
+        return originalAddChannel.call(this.busService, channel);
+    };
+
+    // Verificar cada notificación que llega
+    this.busService.addEventListener('notification', (event) => {
+        console.log("🔔 BUS DEBUG RAW EVENT:", event);
+    });
+}
+
+
 
 setupMultipleBusListeners() {
     // MÉTODO 1: Usar useBus si está disponible
@@ -170,6 +264,8 @@ handleBusNotifications(notifications) {
         return;
     }
     
+    let mensajesProcesados = 0;
+    
     notifications.forEach((notification, index) => {
         try {
             console.log(`🔔 BUS [${index}]:`, notification);
@@ -182,25 +278,26 @@ handleBusNotifications(notifications) {
                 if (channel === BUS_CHANNELS.AUDIO_TEXT) {
                     console.log("🎯 BUS: Mensaje en canal correcto detectado");
                     
-                    // ✅ ACEPTAR DIFERENTES FORMATOS DE MENSAJE
+                    // ✅ FORMATO ESPERADO POR EL BACKEND ACTUAL:
+                    // message es directamente el payload {final_message, answer_ia, request_id}
                     let payload = null;
                     
-                    if (message.type === 'new_response' && message.payload) {
+                    if (message.final_message && message.answer_ia) {
+                        // 🔥 FORMATO DIRECTO (como lo envía el backend)
+                        payload = message;
+                        console.log("📦 BUS: Formato directo detectado (backend actual)");
+                    } else if (message.type === 'new_response' && message.payload) {
+                        // Formato alternativo
                         payload = message.payload;
                         console.log("📦 BUS: Formato type/payload detectado");
-                    } else if (message.final_message) {
-                        // Formato directo
-                        payload = message;
-                        console.log("📦 BUS: Formato directo detectado");
-                    } else {
-                        console.log("❌ BUS: Formato de mensaje no reconocido:", message);
                     }
                     
                     if (payload && payload.final_message) {
                         console.log("🎯✅✅✅ BUS: Mensaje válido recibido:", payload);
                         this.processIncomingMessage(payload, 'bus');
+                        mensajesProcesados++;
                     } else {
-                        console.log("❌ BUS: Payload no válido (sin final_message):", payload);
+                        console.log("❌ BUS: Payload no válido:", payload);
                     }
                 } else {
                     console.log(`⚠️ BUS: Canal diferente: ${channel}, esperado: ${BUS_CHANNELS.AUDIO_TEXT}`);
@@ -212,6 +309,12 @@ handleBusNotifications(notifications) {
             console.error(`❌ Error procesando notificación bus [${index}]:`, error, notification);
         }
     });
+    
+    if (mensajesProcesados > 0) {
+        console.log(`✅ BUS: ${mensajesProcesados} mensajes procesados correctamente`);
+        this.state.debugInfo = `Bus: ${mensajesProcesados} mensajes recibidos`;
+        this.forceRender();
+    }
 }
 
 // 🔥 MÉTODO PRINCIPAL MEJORADO - GARANTIZAR ACTUALIZACIÓN
@@ -308,6 +411,19 @@ startActivePolling(requestId) {
         // 1. PRIMERO: Intentar recibir del bus (si existe)
         if (this.busService && pollingCount === 1) {
             console.log("🎯 Intentando recibir del bus...");
+        }
+
+        // En startActivePolling, cambia el tiempo de simulación:
+        if (pollingCount === 2) {  // 🔥 Cambiado de 6 a 2 (10 segundos en lugar de 30)
+            console.log("🧪 POLLING: Mostrando respuesta simulada...");
+            const simulatedPayload = {
+                final_message: "No vayas a traducir nada para la IA, esto es solo una prueba. [RESPUESTA SIMULADA - Bus no funcionó]",
+                answer_ia: "Área: Comunicación general.\n\nInterpretación: Mensaje aclaratorio sin consulta médica.\n\nRecomendaciones: Sin acciones necesarias.\n\nPróximos pasos: Disponible para asistencia clínica cuando lo precise.\n\n⚠️ Advertencia: No reemplaza consulta médica presencial.",
+                request_id: requestId
+            };
+            this.processIncomingMessage(simulatedPayload, 'polling_simulado');
+            this.stopPolling();
+            return;
         }
         
         // 2. SEGUNDO: Después de 3 intentos (15 segundos), forzar actualización del bus

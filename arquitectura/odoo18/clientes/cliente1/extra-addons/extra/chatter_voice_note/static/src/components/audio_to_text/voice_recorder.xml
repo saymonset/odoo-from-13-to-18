@@ -12,14 +12,15 @@
             </div>
 
             <!-- Botones de Control -->
-            <div class="alert alert-warning mt-3">
-                <button class="btn btn-warning" t-on-click="testBusReception">
+           <div class="alert alert-warning mt-3">
+                <strong>🧪 CONTROL DEL BUS:</strong>
+                <button class="btn btn-warning btn-sm" t-on-click="connectBusManually">
+                    🔌 Conectar Bus Manualmente
+                </button>
+                <button class="btn btn-info btn-sm ml-2" t-on-click="testBusReception">
                     🧪 Test Recepción
                 </button>
-                <button class="btn btn-info ml-2" t-on-click="checkBusStatus">
-                    🔍 Ver Estado
-                </button>
-                <small class="text-muted d-block mt-1">Sistema: Polling + Bus</small>
+                <small class="d-block mt-1">Estado: <t t-esc="state.debugInfo"/></small>
             </div>
         <!-- Grabación inicial -->
         <t t-if="audioNoteManager.state.notes.length === 0">

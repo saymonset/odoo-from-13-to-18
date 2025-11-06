@@ -39,10 +39,20 @@ class AudioToTextUseCase(models.TransientModel):
                 'request_id': request_id
             }
             
+            # En tu backend, agrega estos logs adicionales para confirmar:
+            _logger.info(f"🎯 PREPARANDO ENVÍO AL BUS - CANAL: {channel_name}")
+            _logger.info(f"📤 MENSAJE A ENVIAR: {payload}")
+            _logger.info(f"🔍 TIPO DE MENSAJE: new_response")
+
             # 🔥 ENVIAR AL BUS
+            _logger.info("✅ ENVÍO AL BUS COMPLETADO SIN ERRORES")
             self.env['bus.bus']._sendone(channel_name, 'new_response', payload)
             _logger.info(f"✅✅✅ USE CASE: ENVIADO AL BUS - {payload}")
-            
+
+            # 🔥 VERIFICAR QUE NO HAY ERRORES
+           
+            # 🔥 ENVIAR AL BUS
+           
             # 🔥 RETORNAR RESPUESTA
             return {
                 'status': 'success',

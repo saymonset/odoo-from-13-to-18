@@ -56,6 +56,9 @@ source .venv/bin/activate
      uv pip install lxml
     uv pip install gevent psycogreen
     uv pip install  greenlet
+    uv pip install websocket-client
+    uv pip install websocket-client
+
 
      ``
 # Instalar los requirement
@@ -130,14 +133,11 @@ source .venv/bin/activate
 # Rn naturalmente
 ```bash
 # Corre normal
-./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
-<<<<<<< HEAD
-=======
+ 
+./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg 
+./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u all --dev=assets
 ./odoo/odoo-bin -d dbcliente1_18  -u chatter_voice_note -c clientes/cliente1/conf/odoo.cfg
 ./odoo/odoo-bin  python -m debugpy --listen 5679 --wait-for-client ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg
->>>>>>> audio_to_text_bus
-
-./odoo/odoo-bin gevent -c clientes/cliente1/conf/odoo.cfg
 
 
 
