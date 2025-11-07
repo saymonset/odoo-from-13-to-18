@@ -1,6 +1,5 @@
 /** @odoo-module **/
-import { N8N_WEBHOOK_URL, BUS_CHANNELS } from "./constants";
-import { _t } from "@web/core/l10n/translation";
+import { N8N_WEBHOOK_URL } from "./constants";
 
 export class N8NService {
     constructor(orm, notification) {
@@ -8,141 +7,93 @@ export class N8NService {
         this.notification = notification;
     }
 
-    async sendToN8N(notes, contacts, resModel = null, resId = null, requestId = null) {
-        console.log("📤 Iniciando envío a N8N...", { 
-            requestId, 
-            notesCount: notes.length, 
-            contactsCount: contacts.length,
-            resModel,
-            resId
+    /**
+     * ENVÍA TODO A n8n COMO JSON + BASE64
+     * → n8n recibe audios sin usar binary → NO null
+     */
+    async sendToN8N(notesToSend, contactsToSend, resModel, resId, requestId) {
+        // === CONVERTIR BLOBS A BASE64 ===
+        const audiosBase64 = await Promise.all(
+            notesToSend.map(async (note) => {
+                if (!note.data || note.data.size === 0) {
+                    console.warn("Audio vacío, omitido");
+                    return null;
+                }
+
+                try {
+                    const base64 = await this.blobToBase64(note.data);
+                    return {
+                        filename: note.filename,
+                        data: base64,           // ← base64 string
+                        mimetype: "audio/webm"
+                    };
+                } catch (err) {
+                    console.error("Error convirtiendo blob a base64:", err);
+                    return null;
+                }
+            })
+        );
+
+        // Filtrar audios válidos
+        const validAudios = audiosBase64.filter(a => a !== null);
+
+        // === PAYLOAD JSON ===
+        const payload = {
+            audios: validAudios,
+            contacts: contactsToSend,
+            res_model: resModel || null,
+            res_id: resId || null,
+            request_id: requestId,
+            callback_url: `${window.location.origin}/chatter_voice_note/audio_to_text?request_id=${requestId}`
+        };
+
+        console.log("Enviando a n8n:", {
+            audios: validAudios.length,
+            contacts: contactsToSend.length,
+            request_id: requestId
         });
 
         try {
-            console.log("📤 Construyendo payload para N8N...");
-            const payload = await this.buildPayload(notes, contacts, resModel, resId, requestId);
-            console.log("📦 Payload construido:", payload);
-            
-            const response = await this.sendPayload(payload);
-            console.log("✅ Envío a N8N completado");
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
+            const data = await response.json();
             this.notification.add(
-                _t("✅ Datos enviados a N8N. El modelo procesará la respuesta."),
-                { type: "info" }
+                `Enviado: ${validAudios.length} audio(s), ${contactsToSend.length} contacto(s)`,
+                { type: "success" }
             );
 
-            return {
-                success: true,
-                n8n_response: response,
-                message: "Datos enviados correctamente a N8N"
-            };
+            return data;
 
         } catch (error) {
-            console.error("❌ Error en N8NService:", error);
-            this.handleSendError(error);
+            console.error("Error enviando a n8n:", error);
+            this.notification.add(`Error: ${error.message}`, { type: "danger" });
             throw error;
         }
     }
 
-    async buildPayload(audioNotes, contacts, resModel, resId, requestId) {
-        const audios = audioNotes.length > 0 ? await this.getAudioData(audioNotes) : [];
-        
-        const payload = {
-            record_id: resId || null,
-            model: resModel || null,
-            audios: audios,
-            contacts: contacts,
-            user_id: await this.getUserId(),
-            bus_channel: BUS_CHANNELS.AUDIO_TEXT,
-            request_id: requestId,
-            timestamp: new Date().toISOString()
-        };
-        
-        console.log("📦 Payload para N8N:", {
-            audios_count: payload.audios.length,
-            contacts_count: payload.contacts.length,
-            request_id: payload.request_id,
-            bus_channel: payload.bus_channel
+    /**
+     * UTILIDAD: Convierte Blob → Base64 (sin "data:audio/webm;base64,")
+     */
+    blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64String = reader.result.split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = () => reject(new Error("Error leyendo blob"));
+            reader.readAsDataURL(blob);
         });
-        
-        return payload;
-    }
-
-    async getAudioData(notes) {
-        try {
-            const attachmentIds = notes.filter(n => n.id).map(n => n.id);
-            
-            if (attachmentIds.length === 0) {
-                console.warn("⚠️ No hay attachments con ID para enviar");
-                return [];
-            }
-            
-            const attachments = await this.orm.read(
-                "ir.attachment", 
-                attachmentIds, 
-                ["name", "datas", "mimetype"]
-            );
-            
-            return attachments.map(attachment => ({
-                filename: attachment.name,
-                mimetype: attachment.mimetype,
-                data: attachment.datas,
-            }));
-        } catch (error) {
-            console.error("❌ Error obteniendo datos de audio:", error);
-            return [];
-        }
-    }
-
-    async getUserId() {
-        try {
-            const user_id = await this.orm.call("res.users", "get_user_id", []);
-            return user_id;
-        } catch (error) {
-            console.warn("⚠️ No se pudo obtener user_id:", error);
-            return null;
-        }
-    }
-
-    async sendPayload(payload) {
-        console.log("🌐 Enviando payload a N8N...", {
-            url: N8N_WEBHOOK_URL,
-            payload_size: JSON.stringify(payload).length
-        });
-
-        const response = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("❌ Error en respuesta N8N:", response.status, errorText);
-            throw new Error(`HTTP ${response.status}: ${errorText}`);
-        }
-
-        const responseData = await response.json();
-        
-        const noteCount = payload.audios.length;
-        const contactCount = payload.contacts.length;
-        this.notification.add(
-            `📤 Enviado a N8N: ${noteCount} audios, ${contactCount} contactos`,
-            { type: "info" }
-        );
-
-        return responseData;
-    }
-
-    handleSendError(error) {
-        let errorMessage = "Error al enviar a N8N";
-        if (error.message.includes('HTTP')) {
-            errorMessage = `Error del servidor N8N: ${error.message}`;
-        } else if (error.name === 'TypeError') {
-            errorMessage = "Error de conexión. Verifica tu internet.";
-        } else {
-            errorMessage = `Error: ${error.message}`;
-        }
-        
-        this.notification.add(errorMessage, { type: "danger" });
     }
 }
