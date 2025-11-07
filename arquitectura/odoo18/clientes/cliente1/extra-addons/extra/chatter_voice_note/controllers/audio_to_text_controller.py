@@ -70,43 +70,29 @@ class AudioToTextController(http.Controller):
     # Endpoint para consultar respuestas
     @http.route('/chatter_voice_note/get_response', type='json', auth='user', methods=['POST'], csrf=False)
     def get_response(self, **kwargs):
-        """Endpoint para que el frontend consulte respuestas"""
         try:
             request_data = request.httprequest.get_json(silent=True) or {}
             request_id = request_data.get('request_id')
             
-            _logger.info(f"🔍 Buscando respuesta para request_id: {request_id}")
+            _logger.info(f"Buscando respuesta para request_id: {request_id}")
             
             if not request_id:
-                _logger.error("❌ No se proporcionó request_id")
-                return {
-                    'found': False,
-                    'error': 'No se proporcionó request_id'
-                }
-            
-            # Buscar en el modelo use.case
+                return {'found': False, 'error': 'No request_id'}
+
             record = request.env['audio_to_text.use.case'].sudo().search([
                 ('request_id', '=', request_id)
             ], limit=1)
             
             if record:
-                _logger.info(f"✅ Respuesta encontrada: {record.final_message[:100]}...")
                 return {
+                    'found': True,
                     'final_message': record.final_message,
                     'answer_ia': record.answer_ia or '',
-                    'request_id': record.request_id,
-                    'found': True
+                    'request_id': record.request_id
                 }
             else:
-                _logger.info(f"⚠️ No se encontró respuesta para: {request_id}")
-                return {
-                    'found': False,
-                    'message': 'Respuesta no disponible aún'
-                }
-                
+                return {'found': False, 'message': 'No disponible aún'}
+                    
         except Exception as e:
             _logger.error(f'Error en get_response: {str(e)}')
-            return {
-                'error': str(e),
-                'found': False
-            }
+            return {'found': False, 'error': str(e)}

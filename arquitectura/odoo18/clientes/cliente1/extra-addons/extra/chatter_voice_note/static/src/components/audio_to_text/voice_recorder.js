@@ -10,6 +10,7 @@ export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
 
     setup() {
+
         console.log("🔧 Setup VoiceRecorder - Versión Simplificada");
         
         this.initServices();
@@ -26,9 +27,49 @@ export class VoiceRecorder extends Component {
         });
         
         this.currentRequestId = null;
+        this.pollInterval = null; // ← AÑADE ESTO
 
-        onWillUnmount(() => this.cleanup());
+        onWillUnmount(() =>{
+            this.stopPolling(); // ← SIEMPRE
+            this.cleanup()
+        } );
     }
+
+    // 🔥 POLLING INTELIGENTE (SIN BUS, SIN POLLING CONSTANTE)
+startPollingWhenNeeded() {
+    if (this.currentRequestId && !this.state.final_message) {
+        this.startPolling();
+    }
+}
+
+startPolling() {
+    if (this.pollInterval) return;
+
+    this.pollInterval = setInterval(async () => {
+        if (!this.currentRequestId || this.state.final_message) {
+            this.stopPolling();
+            return;
+        }
+
+        try {
+            const res = await this.tryControllerCall(this.currentRequestId);
+            if (res && res.found && res.final_message) {
+                console.log("RESPUESTA ENCONTRADA EN POLLING:", res);
+                this.processResponse(res);
+                this.stopPolling();
+            }
+        } catch (err) {
+            console.warn("Polling error (continúa):", err);
+        }
+    }, 3000);
+}
+
+stopPolling() {
+    if (this.pollInterval) {
+        clearInterval(this.pollInterval);
+        this.pollInterval = null;
+    }
+}
 
     initServices() {
         this.orm = useService("orm");
@@ -67,6 +108,24 @@ export class VoiceRecorder extends Component {
         this.audioNoteManager.deleteNote(noteId);
     }
 
+generateUniqueRequestId() {
+    // 1. Timestamp en milisegundos
+    const timestamp = Date.now();
+    
+    // 2. ID del usuario actual (si está logueado)
+    const userId = this.env.user?.id || 0;
+    
+    // 3. Generar UUID v4 simple (sin librerías)
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+    
+    // 4. Combinar todo
+    return `req_${userId}_${timestamp}_${uuid.substring(0, 8)}`;
+}
+
  async sendToN8N() {
     const notes = this.audioNoteManager.getNotesForSending();
     const contacts = this.contactManager.getSelectedContacts();
@@ -76,7 +135,8 @@ export class VoiceRecorder extends Component {
         return;
     }
 
-    this.currentRequestId = `req_${Date.now()}`;
+    // GENERAR ID ÚNICO SEGURO
+    this.currentRequestId = this.generateUniqueRequestId();
     this.state.isSending = true;
 
     try {
@@ -87,6 +147,7 @@ export class VoiceRecorder extends Component {
             this.props.resId,
             this.currentRequestId
         );
+        this.startPollingWhenNeeded(); // INICIA POLLING
     } catch (err) {
         console.error("Error envío:", err);
     } finally {
@@ -109,6 +170,7 @@ export class VoiceRecorder extends Component {
             if (response && response.final_message) {
                 console.log("✅ RESPUESTA ENCONTRADA:", response);
                 this.processResponse(response);
+                this.stopPolling(); // ← DETIENE AL RECIBIR RESPUESTA
             } else {
                 this.state.debugInfo = 'Respuesta aún no disponible';
                 this.notification.add("La respuesta aún no está disponible. Intenta más tarde.", { 
@@ -124,37 +186,45 @@ export class VoiceRecorder extends Component {
     }
 
     // 🔥 LLAMADA DIRECTA AL CONTROLADOR
-    async tryControllerCall(requestId) {
-        try {
-            console.log("🔍 Buscando respuesta via controlador para:", requestId);
-            
-            const payload = {
-                request_id: requestId
-            };
 
-            const response = await fetch('/chatter_voice_note/get_response', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify(payload)
-            });
-            
-            if (response.ok) {
+    async tryControllerCall(requestId) {
+            try {
+                console.log("Buscando respuesta via controlador para:", requestId);
+                
+                const payload = { request_id: requestId };
+
+                const response = await fetch('/chatter_voice_note/get_response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    console.warn("HTTP error:", response.status);
+                    return null;
+                }
+
                 const data = await response.json();
-                console.log("📥 Respuesta recibida:", data);
-                return data;
-            } else {
-                console.log("⚠️ Controlador respondió con error:", response.status);
+                console.log("Respuesta cruda:", data);
+
+                // DESENVOLVER JSON-RPC
+                if (data.jsonrpc === '2.0' && data.result) {
+                    const result = data.result;
+                    console.log("Respuesta procesada:", result);
+                    return result;
+                } else {
+                    console.warn("Formato JSON-RPC inválido:", data);
+                    return null;
+                }
+                
+            } catch (error) {
+                console.error("Error en fetch:", error);
                 return null;
             }
-            
-        } catch (error) {
-            console.log("⚠️ Controlador no disponible:", error.message);
-            return null;
         }
-    }
 
     // 🔥 PROCESAR RESPUESTA
     processResponse(payload) {
@@ -168,10 +238,7 @@ export class VoiceRecorder extends Component {
             { type: "success" }
         );
         
-        // Auto-reset después de éxito
-        setTimeout(() => {
-            this.resetInterface();
-        }, 10000);
+     
     }
 
     cleanup() {
@@ -189,6 +256,7 @@ export class VoiceRecorder extends Component {
         this.state.answer_ia = '';
         this.state.debugInfo = 'Sistema listo para nueva consulta';
         this.state.error = null;
+        this.stopPolling(); // ← LIMPIEZA
     }
 
     // 🔥 MÉTODOS EXISTENTES
@@ -202,6 +270,8 @@ export class VoiceRecorder extends Component {
 
     async startRecording() {
         try {
+            // RESetea solo cuando se inicia una NUEVA grabación
+            this.resetInterface();  // ← ¡AQUÍ!
             await this.audioRecorder.startRecording();
             this.state.recording = true;
             this.state.error = null;
