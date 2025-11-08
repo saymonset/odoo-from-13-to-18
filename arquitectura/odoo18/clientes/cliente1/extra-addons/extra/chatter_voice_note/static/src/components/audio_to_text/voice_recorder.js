@@ -23,7 +23,10 @@ export class VoiceRecorder extends Component {
             final_message: '',
             answer_ia: '',
             debugInfo: 'Sistema listo',
-            error: null
+            error: null,
+            // 🔥 NUEVOS ESTADOS PARA EDICIÓN
+            editingFinalMessage: false,
+            editedFinalMessage: ''
         });
         
         this.currentRequestId = null;
@@ -84,6 +87,35 @@ stopPolling() {
         this.n8nService = new N8NService(this.orm, this.notification);
     }
 
+     // 🔥 MÉTODOS DE EDICIÓN DEL MENSAJE FINAL
+    startEditingFinalMessage() {
+        console.log("✏️ Iniciando edición del mensaje final");
+        this.state.editedFinalMessage = this.state.final_message;
+        this.state.editingFinalMessage = true;
+    }
+
+    saveFinalMessage() {
+        console.log("💾 Guardando mensaje final editado");
+        this.state.final_message = this.state.editedFinalMessage;
+        this.state.editingFinalMessage = false;
+        
+        this.notification.add(
+            "✅ Mensaje final actualizado correctamente",
+            { type: "success" }
+        );
+    }
+
+    cancelEditingFinalMessage() {
+        console.log("❌ Cancelando edición del mensaje final");
+        this.state.editingFinalMessage = false;
+        this.state.editedFinalMessage = '';
+        
+        this.notification.add(
+            "Edición cancelada",
+            { type: "info" }
+        );
+    }
+
     // 🔥 MÉTODOS DE MANEJO DE EVENTOS SIMPLIFICADOS
     onSearchInput(ev) {
         this.contactManager.state.searchTerm = ev.target.value;
@@ -138,6 +170,9 @@ generateUniqueRequestId() {
     // GENERAR ID ÚNICO SEGURO
     this.currentRequestId = this.generateUniqueRequestId();
     this.state.isSending = true;
+     // 🔥 LIMPIAR ESTADOS DE EDICIÓN AL ENVIAR NUEVA SOLICITUD
+    this.state.editingFinalMessage = false;
+    this.state.editedFinalMessage = '';
 
     try {
         await this.n8nService.sendToN8N(
@@ -232,6 +267,10 @@ generateUniqueRequestId() {
         this.state.answer_ia = String(payload.answer_ia || '');
         this.state.debugInfo = 'Procesamiento completado ✓';
         this.state.error = null;
+
+         // 🔥 INICIAR AUTOMÁTICAMENTE EN MODO EDICIÓN
+        this.state.editedFinalMessage = this.state.final_message;
+        this.state.editingFinalMessage = true;
         
         this.notification.add(
             `✅ Procesamiento completado: ${payload.final_message.substring(0, 40)}...`,
@@ -256,6 +295,9 @@ generateUniqueRequestId() {
         this.state.answer_ia = '';
         this.state.debugInfo = 'Sistema listo para nueva consulta';
         this.state.error = null;
+         // 🔥 LIMPIAR ESTADOS DE EDICIÓN
+        this.state.editingFinalMessage = false;
+        this.state.editedFinalMessage = '';
         this.stopPolling(); // ← LIMPIEZA
     }
 

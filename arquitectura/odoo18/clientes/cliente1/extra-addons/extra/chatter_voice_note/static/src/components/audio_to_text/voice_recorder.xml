@@ -87,13 +87,43 @@
         </t>
 
         <!-- Respuestas -->
-        <div class="row mt-4">
+    <div class="row mt-4">
             <div class="col-6">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">Mensaje Final</div>
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span>Mensaje Final</span>
+                        <t t-if="state.final_message and !state.editingFinalMessage">
+                            <button type="button" t-on-click="startEditingFinalMessage" 
+                                    class="btn btn-sm btn-light">
+                                ✏️ Editar
+                            </button>
+                        </t>
+                    </div>
                     <div class="card-body">
-                        <t t-if="state.final_message"><t t-esc="state.final_message"/></t>
-                        <t t-else=""><span class="text-muted">Esperando mensaje...</span></t>
+                        <t t-if="state.editingFinalMessage">
+                            <textarea t-model="state.editedFinalMessage" 
+                                      class="form-control" 
+                                      rows="4"
+                                      placeholder="Edita el mensaje final aquí..."></textarea>
+                            <div class="mt-2 d-flex gap-2">
+                                <button type="button" t-on-click="saveFinalMessage" 
+                                        class="btn btn-success btn-sm">
+                                    ✅ Aceptar
+                                </button>
+                                <button type="button" t-on-click="cancelEditingFinalMessage" 
+                                        class="btn btn-secondary btn-sm">
+                                    ❌ Cancelar
+                                </button>
+                            </div>
+                        </t>
+                        <t t-elif="state.final_message">
+                            <div class="final-message-content">
+                                <t t-esc="state.final_message"/>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <span class="text-muted">Esperando mensaje...</span>
+                        </t>
                     </div>
                 </div>
             </div>
@@ -101,13 +131,18 @@
                 <div class="card">
                     <div class="card-header bg-success text-white">Respuesta IA</div>
                     <div class="card-body">
-                        <t t-if="state.answer_ia"><t t-esc="state.answer_ia"/></t>
-                        <t t-else=""><span class="text-muted">Esperando respuesta IA...</span></t>
+                        <t t-if="state.answer_ia">
+                            <div class="answer-ia-content">
+                                <t t-esc="state.answer_ia"/>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <span class="text-muted">Esperando respuesta IA...</span>
+                        </t>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Verificar manual -->
         <t t-if="currentRequestId &amp;&amp; !state.final_message">
             <div class="mt-3">
