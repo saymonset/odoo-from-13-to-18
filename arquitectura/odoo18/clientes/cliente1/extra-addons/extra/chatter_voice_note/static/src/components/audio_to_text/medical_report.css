@@ -44,21 +44,65 @@
     height: 80px;
 }
 
-/* Estilos para impresión */
+/* 🔥 ESTILOS PARA IMPRESIÓN - SOLO EL REPORTE */
 @media print {
+    body * {
+        visibility: hidden;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .medical-report-container,
+    .medical-report-container * {
+        visibility: visible;
+    }
+    
     .medical-report-container {
-        position: static;
-        background: none;
-        padding: 0;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
     }
     
     .medical-report {
         box-shadow: none !important;
-        border: 1px solid #000 !important;
+        border: none !important;
         max-height: none !important;
+        max-width: none !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
     .report-actions {
         display: none !important;
+    }
+    
+    /* Mejoras de estilo para impresión */
+    .report-header {
+        border-bottom: 2px solid #333 !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .medical-content {
+        border: 1px solid #ddd !important;
+        background: #f9f9f9 !important;
+    }
+    
+    .report-footer {
+        border-top: 2px solid #333 !important;
+        margin-top: 30px !important;
+    }
+    
+    /* Evitar saltos de página innecesarios */
+    .report-header, 
+    .report-content, 
+    .report-footer {
+        page-break-inside: avoid;
     }
 }
