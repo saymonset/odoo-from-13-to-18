@@ -1,0 +1,64 @@
+/* medical_report.css */
+.medical-report-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.medical-report {
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+.report-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.medical-content {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.medical-text {
+    white-space: pre-line;
+    text-align: left;
+    line-height: 1.6;
+}
+
+.logo-placeholder {
+    width: 100px;
+    height: 80px;
+}
+
+/* Estilos para impresión */
+@media print {
+    .medical-report-container {
+        position: static;
+        background: none;
+        padding: 0;
+    }
+    
+    .medical-report {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        max-height: none !important;
+    }
+    
+    .report-actions {
+        display: none !important;
+    }
+}

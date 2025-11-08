@@ -1,13 +1,17 @@
 /** @odoo-module **/
-import { Component, useState, onWillUnmount } from "@odoo/owl";
+import { Component, useState, onWillUnmount, markup } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { ContactManager } from "./contact_manager";
 import { AudioRecorder } from "./audio_recorder";
 import { AudioNoteManager } from "./audio_note_manager";
+import { MedicalReport } from "./medical_report";
 import { N8NService } from "./n8n_service";
 
 export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
+    static components = {
+        MedicalReport
+    };
 
     setup() {
 
@@ -24,13 +28,16 @@ export class VoiceRecorder extends Component {
             answer_ia: '',
             debugInfo: 'Sistema listo',
             error: null,
-            // 🔥 NUEVOS ESTADOS PARA EDICIÓN
+            // 🔥 ESTADOS PARA EDICIÓN
             editingFinalMessage: false,
-            editedFinalMessage: ''
+            editedFinalMessage: '',
+            showMedicalReport: false,
+            reportTitle: 'Reporte Médico'
+
         });
         
         this.currentRequestId = null;
-        this.pollInterval = null; // ← AÑADE ESTO
+        this.pollInterval = null; 
 
         onWillUnmount(() =>{
             this.stopPolling(); // ← SIEMPRE
@@ -98,12 +105,34 @@ stopPolling() {
         console.log("💾 Guardando mensaje final editado");
         this.state.final_message = this.state.editedFinalMessage;
         this.state.editingFinalMessage = false;
+
+         // 🔥 MOSTRAR REPORTE AUTOMÁTICAMENTE
+        this.state.showMedicalReport = true;
         
         this.notification.add(
             "✅ Mensaje final actualizado correctamente",
             { type: "success" }
         );
     }
+
+    // CERRAR REPORTE
+    closeMedicalReport = () => {
+        console.log("🔴 Cerrando reporte médico");
+        this.state.showMedicalReport = false;
+    }
+
+      // 🔥  MÉTODO PARA FORMATEAR CONTENIDO
+     get formattedReportContent() {
+        if (!this.state.final_message) return markup('');
+        
+        const htmlContent = this.state.final_message
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+        return markup(htmlContent); // 🔥 ENVOLVER CON markup
+    }
+
 
     cancelEditingFinalMessage() {
         console.log("❌ Cancelando edición del mensaje final");
@@ -173,6 +202,9 @@ generateUniqueRequestId() {
      // 🔥 LIMPIAR ESTADOS DE EDICIÓN AL ENVIAR NUEVA SOLICITUD
     this.state.editingFinalMessage = false;
     this.state.editedFinalMessage = '';
+    this.state.showMedicalReport = false; 
+    this.state.final_message = '';         // ← LIMPIAR MENSAJE ANTERIOR
+    this.state.answer_ia = '';             // ← LIMPIAR RESPUESTA IA
 
     try {
         await this.n8nService.sendToN8N(
@@ -298,6 +330,7 @@ generateUniqueRequestId() {
          // 🔥 LIMPIAR ESTADOS DE EDICIÓN
         this.state.editingFinalMessage = false;
         this.state.editedFinalMessage = '';
+        this.state.showMedicalReport = false;  
         this.stopPolling(); // ← LIMPIEZA
     }
 
