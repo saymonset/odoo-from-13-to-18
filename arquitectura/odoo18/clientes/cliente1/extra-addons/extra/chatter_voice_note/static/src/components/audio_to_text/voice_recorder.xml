@@ -77,8 +77,12 @@
                     <!-- Enviar -->
                     <t t-if="contactManager.state.selectedContacts.length > 0">
                         <div class="mt-3">
-                            <button type="button" t-on-click="sendToN8N" class="btn btn-success btn-lg">
-                                <t t-esc="state.isSending ? 'Enviando...' : 'Enviar a N8N'"/>
+                            <button type="button" 
+                                    t-on-click="sendToN8N" 
+                                    t-att-disabled="state.isSending"
+                                    t-att-class="state.isSending ? 'btn-secondary' : 'btn-success'"
+                                    class="btn btn-lg">
+                                <t t-esc="state.isSending ? 'Enviando...' : 'Enviar a IA'"/>
                             </button>
                         </div>
                     </t>
