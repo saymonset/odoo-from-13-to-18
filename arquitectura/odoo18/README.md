@@ -58,6 +58,7 @@ source .venv/bin/activate
     uv pip install  greenlet
     uv pip install websocket-client
     uv pip install websocket-client
+    uv pip install "pydantic>=2.0,<3.0" "httpx>=0.27.0" packaging
 
 
      ``

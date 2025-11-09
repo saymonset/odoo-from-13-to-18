@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
     <t t-name="chat-bot-n8n-ia.OpenAI">
       <div>
-            <h1>OPEN AI</h1>
+            <h1></h1>
         </div>
     </t>
 </templates>
