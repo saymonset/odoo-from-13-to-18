@@ -1,18 +1,5 @@
-# Backend Theme
-> [!WARNING]
-> This module is purely experimental and for educational purpose use only.
->
-> Do not use it in any environment but in an experimental one, definitely not in a production environment.
->
-> I'm not responsible for any damage or harm by the use of anything from this repo.
->
-> Use it at your own risk.
+# Crea la personalizacion del login y password aparte de eso hereda de 
+# chat-bot-n8n-ia para crear un chat en la parte principal de la pag web
 
-> [!CAUTION]
-> Do not use this module unless you have reviewed the source codes thoroughly, understand what it does and in an experimental environment.
-
-Backend Theme for Odoo ( in development ).
-
-Please watch this videos for more details:
-
-[![EXPLORING_ODOO](https://img.youtube.com/vi/hmBIX6U9zhQ/0.jpg)](https://youtu.be/hmBIX6U9zhQ)
+# El chat es creado por n8n donde su codigo del controller, services y useCase  esta en el modulo 
+# 'business_intelligence_queries' y es  Usado en el modulo 'backend_theme_explorer' en el views/login_templates.xml 

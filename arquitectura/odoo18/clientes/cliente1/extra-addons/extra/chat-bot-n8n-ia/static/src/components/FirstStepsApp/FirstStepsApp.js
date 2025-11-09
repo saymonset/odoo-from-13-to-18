@@ -17,7 +17,7 @@ export class FirstStepsApp extends Component {
     setup() {
         this.state = useState({
             itemsInCart2, 
-            chatWebhook: "https://n8n.jumpjibe.com/webhook/7fa980aa-20df-470c-878b-16817e490bdd/chat",
+            chatWebhook: "https://n8n.jumpjibe.com/webhook/b9d1fd06-1b3a-448a-ab7a-579d326b60f9/chat",
         });
     }
 }

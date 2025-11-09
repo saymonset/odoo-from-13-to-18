@@ -1,0 +1,1164 @@
+{
+  "name": "voz-to-text",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "audios",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2336,
+        80
+      ],
+      "id": "945932de-c003-48cc-89e8-527b8446f929",
+      "name": "Webhook",
+      "webhookId": "cd021541-d2a5-49c2-9ec1-61000d467e00"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f4634f5-1966-4131-90b6-681c4f25fe1d",
+              "name": "contacts",
+              "value": "={{ $json.body.contacts }}",
+              "type": "string"
+            },
+            {
+              "id": "cb7da8e0-2e24-4c32-82d6-7d75bf50d310",
+              "name": "message_type",
+              "value": "={{ $json.body.audios[0].mimetype }}",
+              "type": "string"
+            },
+            {
+              "id": "d611e307-6e5f-4d6f-8667-51fba2c7ae10",
+              "name": "voice_message",
+              "value": "={{ $json.body.audios[0].data }}",
+              "type": "string"
+            },
+            {
+              "id": "ee02b0d1-0121-44a6-8d69-d5615dd97c0a",
+              "name": "apikey",
+              "value": "={{ $workflow.id }}",
+              "type": "string"
+            },
+            {
+              "id": "fd4a9acb-f0eb-4a63-9144-1a94d5934c7d",
+              "name": "request_id",
+              "value": "={{ $json.body.request_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1920,
+        80
+      ],
+      "id": "5e079c08-00de-48bf-8e94-4ab1011eeea5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "43f5aa2b-597c-46d9-9e3f-185c705e5c12",
+              "leftValue": "={{ $json.message_type }}",
+              "rightValue": "conversation",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1360,
+        80
+      ],
+      "id": "56940008-5fd7-4f16-8e6c-4a3ab34675a9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "voice_message",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1440,
+        432
+      ],
+      "id": "34c91f14-dd8a-4bc7-b80f-0ae8fb628fea",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1248,
+        432
+      ],
+      "id": "3fd3e092-1bdb-4359-99fc-3aa9598b0685",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f5e56f0d-38cc-4109-9b8b-eb9c2107ff87",
+              "name": "final_message",
+              "value": "={{ $json.text_message }}",
+              "type": "string"
+            },
+            {
+              "id": "1db41844-9db9-4dc2-b00d-e975811fa7e8",
+              "name": "body.data.key.remoteJid",
+              "value": "={{ $('Webhook').item.json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "d38c3934-4a97-4d1e-86bb-859978606352",
+              "name": "body.instance",
+              "value": "={{ $('Webhook').item.json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "0697dabe-98a8-46f7-9e54-e9372e783f7f",
+              "name": "apikey",
+              "value": "={{ $json.apikey }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1248,
+        -144
+      ],
+      "id": "3e1ddb2e-05a0-4924-852d-e496b4a16d1b",
+      "name": "final_message_txt"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "47bf30a0-3e30-4f52-9d56-6f4468ca9e2f",
+              "name": "chatInput",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "782899d3-78bf-4505-83c7-492e322758b5",
+              "name": "message_type",
+              "value": "={{ $('Webhook').item.json.body.audios[0].mimetype }}",
+              "type": "string"
+            },
+            {
+              "id": "9a2a4980-ae22-4ada-ada8-11ec9086870f",
+              "name": "apikey",
+              "value": "={{ $('Edit Fields').item.json.request_id }}",
+              "type": "string"
+            },
+            {
+              "id": "78124e4c-ab90-4520-950b-79a5ff167a62",
+              "name": "contacts",
+              "value": "={{ $('Edit Fields').item.json.contacts }}",
+              "type": "string"
+            },
+            {
+              "id": "aa64af15-f34b-4567-8fe9-bc8deb0e22e0",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1056,
+        112
+      ],
+      "id": "128ef997-d47c-4c23-b060-9975dc784b4c",
+      "name": "final_message_voice"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://5.189.161.7:8020/webhook/n8n-messages-upsert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "sender",
+              "value": "={{ $('If').item.json.sender }}"
+            },
+            {
+              "name": "message_type",
+              "value": "={{ $('If').item.json.message_type }}"
+            },
+            {
+              "name": "remoteJid",
+              "value": "={{ $json.body.data.key.remoteJid }}"
+            },
+            {
+              "name": "instance",
+              "value": "={{ $json.body.instance }}"
+            },
+            {
+              "name": "conversation",
+              "value": "={{ $json.final_message }}"
+            },
+            {
+              "name": "apiKey",
+              "value": "={{ $json.apikey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -752,
+        -144
+      ],
+      "id": "d002fcf9-aeeb-492f-8ead-d950ed23d5fb",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener todos los elementos de entrada\nconst items = $input.all();\nlet newItems = [];\nlet conta = 0; // Reinicia el contador por cada ejecución\n\nfor (const item of items) {\n  // Parsear contactos\n  const contacts = JSON.parse(item.json.contacts);\n\n  for (const contact of contacts) {\n    const newItem = {\n      ...contact,\n      to: item.json.email,\n      sessionId: ++conta,\n      final_message: item.json.final_message,\n      answer_ia: item.json.answer_ia\n    };\n\n    // ENVOLVER en { json: ... }\n    newItems.push({ json: newItem });\n  }\n}\n\n// Devolver en formato n8n\nreturn newItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -496,
+        384
+      ],
+      "id": "d3e31abc-3567-4932-aadd-d495124afa33",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Eres un asistente especializado en proporcionar recomendaciones médicas profesionales, interpretación de estudios clínicos y guías basadas en evidencia científica. Tu objetivo es ofrecer respuestas directas, resumidas y bastante concretas, evitando divagaciones o información excesiva.\n\nFunciones Principales:\nIdentificar la especialidad médica relevante.\n\nAnalizar el contexto clínico del usuario.\n\nProporcionar recomendaciones basadas en evidencia científica.\n\nInterpretar hallazgos clave de estudios médicos cuando sea necesario.\n\nMantener un tono profesional y preciso.\n\nEstructura de Respuesta (Resumida):\nÁrea médica identificada: Especialidad y contexto.\n\nAnálisis/Interpretación clave: Hallazgos relevantes y fundamentos científicos.\n\nRecomendaciones concretas: Acciones específicas basadas en guías clínicas.\n\nPróximos pasos: Seguimiento o derivación necesaria.\n\nAdvertencias: Señalar signos de alarma o limitaciones.\n\nÁreas Médicas Cubiertas:\nMedicina interna, laboratorio, imagenología, farmacología, urgencias, pediatría, ginecología, cirugía, entre otras.\n\nDirectrices Clave:\nRespuestas breves y concretas.\n\nBasarse en guías clínicas reconocidas (ej. NICE, OMS).\n\nSiempre aclarar que no sustituyes una consulta médica presencial.\n\nDestacar signos de alarma que requieran atención inmediata.\n\nEjemplo de Respuesta Resumida:\nUsuario: \"Tengo un paciente con TSH elevada y T4 normal\"\n\nAsistente:\nÁrea: Endocrinología - Función tiroidea.\nInterpretación: TSH elevada + T4 normal sugiere hipotiroidismo subclínico.\nRecomendaciones:\n\nConfirmar con anticuerpos anti-TPO.\n\nRepetir perfil tiroideo en 3-6 meses.\n\nConsiderar levotiroxina si TSH >10 mUI/L o síntomas.\nPróximos pasos: Derivar a endocrinología si persiste o empeora.\n⚠️ Advertencia: No reemplaza consulta presencial. Evaluar contexto clínico completo.\n\nAhora, procede a analizar el mensaje del usuario y responde de manera resumida y concreta, priorizando la información esencial.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -848,
+        112
+      ],
+      "id": "f02ffbb5-de1a-4b91-9c20-52ae1e0f3cd9",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Edit Fields').item.json.request_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -880,
+        320
+      ],
+      "id": "14f2d9a4-fc42-4d9f-aa6d-de4620ac595c",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -992,
+        320
+      ],
+      "id": "abfb3387-8768-41cd-82a2-90a5f24e6acc",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fdb10435-c0fb-46df-a82e-267dbc32b62a",
+              "name": "answer_ia",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "c52ad1d3-e110-4fbd-a467-2822dc856ad7",
+              "name": "final_message",
+              "value": "={{ $('final_message_voice').item.json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "2ded8448-23f5-44ac-a8e5-350e930163be",
+              "name": "request_id",
+              "value": "={{ $('Edit Fields').item.json.request_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        112
+      ],
+      "id": "1ff49927-d83c-42c9-b5bd-f0c2aa2f6f41",
+      "name": "wait_out1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lead.jumpjibe.com/chatter_voice_note/audio_to_text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=final_message",
+              "value": "={{ $json.final_message }}"
+            },
+            {
+              "name": "answer_ia",
+              "value": "={{ $('AI Agent1').item.json.output }}"
+            },
+            {
+              "name": "request_id",
+              "value": "={{ $json.request_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -288,
+        112
+      ],
+      "id": "e1ad64b4-880e-4d9f-a8e8-312faef09307",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4d514641-b9db-4504-9afe-1be1973e7c8e",
+              "name": "final_message",
+              "value": "={{ $json.received.final_message }}",
+              "type": "string"
+            },
+            {
+              "id": "f4d68058-6980-4416-9d4a-c417aa0f53e1",
+              "name": "answer_ia",
+              "value": "={{ $json.received.answer_ia }}",
+              "type": "string"
+            },
+            {
+              "id": "7b026c08-3bd0-4041-9a34-97c1f06bb938",
+              "name": "contacts",
+              "value": "={{ $('Edit Fields').item.json.contacts }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -704,
+        384
+      ],
+      "id": "7f739d56-ce75-433d-99d8-9c0ee6a679de",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Audio a texto con IA",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333;\n            max-width: 800px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            color: white;\n            padding: 20px;\n            border-radius: 8px 8px 0 0;\n            text-align: center;\n        }\n        .table-container {\n            margin: 20px 0;\n            border: 1px solid #ddd;\n            border-radius: 0 0 8px 8px;\n            overflow: hidden;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n        }\n        th {\n            background-color: #f8f9fa;\n            padding: 12px 15px;\n            text-align: left;\n            font-weight: bold;\n            border-bottom: 2px solid #dee2e6;\n        }\n        td {\n            padding: 12px 15px;\n            border-bottom: 1px solid #dee2e6;\n        }\n        tr:last-child td {\n            border-bottom: none;\n        }\n        .message-table {\n            margin-bottom: 30px;\n        }\n        .message-title {\n            background-color: #007bff;\n            color: white;\n            padding: 10px 15px;\n            font-weight: bold;\n            margin: 0;\n        }\n        .info-row {\n            background-color: #f8f9fa;\n        }\n        .message-content {\n            background-color: #fff;\n            padding: 15px;\n            border-left: 4px solid #007bff;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1> UNISA - Traductor Inteligente</h1>\n        <p>Procesamiento completado exitosamente</p>\n    </div>\n\n    <!-- Tabla de información general OBLIGATORIA -->\n    <div class=\"table-container\">\n        <table>\n            <thead>\n                <tr>\n                    <th colspan=\"2\" style=\"text-align: center;\">Información del Contacto</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr class=\"info-row\">\n                    <td><strong>ID:</strong></td>\n                    <td>{{ $json.id }}</td>\n                </tr>\n                <tr>\n                    <td><strong>Nombre:</strong></td>\n                    <td>{{ $json.name }}</td>\n                </tr>\n                <tr class=\"info-row\">\n                    <td><strong>Email:</strong></td>\n                    <td>{{ $json.email }}</td>\n                </tr>\n                <tr>\n                    <td><strong>Teléfono:</strong></td>\n                    <td>{{ $json.phone }}</td>\n                </tr>\n            </tbody>\n        </table>\n    </div>\n\n    <!-- Tabla para final_message OBLIGATORIA -->\n    <div class=\"message-table\">\n        <div class=\"message-title\">Mensaje Final del Usuario</div>\n        <div class=\"table-container\">\n            <table>\n                <tbody>\n                    <tr>\n                        <td class=\"message-content\">\n                            {{ $json.final_message }}\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </div>\n\n    <!-- Tabla para answer_ia OBLIGATORIA -->\n    <div class=\"message-table\">\n        <div class=\"message-title\">Respuesta de IA Procesada</div>\n        <div class=\"table-container\">\n            <table>\n                <tbody>\n                    <tr>\n                        <td class=\"message-content\">\n                            {{ $json.answer_ia || \"Procesamiento en curso - Sin respuesta de IA aún\" }}\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        368
+      ],
+      "id": "f3b7ac60-f06b-4713-8097-121449632bc5",
+      "name": "Send a message",
+      "webhookId": "05cbbd81-a686-434e-8aca-e5a94945a514",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GGox6idrEobuo72S",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot{{ $('Prepare Voice Message Data').item.json.telegramToken }}/{{ $json.result.file_path }}",
+        "options": {}
+      },
+      "id": "c7b77b64-6ea1-4db7-a8d9-874613d53693",
+      "name": "Download Voice File",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -2016,
+        -784
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $json.telegramToken }}/getFile?file_id={{ $json.voice_file_id }}",
+        "options": {}
+      },
+      "id": "990785dd-3f2f-4d41-b12c-9fae2606d042",
+      "name": "Get File Path",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1904,
+        -640
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e0deb0df-a5f8-4d13-8af6-92d0e1f0ad74",
+              "name": "user_id",
+              "type": "number",
+              "value": "={{ $json.message.from.id }}"
+            },
+            {
+              "id": "d5b76796-10f1-41ef-bff6-1602fb434ad8",
+              "name": "chat_id",
+              "type": "number",
+              "value": "={{ $json.message.chat.id }}"
+            },
+            {
+              "id": "59bda82b-6c18-40fd-b120-ed078a5d4c96",
+              "name": "voice_file_id",
+              "type": "string",
+              "value": "={{ $json.message.voice.file_id }}"
+            },
+            {
+              "id": "9412f498-5e52-4ea9-81a3-9d76379406c0",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "id": "telegramToken",
+              "name": "telegramToken",
+              "type": "string",
+              "value": "8407433385:AAG98DkKC9nJK4ke2XLujtwyJGuyuDJin9M"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a53e1da1-a7e2-43ed-aab3-f575355cef4d",
+      "name": "Prepare Voice Message Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2208,
+        -640
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "text-user-id",
+              "name": "user_id",
+              "type": "number",
+              "value": "={{ $json.message.from.id }}"
+            },
+            {
+              "id": "text-chat-id",
+              "name": "chat_id",
+              "type": "number",
+              "value": "={{ $json.message.chat.id }}"
+            },
+            {
+              "id": "text-message-text",
+              "name": "message_text",
+              "type": "string",
+              "value": "={{ $json.message.text }}"
+            },
+            {
+              "id": "text-message-id",
+              "name": "message_id",
+              "type": "number",
+              "value": "={{ $json.message.message_id }}"
+            },
+            {
+              "id": "text-timestamp",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8b8e29e0-a62a-4a4f-82b3-a8ad4483478a",
+      "name": "Prepare Text Message Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2480,
+        -400
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "876dc746-b9cb-4b7f-a0e2-1542f67fbe05",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "leftValue": "={{ Boolean($json.message.voice) }}",
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c011b7c2-1b65-425f-91c1-ede00ea4f022",
+      "name": "Is Voice Message?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -2496,
+        -640
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "1d231586-d3a2-4b6d-8a5d-8b9f5b85ebb4",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -2768,
+        -640
+      ],
+      "webhookId": "8dadd8e7-a415-46d3-99d5-b577014bae48",
+      "typeVersion": 1.1,
+      "credentials": {
+        "telegramApi": {
+          "id": "GQvXK3j6MPBEQhxd",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1712,
+        -832
+      ],
+      "id": "53531334-922e-4070-8bf3-1fddf68b3a39",
+      "name": "Transcribe a recording1",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad248fca-e1de-4d6e-93ab-7759d2ac9f74",
+              "name": "final_message",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "92bea91a-3229-4394-a24d-054845f95273",
+              "name": "chatInput",
+              "value": "oraclefedora@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "7b1ba407-5484-4b31-bbf0-5adedae46fc3",
+              "name": "sessionId",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1424,
+        -816
+      ],
+      "id": "1e0f83c8-ec82-4808-ac3e-d354875acea5",
+      "name": "final_message_voice1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Toda respuesta es en español: Analiza el texto proporcionado y extrae todas las direcciones de correo electrónico que encuentres. Luego, formatea la información para enviar un mensaje usando la herramienta 'Send a message' de la siguiente manera:\n\nINSTRUCCIONES:\n1. Identifica y extrae todas las direcciones de email válidas del texto\n2. Si se menciona un destinatario principal o hay contexto sobre a quién va dirigido el mensaje, úsalo para determinar el campo 'to'\n3. Organiza la información en este formato:\n\nTO: [email extraído o el contenido de chatInput si no se encuentra email]\nSUBJECT: [asunto del mensaje si se menciona, o crear uno apropiado basado en el contexto]\nBODY: [final_message]\n\n4. Si no se encuentra ningún correo electrónico en el texto, utiliza el contenido de la variable `chatInput` como destinatario (TO)\n5. Si no hay suficiente información para el asunto, usa valores predeterminados apropiados\n6. Si hay múltiples emails, prioriza el que parezca ser el destinatario principal\n7. Siempre verifica que el campo TO tenga un valor válido (email o contenido de chatInput)\n8. Para el campo BODY, utiliza siempre el contenido de la variable `final_message`\n\nEjemplo de flujo:\n- Si el texto contiene: \"Enviar a maria@empresa.com sobre la reunión\"\n- TO: maria@empresa.com\n- SUBJECT: Reunión\n- BODY: [contenido de final_message]\n\n- Si NO contiene email: usar chatInput como TO\n- BODY: [siempre usar final_message]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1136,
+        -784
+      ],
+      "id": "b8449efc-92b6-4fe7-adc2-e30baaf3d053",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "=<!DOCTYPE html> <html> <head>     <style>         body {             font-family: Arial, sans-serif;             line-height: 1.6;             color: #333;             max-width: 800px;             margin: 0 auto;             padding: 20px;         }         .header {             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             color: white;             padding: 20px;             border-radius: 8px 8px 0 0;             text-align: center;         }         .table-container {             margin: 20px 0;             border: 1px solid #ddd;             border-radius: 0 0 8px 8px;             overflow: hidden;         }         table {             width: 100%;             border-collapse: collapse;         }         th {             background-color: #f8f9fa;             padding: 12px 15px;             text-align: left;             font-weight: bold;             border-bottom: 2px solid #dee2e6;         }         td {             padding: 12px 15px;             border-bottom: 1px solid #dee2e6;         }         tr:last-child td {             border-bottom: none;         }         .message-table {             margin-bottom: 30px;         }         .message-title {             background-color: #007bff;             color: white;             padding: 10px 15px;             font-weight: bold;             margin: 0;         }         .info-row {             background-color: #f8f9fa;         }         .message-content {             background-color: #fff;             padding: 15px;             border-left: 4px solid #007bff;         }     </style> </head> <body>     <div class=\"header\">         <h1> UNISA - Traductor Inteligente</h1>         <p>Procesamiento completado exitosamente</p>     </div>            <!-- Tabla para final_message OBLIGATORIA -->     <div class=\"message-table\">         <div class=\"message-title\">Mensaje Final del Usuario</div>         <div class=\"table-container\">             <table>                 <tbody>                     <tr>                         <td class=\"message-content\">                             {{ $json.final_message }}                         </td>                     </tr>                 </tbody>             </table>         </div>     </div>      </body> </html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -896,
+        -480
+      ],
+      "id": "cbb1c218-552f-4889-b84b-a26c21e49b73",
+      "name": "Send a message in Gmail",
+      "webhookId": "3d2135dc-1b90-4f69-8cac-ddb54ef0a650",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GGox6idrEobuo72S",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1136,
+        -576
+      ],
+      "id": "ca209e1c-c2b0-43f0-a66d-22f6e9701a19",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1280,
+        -576
+      ],
+      "id": "0b01d251-2014-4248-a751-b9659cb52ccc",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.final_message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        -752
+      ],
+      "id": "4cc42433-a558-425a-a079-180bacc91247",
+      "name": "Send a text message",
+      "webhookId": "f9251e14-07c7-4e65-81e3-2c9a286f96f9",
+      "credentials": {
+        "telegramApi": {
+          "id": "GQvXK3j6MPBEQhxd",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5889cfb4-cb14-46e7-9aca-219206d9608b",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "19b5fb36-2556-4f92-8fda-158b16da4a17",
+              "name": "final_message",
+              "value": "={{ $('final_message_voice1').item.json.final_message }}",
+              "type": "string"
+            },
+            {
+              "id": "761a919a-d751-4272-a8c7-04467eaba06a",
+              "name": "message.chat.id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        -784
+      ],
+      "id": "1cbe8a1a-065e-4b4d-bf2b-d298e7b589ce",
+      "name": "Edit Fields2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "final_message_txt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "final_message_voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "final_message_voice": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "final_message_txt": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "wait_out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wait_out1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Path": {
+      "main": [
+        [
+          {
+            "node": "Download Voice File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Voice Message Data": {
+      "main": [
+        [
+          {
+            "node": "Get File Path",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Voice Message?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Voice Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Text Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Is Voice Message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording1": {
+      "main": [
+        [
+          {
+            "node": "final_message_voice1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "final_message_voice1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8db66d64-8982-4b13-be1e-c1e4e3b16689",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "15bcb76b27af2157af7908eb77d2379c6eabf07b96d8f87a740ef7ffe3480343"
+  },
+  "id": "pyGkhz7xXgwAnbj1",
+  "tags": []
+}

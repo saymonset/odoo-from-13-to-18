@@ -1,0 +1,1 @@
+# Usado en el modulo 'backend_theme_explorer' en el views/login_templates.xml 

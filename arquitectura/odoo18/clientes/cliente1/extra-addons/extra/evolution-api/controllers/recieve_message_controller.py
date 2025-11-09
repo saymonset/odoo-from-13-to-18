@@ -8,9 +8,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class WhatsAppWebhook(http.Controller):
-    #https://n8n.jumpjibe.com/webhook/webhook0
-    #https://jumpjibe.com/webhook/n8n-messages-upsert
-    #@http.route('/webhook/n8n-messages-upsert', type='http', auth='public', methods=['POST'], csrf=False)
     @http.route('/webhook/n8n-messages-upsert', type='http', auth='public', methods=['POST'], csrf=False)
     def handle_n8n_messages_upsert(self, **kw):
         # Intenta obtener el JSON del cuerpo
