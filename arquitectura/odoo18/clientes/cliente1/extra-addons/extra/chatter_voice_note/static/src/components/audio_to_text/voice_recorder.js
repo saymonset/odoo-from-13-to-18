@@ -32,6 +32,7 @@ export class VoiceRecorder extends Component {
             editingFinalMessage: false,
             editedFinalMessage: '',
             showMedicalReport: false,
+            reportUserData: null,
             reportTitle: 'Reporte Médico'
 
         });
@@ -101,11 +102,47 @@ stopPolling() {
         this.state.editingFinalMessage = true;
     }
 
+
+        getUserData() {
+        try {
+            // 🔥 OPCIÓN 1: Intentar obtener del environment de Odoo
+            if (this.env && this.env.services && this.env.services.user) {
+                const userService = this.env.services.user;
+                if (userService.name) {
+                    return {
+                        name: userService.name,
+                        userId: userService.userId,
+                    };
+                }
+            }
+            
+            // 🔥 OPCIÓN 2: Intentar obtener del contexto global
+            if (typeof odoo !== 'undefined' && odoo.session_info) {
+                const session = odoo.session_info;
+                return {
+                    name: session.name || session.username || 'Dr. Usuario',
+                    userId: session.uid,
+                };
+            }
+        } catch (error) {
+            console.warn("❌ Error obteniendo datos del usuario:", error);
+        }
+        
+        // 🔥 VALORES POR DEFECTO
+        return {
+            name: 'Dr. Usuario del Sistema',
+            userId: null
+        };
+    }
     saveFinalMessage() {
         console.log("💾 Guardando mensaje final editado");
         this.state.final_message = this.state.editedFinalMessage;
         this.state.editingFinalMessage = false;
 
+           // 🔥 OBTENER DATOS DEL USUARIO Y PASARLOS AL REPORTE
+        const userData = this.getUserData();
+        console.log("🔍 Datos de usuario que se enviarán al reporte:", userData);
+        this.state.reportUserData = userData;
          // 🔥 MOSTRAR REPORTE AUTOMÁTICAMENTE
         this.state.showMedicalReport = true;
         

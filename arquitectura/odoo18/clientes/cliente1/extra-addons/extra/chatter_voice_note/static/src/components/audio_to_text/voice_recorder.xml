@@ -157,6 +157,7 @@
                         content="formattedReportContent"
                         title="state.reportTitle"
                         onClose="closeMedicalReport"
+                        userData="state.reportUserData"
                     />
                 </t>
             </t>
@@ -216,9 +217,23 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="doctor-signature">
-                            <p class="mb-1 fw-bold">Dr. Alejandro Rodríguez</p>
-                            <p class="text-muted small mb-0">Médico Especialista</p>
-                        </div>
+                                <p class="mb-1 fw-bold">
+                                    <t t-if="state.userName">
+                                        <t t-esc="state.userName"/>
+                                    </t>
+                                    <t t-else="">
+                                        Cargando...
+                                    </t>
+                                </p>
+                                <p class="text-muted small mb-0">
+                                    <t t-if="state.userJobTitle">
+                                        <t t-esc="state.userJobTitle"/>
+                                    </t>
+                                    <t t-else="">
+                                        Cargando puesto...
+                                    </t>
+                                </p>
+                            </div>
                     </div>
                     <div class="col-6 text-end">
                         <p class="text-muted mb-0">
@@ -240,10 +255,10 @@
                             t-on-click="printReport">
                         🖨️ Imprimir
                     </button>
-                    <button type="button" class="btn btn-primary btn-sm"
+                    <!-- <button type="button" class="btn btn-primary btn-sm"
                             t-on-click="downloadPDF">
                         📄 Descargar PDF
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>

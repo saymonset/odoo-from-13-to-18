@@ -7,7 +7,8 @@ export class MedicalReport extends Component {
     static props = {
         content: String,
         title: { type: String, optional: true },
-        onClose: { type: Function, optional: true }
+        onClose: { type: Function, optional: true },
+        userData: { type: Object, optional: true }
     };
 
     setup() {
@@ -17,46 +18,148 @@ export class MedicalReport extends Component {
 
          this.state = useState({
                     companyLogo: null,
-                    companyName: ''
+                    companyName: '',
+                    userName: 'Dr. Médico',    
+                    userJobTitle: 'Especialista' 
                 });
 
-         this.loadCompanyLogo();        
+         this.loadCompanyLogo();  
+         this.setUserDataFromProps();
+       
 
     }
-
-    // 🔥 MÉTODO PARA CARGAR EL LOGO DE LA COMPAÑÍA
-async loadCompanyLogo() {
+  
+ setUserDataFromProps() {
     try {
-        console.log("🔄 Cargando logo de la compañía...");
+        console.log("🔄 Configurando datos del usuario desde props...", this.props.userData);
         
-        // Obtener información de la compañía actual
-        const companies = await this.orm.searchRead(
-            "res.company",
-            [],
-            ["logo", "name"],
-            { limit: 1 }
-        );
-        
-        if (companies.length > 0) {
-            const company = companies[0];
+        if (this.props.userData && this.props.userData.name) {
+            this.state.userName = this.props.userData.name;
+            console.log("✅ Usuario obtenido de props:", this.props.userData.name);
             
-            if (company.logo) {
-                console.log("✅ Logo de compañía encontrado");
-                this.state.companyLogo = company.logo;
+            // Si tenemos userId, intentar cargar más detalles
+            if (this.props.userData.userId) {
+                this.loadUserDetailsFromDB(this.props.userData.userId);
             }
-            
-            if (company.name) {
-                this.state.companyName = company.name;
-            }
-            
-            console.log("🏢 Compañía:", company.name);
         } else {
-            console.warn("⚠️ No se encontró información de la compañía");
+            console.warn("⚠️ No se proporcionaron datos de usuario válidos en las props");
+            this.setDefaultUserData();
         }
+        
     } catch (error) {
-        console.error("❌ Error cargando logo de compañía:", error);
+        console.error("❌ Error configurando datos del usuario:", error);
+        this.setDefaultUserData();
     }
 }
+
+    enhanceUserData() {
+        if (this.state.userName && !this.state.userName.includes('Dr.') && !this.state.userName.includes('Dra.')) {
+            this.state.userName = 'Dr. ' + this.state.userName;
+        }
+    }
+
+    async loadUserDetailsFromDB(userId) {
+        try {
+            console.log("🔄 Cargando detalles adicionales del usuario, ID:", userId);
+            
+            const users = await this.orm.searchRead(
+                "res.users",
+                [["id", "=", userId]],
+                ["name", "job_title", "function"],
+                { limit: 1 }
+            );
+            
+            if (users && users.length > 0) {
+                const user = users[0];
+                
+                // Actualizar puesto de trabajo si está disponible
+                if (user.job_title) {
+                    this.state.userJobTitle = user.job_title;
+                } else if (user.function) {
+                    this.state.userJobTitle = user.function;
+                }
+                
+                console.log("✅ Detalles del usuario cargados:", {
+                    name: user.name,
+                    jobTitle: this.state.userJobTitle
+                });
+                
+            } else {
+                console.warn("⚠️ No se encontraron detalles adicionales del usuario");
+                this.enhanceUserData();
+            }
+            
+        } catch (error) {
+            console.error("❌ Error cargando detalles del usuario:", error);
+            this.enhanceUserData();
+        }
+    }
+
+    // 🔥 MÉTODO PARA ESTABLECER DATOS POR DEFECTO
+    setDefaultUserData() {
+        this.state.userName = 'Dr. ' + this.getRandomDoctorName();
+        this.state.userJobTitle = 'Médico Especialista';
+    }
+
+    // 🔥 GENERAR NOMBRE DE MÉDICO ALEATORIO (PARA QUE SEA MÁS PROFESIONAL)
+    getRandomDoctorName() {
+        const names = ['García', 'Rodríguez', 'López', 'Martínez', 'González', 'Pérez', 'Sánchez', 'Ramírez', 'Torres', 'Flores'];
+        const firstNames = ['Alejandro', 'Carlos', 'María', 'Ana', 'Luis', 'Javier', 'Elena', 'Sofía', 'Miguel', 'David'];
+        
+        const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const randomLastName = names[Math.floor(Math.random() * names.length)];
+        
+        return `${randomFirstName} ${randomLastName}`;
+    }
+
+
+    async loadCompanyLogo() {
+        try {
+            console.log("🔄 Cargando logo de la compañía...");
+            
+            let companies = [];
+            
+            try {
+                companies = await this.orm.searchRead(
+                    "res.company",
+                    [],
+                    ["logo", "name"],
+                    { limit: 1 }
+                );
+            } catch (error) {
+                console.warn("⚠️ Error cargando compañía, intentando método alternativo...");
+                companies = await this.orm.call(
+                    "res.company",
+                    "search_read",
+                    [],
+                    {
+                        domain: [],
+                        fields: ["logo", "name"],
+                        limit: 1
+                    }
+                );
+            }
+            
+            if (companies && companies.length > 0) {
+                const company = companies[0];
+                
+                if (company.logo) {
+                    console.log("✅ Logo de compañía encontrado");
+                    this.state.companyLogo = company.logo;
+                }
+                
+                if (company.name) {
+                    this.state.companyName = company.name;
+                }
+                
+                console.log("🏢 Compañía:", company.name);
+            } else {
+                console.warn("⚠️ No se encontró información de la compañía");
+            }
+        } catch (error) {
+            console.error("❌ Error cargando logo de compañía:", error);
+        }
+    }
 
     get currentDate() {
         return new Date().toLocaleDateString('es-ES', {
@@ -83,7 +186,6 @@ async loadCompanyLogo() {
     // 🔥 MÉTODO PARA OBTENER EL LOGO DE LA COMPAÑÍA
     async getCompanyLogo() {
         try {
-            debugger
             const companies = await this.orm.searchRead(
                 "res.company",
                 [],
@@ -300,8 +402,8 @@ async loadCompanyLogo() {
             
             // Información del médico
             doc.setFont("helvetica", "normal");
-            doc.text("Dr. Alejandro Rodríguez", margin, yPosition + 10);
-            doc.text("Médico Especialista", margin, yPosition + 15);
+            doc.text(this.state.userName, margin, yPosition + 10);
+            doc.text(this.state.userJobTitle, margin, yPosition + 15);
             doc.text("Lic. MED-123456", margin, yPosition + 20);
 
             // Sello simulado
