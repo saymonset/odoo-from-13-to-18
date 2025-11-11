@@ -115,7 +115,7 @@
                                     <div class="mt-2 d-flex gap-2">
                                         <button type="button" t-on-click="saveFinalMessage" 
                                                 class="btn btn-success btn-sm">
-                                            ✅ Aceptar
+                                            ✅ Reporte
                                         </button>
                                         <button type="button" t-on-click="cancelEditingFinalMessage" 
                                                 class="btn btn-secondary btn-sm">
@@ -186,17 +186,27 @@
                     <p class="text-muted mb-0">Reporte generado automáticamente</p>
                 </div>
                 <div class="report-logo">
-                    <div class="logo-placeholder bg-light rounded p-3 text-center border">
-                        <i class="fa fa-hospital text-primary fa-2x mb-2"></i>
-                        <div class="small fw-bold">CENTRO MÉDICO</div>
+                        <div class="logo-placeholder bg-light rounded p-3 text-center border">
+                            <!-- Logo de la compañía -->
+                            <t t-if="state.companyLogo">
+                                <img t-att-src="'data:image/png;base64,' + state.companyLogo" 
+                                    alt="Logo Compañía" 
+                                    style="max-width: 120px; max-height: 60px; object-fit: contain;"/>
+                            </t>
+                            <t t-else="">
+                                <!-- Placeholder si no hay logo -->
+                                <i class="fa fa-hospital text-primary fa-2x mb-2"></i>
+                                <div class="small fw-bold">
+                                    <t t-esc="state.companyName || 'CENTRO MÉDICO'"/>
+                                </div>
+                            </t>
+                        </div>
                     </div>
-                </div>
             </div>
 
             <!-- Contenido del Reporte -->
             <div class="report-content mb-4">
                 <div class="medical-content text-center py-4 px-3 bg-light rounded border">
-                    <!-- 🔥 CORRECCIÓN: t-raw -> t-out -->
                     <div t-out="props.content" class="medical-text fs-5 lh-base"/>
                 </div>
             </div>
@@ -213,7 +223,6 @@
                     <div class="col-6 text-end">
                         <p class="text-muted mb-0">
                             <strong>Fecha:</strong> 
-                            <!-- 🔥 CORRECCIÓN: currentDate sin paréntesis -->
                             <span t-esc="currentDate"/>
                         </p>
                     </div>

@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component } from "@odoo/owl";
+import { Component, useState } from "@odoo/owl"; 
 import { useService } from "@web/core/utils/hooks";
 
 export class MedicalReport extends Component {
@@ -13,7 +13,50 @@ export class MedicalReport extends Component {
     setup() {
         super.setup();
         this.notification = useService("notification");
+        this.orm = useService("orm");
+
+         this.state = useState({
+                    companyLogo: null,
+                    companyName: ''
+                });
+
+         this.loadCompanyLogo();        
+
     }
+
+    // 🔥 MÉTODO PARA CARGAR EL LOGO DE LA COMPAÑÍA
+async loadCompanyLogo() {
+    try {
+        console.log("🔄 Cargando logo de la compañía...");
+        
+        // Obtener información de la compañía actual
+        const companies = await this.orm.searchRead(
+            "res.company",
+            [],
+            ["logo", "name"],
+            { limit: 1 }
+        );
+        
+        if (companies.length > 0) {
+            const company = companies[0];
+            
+            if (company.logo) {
+                console.log("✅ Logo de compañía encontrado");
+                this.state.companyLogo = company.logo;
+            }
+            
+            if (company.name) {
+                this.state.companyName = company.name;
+            }
+            
+            console.log("🏢 Compañía:", company.name);
+        } else {
+            console.warn("⚠️ No se encontró información de la compañía");
+        }
+    } catch (error) {
+        console.error("❌ Error cargando logo de compañía:", error);
+    }
+}
 
     get currentDate() {
         return new Date().toLocaleDateString('es-ES', {
@@ -35,6 +78,42 @@ export class MedicalReport extends Component {
 
     get reportTitle() {
         return this.props.title || "Reporte Médico";
+    }
+
+    // 🔥 MÉTODO PARA OBTENER EL LOGO DE LA COMPAÑÍA
+    async getCompanyLogo() {
+        try {
+            debugger
+            const companies = await this.orm.searchRead(
+                "res.company",
+                [],
+                ["logo"],
+                { limit: 1 }
+            );
+            if (companies.length > 0 && companies[0].logo) {
+                return companies[0].logo;
+            }
+        } catch (error) {
+            console.error("Error al obtener el logo de la compañía:", error);
+        }
+        return null;
+    }
+
+    // 🔥 MÉTODO PARA CARGAR IMAGEN DESDE BASE64
+    loadImageFromBase64(base64Data) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.onerror = reject;
+            img.src = `data:image/png;base64,${base64Data}`;
+        });
     }
 
     // 🔥 DESCARGA REAL DE PDF PROFESIONAL
@@ -61,7 +140,7 @@ export class MedicalReport extends Component {
         }
     }
 
-    // 🔥 PDF PROFESIONAL CON DISEÑO MÉDICO
+    // 🔥 PDF PROFESIONAL CON DISEÑO MÉDICO Y LOGO REAL
     generateProfessionalPDF = async () => {
         try {
             const { jsPDF } = window.jspdf;
@@ -92,12 +171,30 @@ export class MedicalReport extends Component {
             doc.setFontSize(12);
             doc.text("Acreditado - Excelencia en Salud", pageWidth / 2, 18, { align: "center" });
 
-            // 🔥 LOGO SIMULADO (podrías reemplazar con imagen real)
-            doc.setFillColor(255, 255, 255);
-            doc.circle(25, 12, 8, 'F');
-            doc.setFontSize(10);
-            doc.setTextColor(41, 128, 185);
-            doc.text("CM", 25, 14, { align: "center" });
+            // 🔥 LOGO REAL DE LA COMPAÑÍA DE ODOO
+            let logoLoaded = false;
+            try {
+                const companyLogo = await this.getCompanyLogo();
+                if (companyLogo) {
+                    const logoData = await this.loadImageFromBase64(companyLogo);
+                    // Añadir el logo con dimensiones apropiadas
+                    doc.addImage(logoData, 'PNG', 20, 8, 15, 15);
+                    logoLoaded = true;
+                    console.log("✅ Logo de la compañía cargado correctamente");
+                }
+            } catch (error) {
+                console.warn("❌ No se pudo cargar el logo de la compañía:", error);
+            }
+
+            // 🔥 LOGO ALTERNATIVO SI NO SE PUDO CARGAR EL LOGO DE LA COMPAÑÍA
+            if (!logoLoaded) {
+                console.log("⚠️ Usando logo alternativo");
+                doc.setFillColor(255, 255, 255);
+                doc.circle(25, 12, 8, 'F');
+                doc.setFontSize(10);
+                doc.setTextColor(41, 128, 185);
+                doc.text("CM", 25, 14, { align: "center" });
+            }
 
             yPosition = 35;
 
