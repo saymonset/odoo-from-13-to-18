@@ -46,6 +46,7 @@ uv venv --python 3.11
 # activarlo
 
 ```bash
+cd /home/odoo/odoo-from-13-to-18/arquitectura/odoo18
 source .venv/bin/activate
 ```
 

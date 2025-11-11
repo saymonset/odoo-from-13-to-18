@@ -203,8 +203,8 @@ generateUniqueRequestId() {
     this.state.editingFinalMessage = false;
     this.state.editedFinalMessage = '';
     this.state.showMedicalReport = false; 
-    this.state.final_message = '';         // ← LIMPIAR MENSAJE ANTERIOR
-    this.state.answer_ia = '';             // ← LIMPIAR RESPUESTA IA
+    this.state.final_message = '';          
+    this.state.answer_ia = '';              
 
     try {
         await this.n8nService.sendToN8N(
@@ -217,8 +217,10 @@ generateUniqueRequestId() {
         this.startPollingWhenNeeded(); // INICIA POLLING
     } catch (err) {
         console.error("Error envío:", err);
+        this.state.isSending = false; 
+        this.state.debugInfo = 'Error al enviar';
+        this.notification.add("Error al enviar el audio", { type: "danger" });
     } finally {
-        this.state.isSending = false;
     }
 }
 
@@ -300,6 +302,8 @@ generateUniqueRequestId() {
         this.state.debugInfo = 'Procesamiento completado ✓';
         this.state.error = null;
 
+        this.state.isSending = false;
+
          // 🔥 INICIAR AUTOMÁTICAMENTE EN MODO EDICIÓN
         this.state.editedFinalMessage = this.state.final_message;
         this.state.editingFinalMessage = true;
@@ -327,11 +331,11 @@ generateUniqueRequestId() {
         this.state.answer_ia = '';
         this.state.debugInfo = 'Sistema listo para nueva consulta';
         this.state.error = null;
-         // 🔥 LIMPIAR ESTADOS DE EDICIÓN
         this.state.editingFinalMessage = false;
         this.state.editedFinalMessage = '';
         this.state.showMedicalReport = false;  
-        this.stopPolling(); // ← LIMPIEZA
+        this.state.isSending = false; 
+        this.stopPolling(); 
     }
 
     // 🔥 MÉTODOS EXISTENTES

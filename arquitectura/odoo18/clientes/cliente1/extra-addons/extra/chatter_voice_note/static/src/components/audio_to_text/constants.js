@@ -1,6 +1,7 @@
 /** @odoo-module **/
-
-export const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook/audios";
+                                
+  export const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook/test-audios";
+//export const N8N_WEBHOOK_URL = "https://n8n.jumpjibe.com/webhook/audios";
 
 // CONFIGURACIÓN MÍNIMA Y COMPATIBLE
 export const AUDIO_CONSTRAINTS = {
