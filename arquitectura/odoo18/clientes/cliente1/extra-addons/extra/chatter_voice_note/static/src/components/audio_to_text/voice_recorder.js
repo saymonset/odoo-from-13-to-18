@@ -129,6 +129,8 @@ stopPolling() {
         this.state.reportUserData = userData;
          // 🔥 MOSTRAR REPORTE AUTOMÁTICAMENTE
         this.state.showMedicalReport = true;
+        this.state.reportUserData = userData;
+        this.state.reportContacts = this.contactManager.state.selectedContacts; 
         
         this.notification.add(
             "✅ Mensaje final actualizado correctamente",

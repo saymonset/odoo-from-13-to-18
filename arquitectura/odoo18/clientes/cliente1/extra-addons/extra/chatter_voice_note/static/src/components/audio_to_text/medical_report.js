@@ -8,7 +8,12 @@ export class MedicalReport extends Component {
         content: String,
         title: { type: String, optional: true },
         onClose: { type: Function, optional: true },
-        userData: { type: Object, optional: true }
+        userData: { type: Object, optional: true },
+        contacts: { type: Array, optional: true },
+        resModel: { type: String, optional: true },
+        resId: { type: Number, optional: true }
+
+        
     };
 
     setup() {
@@ -160,6 +165,9 @@ export class MedicalReport extends Component {
             console.error("❌ Error cargando logo de compañía:", error);
         }
     }
+
+
+
 
     get currentDate() {
         return new Date().toLocaleDateString('es-ES', {
@@ -639,4 +647,120 @@ export class MedicalReport extends Component {
             document.head.removeChild(styleElement);
         }, 1000);
     }
+
+
+
+    // 🔥 MÉTODO PARA ENVIAR POR CORREO
+sendEmail = async () => {
+    try {
+        this.notification.add("📧 Preparando envío por correo...", { type: "info" });
+
+        // Generar PDF en base64
+        const pdfBase64 = await this.generatePDFBase64();
+        
+        if (!pdfBase64) {
+            throw new Error("No se pudo generar el PDF");
+        }
+
+        // Obtener contactos seleccionados (deberías pasar esto como prop desde VoiceRecorder)
+        const contacts = this.props.contacts || [];
+        
+        if (contacts.length === 0) {
+            this.notification.add("❌ No hay contactos seleccionados para enviar el correo", { type: "warning" });
+            return;
+        }
+
+        // Preparar datos para enviar
+        const emailData = {
+            pdf_data: pdfBase64,
+            pdf_name: `Reporte_Medico_${new Date().getTime()}.pdf`,
+            contacts: contacts,
+            subject: `Reporte Médico - ${this.currentDate}`,
+            body: this.generateEmailBody(),
+            res_model: this.props.resModel || null,
+            res_id: this.props.resId || null
+        };
+
+        // Enviar por correo usando el servicio de Odoo
+        await this.sendEmailViaOdoo(emailData);
+        
+        this.notification.add("✅ Reporte enviado por correo correctamente", { type: "success" });
+
+    } catch (error) {
+        console.error("❌ Error enviando email:", error);
+        this.notification.add(`❌ Error al enviar correo: ${error.message}`, { type: "danger" });
+    }
+}
+
+// 🔥 GENERAR PDF COMO BASE64 (sin descargar)
+generatePDFBase64 = async () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!window.jspdf) {
+                reject(new Error("jsPDF no disponible"));
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // ... (todo el código de generateProfessionalPDF pero SIN doc.save())
+            
+            // En lugar de guardar, obtener como base64
+            const pdfBase64 = doc.output('datauristring').split(',')[1];
+            resolve(pdfBase64);
+            
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// 🔥 GENERAR CUERPO DEL EMAIL
+generateEmailBody = () => {
+    return `
+Estimado(a) paciente,
+
+Adjuntamos su reporte médico generado el ${this.currentDateTime}.
+
+${this.state.userName}
+${this.state.userJobTitle}
+${this.state.companyName || 'Centro Médico'}
+
+---
+Este es un mensaje automático, por favor no responder.
+    `.trim();
+}
+
+// 🔥 ENVIAR EMAIL USANDO ODOO
+sendEmailViaOdoo = async (emailData) => {
+    try {
+        const result = await this.orm.call(
+            'mail.mail',
+            'create_and_send_medical_report',
+            [emailData],
+            {}
+        );
+        
+        console.log("✅ Email enviado via Odoo:", result);
+        return result;
+        
+    } catch (error) {
+        console.error("❌ Error enviando email via Odoo:", error);
+        throw error;
+    }
+}
+
+
+
+
+
+
+
+
+
 }

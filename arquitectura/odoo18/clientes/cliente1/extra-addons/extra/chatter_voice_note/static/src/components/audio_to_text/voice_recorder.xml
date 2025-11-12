@@ -158,6 +158,9 @@
                         title="state.reportTitle"
                         onClose="closeMedicalReport"
                         userData="state.reportUserData"
+                        contacts="state.reportContacts"
+                        resModel="props.resModel"
+                        resId="props.resId"
                     />
                 </t>
             </t>
@@ -255,11 +258,38 @@
                             t-on-click="printReport">
                         🖨️ Imprimir
                     </button>
+                      <button type="button" class="btn btn-primary btn-sm"
+                                t-on-click="sendEmail"
+                                t-att-disabled="!props.contacts or props.contacts.length === 0"
+                                t-att-class="(!props.contacts or props.contacts.length === 0) ? 'btn-secondary' : 'btn-primary'">
+                            <t t-if="props.contacts and props.contacts.length > 0">
+                                📧 Enviar a <t t-esc="props.contacts.length"/> contacto(s)
+                            </t>
+                            <t t-else="">
+                                📧 Enviar por Correo
+                            </t>
+                        </button>
                     <!-- <button type="button" class="btn btn-primary btn-sm"
                             t-on-click="downloadPDF">
                         📄 Descargar PDF
                     </button> -->
                 </div>
+
+                    <!-- 🔥 INFO DE CONTACTOS -->
+                <t t-if="props.contacts and props.contacts.length > 0">
+                    <div class="mt-2 text-end">
+                        <small class="text-muted">
+                            Enviando a: 
+                            <t t-foreach="props.contacts" t-as="contact" t-key="contact.id">
+                                <span t-esc="contact.name"/>
+                                <t t-if="contact_index lt props.contacts.length - 1">, </t>
+                            </t>
+                        </small>
+                    </div>
+                </t>
+
+
+
             </div>
         </div>
     </div>
