@@ -8,7 +8,7 @@ class ResPartner(models.Model):
     _inherit = "res.partner"
 
     @api.model
-    def web_save(self, ids, vals):
+    def web_save(self, ids, vals, **kwargs):
         """
         Método seguro para actualizar partners desde OWL/JS.
         Se espera args: [[id1, id2, ...], {field: value, ...}]
