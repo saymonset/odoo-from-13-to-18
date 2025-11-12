@@ -4,6 +4,7 @@
     "category": "Tools",
     "depends": ["web", "base", "bus", "mail"],
     "data": [
+        "security/ir.model.access.csv",
         "views/menu.xml",
     ],
     "assets": {
