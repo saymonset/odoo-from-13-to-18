@@ -2,3 +2,4 @@
 from . import controllers
 from . import uses_cases
 from . import services
+from . import models
