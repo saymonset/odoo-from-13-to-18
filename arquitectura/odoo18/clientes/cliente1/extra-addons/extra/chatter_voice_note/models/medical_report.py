@@ -26,7 +26,7 @@ class MailMail(models.Model):
             # Preparar destinatarios
             partner_ids = []
             for contact in contacts:
-                partner_id = contact.get('partner_id')
+                partner_id = contact.get('id')
                 if partner_id:
                     partner_ids.append(partner_id)
             
@@ -42,10 +42,22 @@ class MailMail(models.Model):
                 'res_id': 0,
             })
             
+            # 🔥 CUERPO DE EMAIL SIMPLE Y SEGURO
+            current_time = fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            email_body = f"""
+Reporte Médico
+
+{body}
+
+---
+Enviado el: {current_time}
+Médico: {self.env.user.name}
+            """.strip()
+            
             # Crear y enviar email
             mail_values = {
                 'subject': subject,
-                'body_html': f'<pre>{body}</pre>',
+                'body_html': f'<pre>{email_body}</pre>',
                 'attachment_ids': [(6, 0, [attachment.id])],
                 'partner_ids': [(6, 0, partner_ids)],
                 'author_id': self.env.user.partner_id.id,
@@ -53,7 +65,7 @@ class MailMail(models.Model):
             
             mail = self.create(mail_values)
             mail.send()
-            d
+            
             _logger.info(f"✅ Reporte médico enviado a {len(partner_ids)} contactos")
             
             return {'success': True, 'message': f'Email enviado a {len(partner_ids)} contactos'}

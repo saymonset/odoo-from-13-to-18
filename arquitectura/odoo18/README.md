@@ -62,6 +62,7 @@ source .venv/bin/activate
     uv pip install "pydantic>=2.0,<3.0" "httpx>=0.27.0" packaging
 
 
+
      ``
 # Instalar los requirement
 ```bash
