@@ -17,13 +17,11 @@
     'assets': {
           "web.assets_frontend": [
                   'chat-bot-n8n-ia/static/src/css/chat-bot.css',
-                  'chat-bot-n8n-ia/static/src/js/chat_bot_wrapper.js',
                   'chat-bot-n8n-ia/static/src/**/*.js',
                   'chat-bot-n8n-ia/static/src/**/*.xml',
                 ],
               'web.assets_backend': [
                   'chat-bot-n8n-ia/static/src/css/chat-bot.css',
-                  'chat-bot-n8n-ia/static/src/js/chat_bot_wrapper.js',
                   'chat-bot-n8n-ia/static/src/css/ItemCunter.css',
                   'chat-bot-n8n-ia/static/src/**/*.js',
                   'chat-bot-n8n-ia/static/src/**/*.xml',
