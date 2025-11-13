@@ -32,7 +32,7 @@ msgstr "Internos:"
 #, python-format
 msgid ""
 "A patient cannot have multiple visits with the same doctor on the same day."
-msgstr "Un paciente no puede tener múltiples visitas con el mismo médico en el mismo día."
+msgstr "Un paciente no puede tener múltiples consultas con el mismo médico en el mismo día."
 
 #. module: a_hospital
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_visit__active
@@ -47,7 +47,7 @@ msgstr "Añadir médico"
 #. module: a_hospital
 #: model_terms:ir.ui.view,arch_db:a_hospital.view_patient_form
 msgid "Add visit"
-msgstr "Añadir visita"
+msgstr "Añadir consulta"
 
 #. module: a_hospital
 #: model:res.groups,name:a_hospital.group_a_hospital_admin
@@ -298,7 +298,7 @@ msgstr "Médico aprobado"
 #: code:addons/a_hospital/models/visit.py:0
 #, python-format
 msgid "Doctor has already been approved for this visit."
-msgstr "El médico ya ha sido aprobado para esta visita."
+msgstr "El médico ya ha sido aprobado para esta consulta."
 
 #. module: a_hospital
 #: model:res.groups,comment:a_hospital.group_a_hospital_doctor
@@ -387,7 +387,7 @@ msgstr "ID"
 #. module: a_hospital
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_visit__initial_doctor_visit
 msgid "Initial doctor's visit"
-msgstr "Visita inicial del médico"
+msgstr "Consulta inicial del médico"
 
 #. module: a_hospital
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_doctor__is_intern
@@ -510,7 +510,7 @@ msgstr "Paciente"
 #. module: a_hospital
 #: model:ir.model,name:a_hospital.model_a_hospital_visit
 msgid "Patient Visit"
-msgstr "Visita del paciente"
+msgstr "Consulta del paciente"
 
 #. module: a_hospital
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_doctor_report_template
@@ -525,12 +525,12 @@ msgstr "Paciente del a_hospital"
 #. module: a_hospital
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_visit_search
 msgid "Patient visit"
-msgstr "Visita del paciente"
+msgstr "Consulta del paciente"
 
 #. module: a_hospital
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_doctor_report_template
 msgid "Patient visits:"
-msgstr "Visitas del paciente:"
+msgstr "Consultas del paciente:"
 
 #. module: a_hospital
 #: model:ir.actions.act_window,name:a_hospital.action_a_hospital_patient
@@ -609,7 +609,7 @@ msgstr "Fecha y hora programada"
 #. module: a_hospital
 #: model_terms:ir.ui.view,arch_db:a_hospital.view_patient_form
 msgid "Show patient visits"
-msgstr "Mostrar visitas del paciente"
+msgstr "Mostrar consultas del paciente"
 
 #. module: a_hospital
 #: model:ir.actions.act_window,name:a_hospital.action_a_hospital_specialty
@@ -671,34 +671,34 @@ msgstr "Niveles de acceso de usuarios para el a_hospital"
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_diagnosis__visit_id
 #: model:ir.ui.menu,name:a_hospital.a_hospital_menu_visit
 msgid "Visit"
-msgstr "Visita"
+msgstr "Consulta"
 
 #. module: a_hospital
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_visit__visit_date
 msgid "Visit Date & Time"
-msgstr "Fecha y hora de la visita"
+msgstr "Fecha y hora de la consulta"
 
 #. module: a_hospital
 #: model:ir.model.fields,field_description:a_hospital.field_a_hospital_visit__visit_status
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_visit_search
 msgid "Visit Status"
-msgstr "Estado de la visita"
+msgstr "Estado de la consulta"
 
 #. module: a_hospital
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_doctor_report_template
 msgid "Visit date"
-msgstr "Fecha de la visita"
+msgstr "Fecha de la consulta"
 
 #. module: a_hospital
 #: model:ir.actions.act_window,name:a_hospital.action_a_hospital_visit
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_visit_calendar
 msgid "Visits"
-msgstr "Visitas"
+msgstr "Consultas"
 
 #. module: a_hospital
 #: model_terms:ir.ui.view,arch_db:a_hospital.a_hospital_visit_pivot
 msgid "Visits Pivot"
-msgstr "Visitas en tabla dinámica"
+msgstr "Consultas en tabla dinámica"
 
 #. module: a_hospital
 #. odoo-python
@@ -708,7 +708,7 @@ msgid ""
 "Visits with diagnoses cannot be archived. Please remove diagnoses before "
 "archiving."
 msgstr ""
-"Las visitas con diagnósticos no pueden archivarse. Por favor, elimina los diagnósticos antes de archivar."
+"Las consultas con diagnósticos no pueden archivarse. Por favor, elimina los diagnósticos antes de archivar."
 
 #. module: a_hospital
 #. odoo-python
@@ -722,14 +722,14 @@ msgstr "No puedes crear una jerarquía recursiva."
 #: code:addons/a_hospital/models/visit.py:0
 #, python-format
 msgid "You cannot delete visits with diagnoses."
-msgstr "No puedes eliminar visitas con diagnósticos."
+msgstr "No puedes eliminar consultas con diagnósticos."
 
 #. module: a_hospital
 #. odoo-python
 #: code:addons/a_hospital/models/visit.py:0
 #, python-format
 msgid "You cannot modify the scheduled date or doctor for a completed visit."
-msgstr "No puedes modificar la fecha programada o el médico para una visita completada."
+msgstr "No puedes modificar la fecha programada o el médico para una consulta completada."
 
 #. module: a_hospital
 #: model:ir.module.category,name:a_hospital.category_a_hospital
