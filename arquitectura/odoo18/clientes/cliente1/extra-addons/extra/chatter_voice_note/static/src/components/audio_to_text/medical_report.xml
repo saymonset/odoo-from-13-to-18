@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
+
+    <!-- Template para MedicalReport -->
     <t t-name="chatter_voice_note.MedicalReport" owl="1">
         <div class="medical-report-container">
             <div class="medical-report bg-white p-4 shadow-lg">
@@ -93,7 +95,7 @@
                         </button>
                     </div>
 
-                    <!-- 🔥 INFO DE CONTACTOS -->
+                    <!-- INFO DE CONTACTOS -->
                     <t t-if="props.contacts and props.contacts.length > 0">
                         <div class="mt-2 text-end">
                             <small class="text-muted">
@@ -109,4 +111,5 @@
             </div>
         </div>
     </t>
+
 </templates>

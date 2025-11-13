@@ -24,6 +24,7 @@
             
             # 3. Componente del reporte médico
             "chatter_voice_note/static/src/components/audio_to_text/medical_report.js",
+            "chatter_voice_note/static/src/components/audio_to_text/medical_report.xml",
             
             # 4. Componente principal
             "chatter_voice_note/static/src/components/audio_to_text/voice_recorder.js",
