@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
-<!-- Template para el VoiceRecorder -->
+
+    <!-- Template para el VoiceRecorder -->
     <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
         <div class="o_container p-4">
             <!-- Estado -->
@@ -76,18 +77,17 @@
                         </t>
 
                         <!-- Enviar -->
-                        <!-- Enviar -->
-                            <t t-if="contactManager.state.selectedContacts.length > 0">
-                                <div class="mt-3">
-                                    <button type="button" 
-                                            t-on-click="sendToN8N" 
-                                            t-att-disabled="state.isSending and !state.final_message"
-                                            t-att-class="(state.isSending and !state.final_message) ? 'btn-secondary' : 'btn-success'"
-                                            class="btn btn-lg">
-                                        <t t-esc="(state.isSending and !state.final_message) ? 'Enviando...' : 'Procesar'"/>
-                                    </button>
-                                </div>
-                            </t>
+                        <t t-if="contactManager.state.selectedContacts.length > 0">
+                            <div class="mt-3">
+                                <button type="button" 
+                                        t-on-click="sendToN8N" 
+                                        t-att-disabled="state.isSending and !state.final_message"
+                                        t-att-class="(state.isSending and !state.final_message) ? 'btn-secondary' : 'btn-success'"
+                                        class="btn btn-lg">
+                                    <t t-esc="(state.isSending and !state.final_message) ? 'Enviando...' : 'Procesar'"/>
+                                </button>
+                            </div>
+                        </t>
                     </div>
                 </div>
             </t>
@@ -164,32 +164,22 @@
                     />
                 </t>
             </t>
-
-            <!-- Verificar manual -->
-            <!-- <t t-if="currentRequestId &amp;&amp; !state.final_message">
-                <div class="mt-3">
-                    <button type="button" t-on-click="checkResponse" class="btn btn-warning btn-sm">
-                        Verificar Respuesta Manualmente
-                    </button>
-                </div>
-            </t> -->
         </div>
     </t>
 
-   <!-- Template para MedicalReport  -->
-<!-- Template para MedicalReport CORREGIDO -->
-<t t-name="chatter_voice_note.MedicalReport" owl="1">
-    <div class="medical-report-container">
-        <div class="medical-report bg-white p-4 shadow-lg">
-            <!-- Header del Reporte -->
-            <div class="report-header d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
-                <div class="report-title-section">
-                    <h1 class="report-title text-primary mb-1">
-                        <t t-esc="reportTitle"/>
-                    </h1>
-                    <p class="text-muted mb-0">Reporte generado automáticamente</p>
-                </div>
-                <div class="report-logo">
+    <!-- Template para MedicalReport -->
+    <t t-name="chatter_voice_note.MedicalReport" owl="1">
+        <div class="medical-report-container">
+            <div class="medical-report bg-white p-4 shadow-lg">
+                <!-- Header del Reporte -->
+                <div class="report-header d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
+                    <div class="report-title-section">
+                        <h1 class="report-title text-primary mb-1">
+                            <t t-esc="reportTitle"/>
+                        </h1>
+                        <p class="text-muted mb-0">Reporte generado automáticamente</p>
+                    </div>
+                    <div class="report-logo">
                         <div class="logo-placeholder bg-light rounded p-3 text-center border">
                             <!-- Logo de la compañía -->
                             <t t-if="state.companyLogo">
@@ -206,20 +196,20 @@
                             </t>
                         </div>
                     </div>
-            </div>
-
-            <!-- Contenido del Reporte -->
-            <div class="report-content mb-4">
-                <div class="medical-content text-center py-4 px-3 bg-light rounded border">
-                    <div t-out="props.content" class="medical-text fs-5 lh-base"/>
                 </div>
-            </div>
 
-            <!-- Footer del Reporte -->
-            <div class="report-footer border-top pt-3">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="doctor-signature">
+                <!-- Contenido del Reporte -->
+                <div class="report-content mb-4">
+                    <div class="medical-content text-center py-4 px-3 bg-light rounded border">
+                        <div t-out="props.content" class="medical-text fs-5 lh-base"/>
+                    </div>
+                </div>
+
+                <!-- Footer del Reporte -->
+                <div class="report-footer border-top pt-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="doctor-signature">
                                 <p class="mb-1 fw-bold">
                                     <t t-if="state.userName">
                                         <t t-esc="state.userName"/>
@@ -237,28 +227,28 @@
                                     </t>
                                 </p>
                             </div>
-                    </div>
-                    <div class="col-6 text-end">
-                        <p class="text-muted mb-0">
-                            <strong>Fecha:</strong> 
-                            <span t-esc="currentDate"/>
-                        </p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p class="text-muted mb-0">
+                                <strong>Fecha:</strong> 
+                                <span t-esc="currentDate"/>
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Acciones del Reporte -->
-            <div class="report-actions mt-4 pt-3 border-top">
-                <div class="d-flex gap-2 justify-content-end">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" 
-                            t-on-click="props.onClose">
-                        ❌ Cerrar
-                    </button>
-                    <button type="button" class="btn btn-outline-primary btn-sm"
-                            t-on-click="printReport">
-                        🖨️ Imprimir
-                    </button>
-                      <button type="button" class="btn btn-primary btn-sm"
+                <!-- Acciones del Reporte -->
+                <div class="report-actions mt-4 pt-3 border-top">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                t-on-click="props.onClose">
+                            ❌ Cerrar
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                t-on-click="printReport">
+                            🖨️ Imprimir
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm"
                                 t-on-click="sendEmail"
                                 t-att-disabled="!props.contacts or props.contacts.length === 0"
                                 t-att-class="(!props.contacts or props.contacts.length === 0) ? 'btn-secondary' : 'btn-primary'">
@@ -269,29 +259,23 @@
                                 📧 Enviar por Correo
                             </t>
                         </button>
-                    <!-- <button type="button" class="btn btn-primary btn-sm"
-                            t-on-click="downloadPDF">
-                        📄 Descargar PDF
-                    </button> -->
-                </div>
-
-                    <!-- 🔥 INFO DE CONTACTOS -->
-                <t t-if="props.contacts and props.contacts.length > 0">
-                    <div class="mt-2 text-end">
-                        <small class="text-muted">
-                            Enviando a: 
-                            <t t-foreach="props.contacts" t-as="contact" t-key="contact.id">
-                                <span t-esc="contact.name"/>
-                                <t t-if="contact_index lt props.contacts.length - 1">, </t>
-                            </t>
-                        </small>
                     </div>
-                </t>
 
-
-
+                    <!-- INFO DE CONTACTOS -->
+                    <t t-if="props.contacts and props.contacts.length > 0">
+                        <div class="mt-2 text-end">
+                            <small class="text-muted">
+                                Enviando a: 
+                                <t t-foreach="props.contacts" t-as="contact" t-key="contact.id">
+                                    <span t-esc="contact.name"/>
+                                    <t t-if="contact_index lt props.contacts.length - 1">, </t>
+                                </t>
+                            </small>
+                        </div>
+                    </t>
+                </div>
             </div>
         </div>
-    </div>
-</t>
+    </t>
+
 </templates>
