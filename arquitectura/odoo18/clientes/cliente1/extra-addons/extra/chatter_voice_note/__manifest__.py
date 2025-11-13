@@ -15,6 +15,8 @@
             
             # 2. Servicios y managers
             "chatter_voice_note/static/src/components/audio_to_text/contact_manager.js",
+            "chatter_voice_note/static/src/components/audio_to_text/contact_manager_component.js",
+            "chatter_voice_note/static/src/components/audio_to_text/contact_manager_template.xml",
             "chatter_voice_note/static/src/components/audio_to_text/audio_recorder.js",
             "chatter_voice_note/static/src/components/audio_to_text/audio_note_manager.js",
             "chatter_voice_note/static/src/components/audio_to_text/n8n_service.js",

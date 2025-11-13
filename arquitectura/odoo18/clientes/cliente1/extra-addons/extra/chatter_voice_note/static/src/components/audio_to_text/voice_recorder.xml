@@ -4,6 +4,7 @@
     <!-- Template para el VoiceRecorder -->
     <t t-name="chatter_voice_note.VoiceRecorder" owl="1">
         <div class="o_container p-4">
+
             <!-- Estado -->
             <div class="alert alert-info">
                 <strong>Estado:</strong> <t t-esc="state.debugInfo"/>
@@ -16,124 +17,112 @@
                 </div>
             </t>
 
-            <!-- Sin notas: botón de grabación -->
+            <!-- Sin notas -->
             <t t-if="audioNoteManager.state.notes.length == 0">
                 <h2>Voice Recorder</h2>
-                <button type="button" t-on-click="toggleRecording" class="btn btn-lg"
-                        t-att-class="state.recording ? 'btn-warning' : 'btn-primary'">
+                <button type="button"
+                        t-on-click="toggleRecording"
+                        t-att-class="state.recording ? 'btn btn-lg btn-warning' : 'btn btn-lg btn-primary'">
                     <t t-esc="state.recording ? 'Stop Recording' : 'Start Recording'"/>
                 </button>
             </t>
 
-            <!-- Con notas: lista + reproductor -->
+            <!-- Con notas -->
             <t t-if="audioNoteManager.state.notes.length > 0">
                 <div class="mt-3">
                     <h4>Notas grabadas: <t t-esc="audioNoteManager.state.notes.length"/></h4>
 
                     <t t-foreach="sortedNotes" t-as="note" t-key="note.id">
-                        <div class="mb-2 p-2 border">
+                        <div class="mb-2 p-2 border rounded shadow-sm">
                             <strong><t t-esc="note.name"/></strong>
 
-                            <!-- REPRODUCTOR CORRECTO -->
-                            <audio controls="controls" class="d-block mt-1 w-100">
+                            <!-- REPRODUCTOR -->
+                            <audio t-att-controls="true" class="d-block mt-1 w-100">
                                 <source t-att-src="note.url" type="audio/webm"/>
                                 Tu navegador no soporta audio.
                             </audio>
 
-                            <button type="button" class="btn btn-sm btn-danger mt-1"
-                                    t-on-click="deleteNote" t-att-data-note-id="note.id">
+                            <button type="button"
+                                    class="btn btn-sm btn-danger mt-1"
+                                    t-on-click="deleteNote"
+                                    t-att-data-note-id="note.id">
                                 Eliminar
                             </button>
                         </div>
                     </t>
 
-                    <!-- Contactos -->
+                    <!-- Componente de contactos -->
+                    <ContactManagerComponent
+                            contactManager="contactManager"
+                            onSend="sendToN8N.bind(this)"/>
+
+                    <!-- Botón Procesar fuera del componente de contactos -->
                     <div class="mt-3">
-                        <h4>Contactos: <t t-esc="contactManager.state.selectedContacts.length"/></h4>
-                        <input class="form-control mb-2" placeholder="Buscar contactos..."
-                               t-att-value="contactManager.state.searchTerm" t-on-input="onSearchInput"/>
+                        <button type="button"
+                                class="btn btn-lg"
+                                t-on-click="sendToN8N"
+                                t-att-disabled="state.isSending || contactManager.state.selectedContacts.length === 0"
+                                t-att-class="state.isSending 
+                                            ? 'btn-warning' 
+                                            : (contactManager.state.selectedContacts.length > 0 ? 'btn-success' : 'btn-secondary')">
+                            <t t-esc="state.isSending ? 'Enviando...' 
+                                    : (contactManager.state.selectedContacts.length > 0 ? 'Procesar' : 'Selecciona contactos')"/>
+                        </button>
+                    </div>        
 
-                        <t t-if="contactManager.state.availableContacts.length > 0">
-                            <div class="list-group mb-2">
-                                <t t-foreach="contactManager.state.availableContacts" t-as="contact" t-key="contact.id">
-                                    <a href="#" class="list-group-item list-group-item-action"
-                                       t-on-click="onAddContact" t-att-data-contact-id="contact.id">
-                                        <t t-esc="contact.name"/>
-                                    </a>
-                                </t>
-                            </div>
-                        </t>
-
-                        <t t-if="contactManager.state.selectedContacts.length > 0">
-                            <div class="list-group">
-                                <t t-foreach="contactManager.state.selectedContacts" t-as="contact" t-key="contact.id">
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <t t-esc="contact.name"/>
-                                        <button type="button" class="btn btn-sm btn-danger"
-                                                t-on-click="onRemoveContact" t-att-data-contact-id="contact.id">X</button>
-                                    </div>
-                                </t>
-                            </div>
-                        </t>
-
-                        <!-- Enviar -->
-                        <t t-if="contactManager.state.selectedContacts.length > 0">
-                            <div class="mt-3">
-                                <button type="button" 
-                                        t-on-click="sendToN8N" 
-                                        t-att-disabled="state.isSending and !state.final_message"
-                                        t-att-class="(state.isSending and !state.final_message) ? 'btn-secondary' : 'btn-success'"
-                                        class="btn btn-lg">
-                                    <t t-esc="(state.isSending and !state.final_message) ? 'Enviando...' : 'Procesar'"/>
-                                </button>
-                            </div>
-                        </t>
-                    </div>
                 </div>
             </t>
 
             <!-- Respuestas -->
             <t t-if="state.answer_ia">
                 <div class="row mt-4">
+
+                    <!-- Mensaje Final -->
                     <div class="col-6">
                         <div class="card">
                             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                 <span>Mensaje Final</span>
                                 <t t-if="state.final_message and !state.editingFinalMessage">
-                                    <button type="button" t-on-click="startEditingFinalMessage" 
-                                            class="btn btn-sm btn-light">
+                                    <button type="button"
+                                            class="btn btn-sm btn-light"
+                                            t-on-click="startEditingFinalMessage">
                                         ✏️ Editar
                                     </button>
                                 </t>
                             </div>
                             <div class="card-body">
+
+                                <!-- Editando -->
                                 <t t-if="state.editingFinalMessage">
-                                    <textarea t-model="state.editedFinalMessage" 
-                                            class="form-control" 
-                                            rows="4"
-                                            placeholder="Edita el mensaje final aquí..."></textarea>
+                                    <textarea t-model="state.editedFinalMessage"
+                                              class="form-control"
+                                              rows="4"
+                                              placeholder="Edita el mensaje final aquí..."></textarea>
                                     <div class="mt-2 d-flex gap-2">
-                                        <button type="button" t-on-click="saveFinalMessage" 
-                                                class="btn btn-success btn-sm">
-                                            ✅ Reporte
-                                        </button>
-                                        <button type="button" t-on-click="cancelEditingFinalMessage" 
-                                                class="btn btn-secondary btn-sm">
-                                            ❌ Cancelar
-                                        </button>
+                                        <button type="button"
+                                                class="btn btn-success btn-sm"
+                                                t-on-click="saveFinalMessage">✅ Reporte</button>
+                                        <button type="button"
+                                                class="btn btn-secondary btn-sm"
+                                                t-on-click="cancelEditingFinalMessage">❌ Cancelar</button>
                                     </div>
                                 </t>
+
+                                <!-- Mostrando -->
                                 <t t-elif="state.final_message">
                                     <div class="final-message-content">
                                         <t t-esc="state.final_message"/>
                                     </div>
                                 </t>
+
                                 <t t-else="">
                                     <span class="text-muted">Esperando mensaje...</span>
                                 </t>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Respuesta IA -->
                     <div class="col-6">
                         <div class="card">
                             <div class="card-header bg-success text-white">Respuesta IA</div>
@@ -151,17 +140,17 @@
                     </div>
                 </div>
 
-                <!-- Reporte Médico Modal -->
+                <!-- Reporte Médico -->
                 <t t-if="state.showMedicalReport">
-                    <MedicalReport 
+                   <MedicalReport
                         content="formattedReportContent"
                         title="state.reportTitle"
                         onClose="closeMedicalReport"
                         userData="state.reportUserData"
                         contacts="state.reportContacts"
                         resModel="props.resModel"
-                        resId="props.resId"
-                    />
+                        resId="props.resId"/>
+
                 </t>
             </t>
         </div>

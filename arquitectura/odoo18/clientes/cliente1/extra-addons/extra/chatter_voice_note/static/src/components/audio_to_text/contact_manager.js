@@ -5,9 +5,9 @@ export class ContactManager {
     constructor(orm) {
         this.orm = orm;
         this.state = useState({
-            searchTerm: '',
+            searchTerm: "",
             availableContacts: [],
-            selectedContacts: []
+            selectedContacts: [],
         });
     }
 
@@ -23,7 +23,7 @@ export class ContactManager {
     }
 
     clearSearch() {
-        this.state.searchTerm = '';
+        this.state.searchTerm = "";
         this.state.availableContacts = [];
     }
 
@@ -32,7 +32,7 @@ export class ContactManager {
             this.state.availableContacts = [];
             return;
         }
-        
+
         try {
             const contacts = await this.orm.searchRead(
                 "res.partner",
@@ -51,8 +51,8 @@ export class ContactManager {
         return this.state.selectedContacts.map(contact => ({
             id: contact.id,
             name: contact.name,
-            email: contact.email || '',
-            phone: contact.phone || '',
+            email: contact.email || "",
+            phone: contact.phone || "",
         }));
     }
 

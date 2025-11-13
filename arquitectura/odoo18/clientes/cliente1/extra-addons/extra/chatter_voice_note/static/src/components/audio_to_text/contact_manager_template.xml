@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Template del ContactManagerComponent -->
+    <t t-name="chatter_voice_note.ContactManager" owl="1">
+        <div class="contact-manager mt-3">
+            <h4>Contactos: <t t-esc="contactManager.state.selectedContacts.length"/></h4>
+
+            <input class="form-control mb-2"
+                   placeholder="Buscar contactos..."
+                   t-att-value="contactManager.state.searchTerm"
+                   t-on-input="onSearchInput"/>
+
+            <!-- Contactos disponibles -->
+            <t t-if="contactManager.state.availableContacts.length > 0">
+                <div class="list-group mb-2">
+                    <t t-foreach="contactManager.state.availableContacts" t-as="contact" t-key="contact.id">
+                        <a href="#"
+                           class="list-group-item list-group-item-action"
+                           t-on-click="onAddContact"
+                           t-att-data-contact-id="contact.id">
+                            <t t-esc="contact.name"/>
+                        </a>
+                    </t>
+                </div>
+            </t>
+
+            <!-- Contactos seleccionados -->
+            <t t-if="contactManager.state.selectedContacts.length > 0">
+                <div class="list-group">
+                    <t t-foreach="contactManager.state.selectedContacts" t-as="contact" t-key="contact.id">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <t t-esc="contact.name"/>
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    t-on-click="onRemoveContact"
+                                    t-att-data-contact-id="contact.id">
+                                X
+                            </button>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

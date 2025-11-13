@@ -2,23 +2,29 @@
 import { Component, useState, onWillUnmount, markup } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { ContactManager } from "./contact_manager";
+import { ContactManagerComponent } from "./contact_manager_component";
 import { AudioRecorder } from "./audio_recorder";
 import { AudioNoteManager } from "./audio_note_manager";
 import { MedicalReport } from "./medical_report";
 import { N8NService } from "./n8n_service";
 
+
 export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
     static components = {
+        ContactManagerComponent,
         MedicalReport
     };
 
     setup() {
 
-        console.log("🔧 Setup VoiceRecorder - Versión Simplificada");
+
+         
         
         this.initServices();
         this.initManagers();
+
+        this.contactManager = new ContactManager(this.orm);
         
         // ESTADO SIMPLIFICADO
         this.state = useState({
