@@ -1,7 +1,9 @@
 #!/bin/bash
 
-echo "🔄 Deteniendo servicios Odoo existentes..."
-sudo pkill -f "odoo-bin" || true
+echo "🔄 Deteniendo contenedor Odoo-18..."
+sudo docker stop odoo-18
+
+echo "⏳ Esperando 5 segundos para que el contenedor se detenga..."
 sleep 5
 
 echo "🔓 Liberando puertos 18069 y 18070..."
@@ -25,13 +27,6 @@ fi
 
 # Actualizar gevent_port a 18070
 sed -i 's/^gevent_port\s*=.*$/gevent_port = 18070/' "$CONFIG_FILE"
-
-# Desactivar longpolling_port (debe estar en False o comentado)
-# if grep -q '^longpolling_port' "$CONFIG_FILE"; then
-#     sed -i 's/^longpolling_port\s*=.*$/longpolling_port = False/' "$CONFIG_FILE"
-# else
-#     echo "longpolling_port = False" >> "$CONFIG_FILE"
-# fi
 
 echo "🔍 Verificando configuración relevante:"
 grep -E "^(gevent_port|longpolling_port|workers)" "$CONFIG_FILE"
