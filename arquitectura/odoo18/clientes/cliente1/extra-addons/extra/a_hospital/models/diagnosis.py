@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo import _
-
+import uuid
 
 class Diagnosis(models.Model):
     """
@@ -93,36 +93,24 @@ class Diagnosis(models.Model):
             self.write({'description': final_message})
         return True
     
+    
+
+
     def action_open_voice_recorder(self):
-        """Abre el componente de grabación de voz"""
+        """Abre el grabador de voz con un request_id que incluye el diagnosis_id"""
         self.ensure_one()
+        
+        # Generar request_id que incluya el diagnosis_id
+        request_id = f"diagnosis_{self.id}_{uuid.uuid4().hex[:8]}"
+        
         return {
             'type': 'ir.actions.client',
             'name': 'Grabador de Voz para Diagnóstico',
-            'tag': 'chatter_voice_note.audio_to_text',  # ⭐⭐ CAMBIAR AQUÍ ⭐⭐
+            'tag': 'chatter_voice_note.audio_to_text',
             'target': 'new',
             'params': {
                 'resModel': self._name,
                 'resId': self.id,
+                'custom_request_id': request_id,  # ⭐⭐ ENVIAR REQUEST_ID PERSONALIZADO ⭐⭐
             }
         }
-        """Abre el componente de grabación de voz"""
-        self.ensure_one()
-        
-        # Intentar abrir el grabador de voz del módulo chatter_voice_note
-        try:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': 'Grabador de Voz',
-                'res_model': 'ir.ui.view',
-                'view_mode': 'form',
-                'view_id': self.env.ref('chatter_voice_note.voice_recorder_view_form').id,
-                'target': 'new',
-                'context': {
-                    'default_res_model': self._name,
-                    'default_res_id': self.id,
-                }
-            }
-        except Exception as e:
-            # Si falla, mostrar un mensaje de error
-            raise UserError(_('No se pudo abrir el grabador de voz. Verifica que el módulo Chatter Voice Note esté instalado correctamente.'))
