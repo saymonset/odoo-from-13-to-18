@@ -367,10 +367,11 @@ generateUniqueRequestId() {
         this.stopPolling(); 
     }
 
-    // 🔥 MÉTODOS EXISTENTES
     async toggleRecording() {
         if (this.state.recording) {
             await this.stopRecording();
+            // 🔥 AUTOMÁTICAMENTE PROCESAR AL TERMINAR LA GRABACIÓN
+            await this.sendToN8N();
         } else {
             await this.startRecording();
         }
