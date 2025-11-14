@@ -57,7 +57,11 @@ class Diagnosis(models.Model):
         string='Patient',
     )
 
-    description = fields.Text()
+    # ⭐⭐ SOLO UNA DEFINICIÓN DEL CAMPO DESCRIPTION - ELIMINAR LA DUPLICADA ⭐⭐
+    description = fields.Text(
+        string='Diagnosis Description',
+        help='Additional information or notes regarding the diagnosis'
+    )
 
     is_approved = fields.Boolean(
         string='Approved',
@@ -79,7 +83,46 @@ class Diagnosis(models.Model):
         readonly=True
     )
 
-      
-    description = fields.Text()
- 
-     
+    # ⭐⭐ ELIMINAR ESTA LÍNEA DUPLICADA ⭐⭐
+    # description = fields.Text()  ← ¡QUITAR ESTA LÍNEA!
+    
+    # Método para actualizar desde el módulo de voz
+    def update_description_from_voice(self, final_message):
+        """Actualiza el campo description con el mensaje del módulo de voz"""
+        if final_message:
+            self.write({'description': final_message})
+        return True
+    
+    def action_open_voice_recorder(self):
+        """Abre el componente de grabación de voz"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'name': 'Grabador de Voz para Diagnóstico',
+            'tag': 'chatter_voice_note.audio_to_text',  # ⭐⭐ CAMBIAR AQUÍ ⭐⭐
+            'target': 'new',
+            'params': {
+                'resModel': self._name,
+                'resId': self.id,
+            }
+        }
+        """Abre el componente de grabación de voz"""
+        self.ensure_one()
+        
+        # Intentar abrir el grabador de voz del módulo chatter_voice_note
+        try:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Grabador de Voz',
+                'res_model': 'ir.ui.view',
+                'view_mode': 'form',
+                'view_id': self.env.ref('chatter_voice_note.voice_recorder_view_form').id,
+                'target': 'new',
+                'context': {
+                    'default_res_model': self._name,
+                    'default_res_id': self.id,
+                }
+            }
+        except Exception as e:
+            # Si falla, mostrar un mensaje de error
+            raise UserError(_('No se pudo abrir el grabador de voz. Verifica que el módulo Chatter Voice Note esté instalado correctamente.'))

@@ -8,7 +8,7 @@
     'version': '18.0',
 
     
-    'depends': ['base', 'calendar','website'],
+    'depends': ['base', 'calendar','website','chatter_voice_note'],
 
     'external_dependencies': {
         'python': [],

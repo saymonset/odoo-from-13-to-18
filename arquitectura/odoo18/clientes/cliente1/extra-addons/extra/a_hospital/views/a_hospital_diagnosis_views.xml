@@ -18,10 +18,17 @@
         <field name="model">a_hospital.diagnosis</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_open_voice_recorder" 
+                            type="object" 
+                            string="Grabar Diagnóstico por Voz"
+                            class="btn-primary"/>
+                </header>
                 <sheet>
                     <group>
                         <group string="Diagnosis Information">
-                            <field name="description"/>
+                             <field name="description" 
+                               placeholder="Escriba el diagnóstico o use el botón para grabar voz..."/>
                         </group>
                     </group>
                     <!-- Nueva sección para archivos adjuntos -->
