@@ -1,36 +1,12 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo import _
-import uuid
 
 class Diagnosis(models.Model):
-    """
-    Model representing a diagnosis within the hospital system.
-
-    Each diagnosis is linked to a specific visit, doctor, patient,
-    and disease, with an option for approval by a mentor doctor if
-    the diagnosing doctor is an intern.
-
-    Fields:
-        - visit_id (Many2one): Reference to the visit in which the diagnosis
-        was made.
-        - doctor_id (Many2one): Reference to the doctor who made the diagnosis.
-        - disease_id (Many2one): Reference to the diagnosed disease.
-        - patient_id (Many2one): Reference to the patient who received
-        the diagnosis.
-        - description (Text): Additional information or notes regarding
-        the diagnosis.
-        - is_approved (Boolean): Indicates if the diagnosis was approved
-        by a mentor doctor.
-        - doctor_approved (Char): Name of the mentor doctor who approved
-        the diagnosis.
-        - disease_type_id (Many2one): Related field showing
-        the type of the diagnosed disease.
-    """
     _name = 'a_hospital.diagnosis'
     _description = 'Diagnosis'
     
-    # Agrega este campo para los archivos adjuntos
+    # Campos
     attachment_ids = fields.Many2many(
         'ir.attachment',
         string='Archivos Adjuntos',
@@ -57,7 +33,7 @@ class Diagnosis(models.Model):
         string='Patient',
     )
 
-    # ⭐⭐ SOLO UNA DEFINICIÓN DEL CAMPO DESCRIPTION - ELIMINAR LA DUPLICADA ⭐⭐
+    # ⭐⭐ SOLO UNA DEFINICIÓN - YA CORREGIDO
     description = fields.Text(
         string='Diagnosis Description',
         help='Additional information or notes regarding the diagnosis'
@@ -83,34 +59,25 @@ class Diagnosis(models.Model):
         readonly=True
     )
 
-    # ⭐⭐ ELIMINAR ESTA LÍNEA DUPLICADA ⭐⭐
-    # description = fields.Text()  ← ¡QUITAR ESTA LÍNEA!
-    
     # Método para actualizar desde el módulo de voz
     def update_description_from_voice(self, final_message):
         """Actualiza el campo description con el mensaje del módulo de voz"""
         if final_message:
             self.write({'description': final_message})
         return True
-    
-    
 
-
+    # 🔥 CORREGIDO: Método para abrir el grabador de voz
     def action_open_voice_recorder(self):
-        """Abre el grabador de voz con un request_id que incluye el diagnosis_id"""
-        self.ensure_one()
-        
-        # Generar request_id que incluya el diagnosis_id
-        request_id = f"diagnosis_{self.id}_{uuid.uuid4().hex[:8]}"
-        
+        """Abre el wizard de grabación de voz para este diagnóstico"""
         return {
-            'type': 'ir.actions.client',
-            'name': 'Grabador de Voz para Diagnóstico',
-            'tag': 'chatter_voice_note.audio_to_text',
+            'type': 'ir.actions.act_window',
+            'name': 'Grabar Diagnóstico por Voz',
+            'res_model': 'chatter_voice_note.voice_recorder_wizard',
+            'view_mode': 'form',
             'target': 'new',
-            'params': {
-                'resModel': self._name,
-                'resId': self.id,
-                'custom_request_id': request_id,  # ⭐⭐ ENVIAR REQUEST_ID PERSONALIZADO ⭐⭐
+            'context': {
+                'default_res_model': 'a_hospital.diagnosis',
+                'default_res_id': self.id,
+                'default_custom_request_id': f'diagnosis_{self.id}',  # 🔥 PREFIJO ESPECÍFICO
             }
         }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form view for Voice Recorder Wizard -->
+        <record id="view_voice_recorder_wizard_form" model="ir.ui.view">
+            <field name="name">voice.recorder.wizard.form</field>
+            <field name="model">chatter_voice_note.voice_recorder_wizard</field>
+            <field name="arch" type="xml">
+                <form string="Grabar Diagnóstico por Voz">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>Grabar Diagnóstico por Voz</h1>
+                        </div>
+                        <div>
+                            <!-- Widget correctamente registrado -->
+                            <widget name="voice_recorder"
+                                    res_model="res_model"
+                                    res_id="res_id"
+                                    context="{'default_custom_request_id': custom_request_id}"/>
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_save_and_close" 
+                                string="Cerrar" 
+                                type="object" 
+                                class="btn-secondary"/>
+                        <button string="Cancelar" 
+                                class="btn-secondary" 
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to open Voice Recorder Wizard -->
+        <record id="action_voice_recorder_wizard" model="ir.actions.act_window">
+            <field name="name">Grabar Diagnóstico por Voz</field>
+            <field name="res_model">chatter_voice_note.voice_recorder_wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'default_res_model': context.get('default_res_model'), 'default_res_id': context.get('default_res_id'), 'default_custom_request_id': context.get('default_custom_request_id')}</field>
+        </record>
+    </data>
+</odoo>

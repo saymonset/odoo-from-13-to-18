@@ -25,8 +25,10 @@ export class VoiceRecorder extends Component {
         this.initManagers();
 
         this.contactManager = new ContactManager(this.orm);
+
+         // 🔥 OBTENER PREFIJO PERSONALIZADO DESDE CONTEXTO
+        this.customRequestPrefix = this.props.context?.default_custom_request_id || null;
         
-        // ESTADO SIMPLIFICADO
         this.state = useState({
             recording: false,
             isSending: false,
@@ -34,7 +36,7 @@ export class VoiceRecorder extends Component {
             answer_ia: '',
             debugInfo: 'Sistema listo',
             error: null,
-            // 🔥 ESTADOS PARA EDICIÓN
+
             editingFinalMessage: false,
             editedFinalMessage: '',
             showMedicalReport: false,
@@ -52,7 +54,6 @@ export class VoiceRecorder extends Component {
         } );
     }
 
-    // 🔥 POLLING INTELIGENTE (SIN BUS, SIN POLLING CONSTANTE)
 startPollingWhenNeeded() {
     if (this.currentRequestId && !this.state.final_message) {
         this.startPolling();
@@ -101,7 +102,6 @@ stopPolling() {
         this.n8nService = new N8NService(this.orm, this.notification);
     }
 
-     // 🔥 MÉTODOS DE EDICIÓN DEL MENSAJE FINAL
     startEditingFinalMessage() {
         console.log("✏️ Iniciando edición del mensaje final");
         this.state.editedFinalMessage = this.state.final_message;
@@ -198,23 +198,17 @@ stopPolling() {
         this.audioNoteManager.deleteNote(noteId);
     }
 
-generateUniqueRequestId() {
-    // 1. Timestamp en milisegundos
-    const timestamp = Date.now();
-    
-    // 2. ID del usuario actual (si está logueado)
-    const userId = this.env.user?.id || 0;
-    
-    // 3. Generar UUID v4 simple (sin librerías)
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-    
-    // 4. Combinar todo
-    return `req_${userId}_${timestamp}_${uuid.substring(0, 8)}`;
-}
+    generateUniqueRequestId(prefix = 'req') {
+        const timestamp = Date.now();
+        const userId = this.env.user?.id || 0;
+        const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+        
+        return `${prefix}_${userId}_${timestamp}_${uuid.substring(0, 8)}`;
+    }
 
  async sendToN8N() {
     const notes = this.audioNoteManager.getNotesForSending();
@@ -226,7 +220,8 @@ generateUniqueRequestId() {
     }
 
     // GENERAR ID ÚNICO SEGURO
-    this.currentRequestId = this.generateUniqueRequestId();
+    const prefix = this.customRequestPrefix || 'req';
+    this.currentRequestId = this.generateUniqueRequestId(prefix);
     this.state.isSending = true;
      // 🔥 LIMPIAR ESTADOS DE EDICIÓN AL ENVIAR NUEVA SOLICITUD
     this.state.editingFinalMessage = false;
@@ -252,6 +247,50 @@ generateUniqueRequestId() {
     } finally {
     }
 }
+
+ async saveAndClose() {
+        if (this.state.final_message) {
+            // Si estamos editando, guardar primero
+            if (this.state.editingFinalMessage) {
+                await this.saveFinalMessage();
+            }
+
+            // Actualizar el diagnóstico si estamos en ese contexto
+            if (this.props.resModel === 'a_hospital.diagnosis' && this.props.resId) {
+                try {
+                    await this.orm.write(
+                        this.props.resModel, 
+                        [this.props.resId], 
+                        { description: this.state.final_message }
+                    );
+                    
+                    this.notification.add(
+                        "✅ Diagnóstico actualizado correctamente",
+                        { type: "success" }
+                    );
+                } catch (error) {
+                    console.error("❌ Error al actualizar diagnóstico:", error);
+                    this.notification.add(
+                        "❌ Error al actualizar el diagnóstico",
+                        { type: "danger" }
+                    );
+                    return; // No cerrar si hay error
+                }
+            }
+
+            // Cerrar el wizard
+            this.env.services.action.doAction({
+                type: 'ir.actions.act_window_close'
+            });
+        } else {
+            this.notification.add(
+                "No hay mensaje para guardar", 
+                { type: "warning" }
+            );
+        }
+    }
+
+
 
     // 🔥 VERIFICAR RESPUESTA MANUALMENTE
     async checkResponse() {
@@ -370,8 +409,7 @@ generateUniqueRequestId() {
     async toggleRecording() {
         if (this.state.recording) {
             await this.stopRecording();
-            // 🔥 AUTOMÁTICAMENTE PROCESAR AL TERMINAR LA GRABACIÓN
-            await this.sendToN8N();
+          
         } else {
             await this.startRecording();
         }
@@ -400,6 +438,8 @@ async stopRecording() {
         if (blob && blob.size > 0) {
             const url = URL.createObjectURL(blob);
             await this.audioNoteManager.createAudioNote({ blob, url });
+            // AUTOMÁTICAMENTE PROCESAR AL TERMINAR LA GRABACIÓN
+            await this.sendToN8N();
         }
     } catch (err) {
         this.state.error = err.message;

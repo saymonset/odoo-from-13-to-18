@@ -6,7 +6,8 @@
     "data": [
         "security/ir.model.access.csv",
         "views/menu.xml",
-        "views/templates.xml",  # Archivo principal que incluye componentes
+        "views/templates.xml",  
+        "views/voice_recorder_wizard_views.xml",  
     ],
     "assets": {
         "web.assets_backend": [
@@ -30,9 +31,10 @@
             
             # 4. Componente principal
             "chatter_voice_note/static/src/components/audio_to_text/voice_recorder.js",
-            
-            # 5. Templates (cargar después de los componentes)
             "chatter_voice_note/static/src/components/audio_to_text/voice_recorder.xml",
+            
+            # 5. Widget para el wizard (NUEVO - agregar esto)
+            "chatter_voice_note/static/src/components/audio_to_text/voice_recorder_widget.js",
             
             # 6. Acción cliente
             "chatter_voice_note/static/src/components/audio_to_text/audio_to_text.js",
@@ -40,6 +42,9 @@
             
             # 7. CSS del reporte médico
             "chatter_voice_note/static/src/components/audio_to_text/medical_report.css",
+            
+            # 8. Index.js (NUEVO - agregar esto al final)
+            "chatter_voice_note/static/src/index.js",
         ],
     },
     "installable": True,

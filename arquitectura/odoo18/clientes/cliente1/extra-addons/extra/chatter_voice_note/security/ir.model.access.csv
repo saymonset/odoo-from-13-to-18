@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_res_partner_web_save,res.partner.web_save,base.model_res_partner,,1,1,0,0
+access_voice_recorder_wizard,voice.recorder.wizard.access,model_chatter_voice_note_voice_recorder_wizard,,1,1,1,1
