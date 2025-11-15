@@ -245,9 +245,22 @@ stopPolling() {
         return;
     }
 
-    // GENERAR ID ÚNICO SEGURO
-    const prefix = this.customRequestPrefix || 'req';
-    this.currentRequestId = this.generateUniqueRequestId(prefix);
+   let prefix = this.customRequestPrefix;
+
+    // Si NO viene del padre → generar uno
+    if (!prefix) {
+        if (this.props.params?.resId) {
+            prefix = `diagnosis_${this.props.params.resId}`;
+        } else {
+            prefix = 'req';
+        }
+        // Generar ID único SOLO si se creó el prefix aquí
+        this.currentRequestId = this.generateUniqueRequestId(prefix);
+    } else {
+        // Si VIENE del padre → usarlo directamente como ID completo
+        this.currentRequestId = prefix;
+    }
+    
     this.state.isSending = true;
      // 🔥 LIMPIAR ESTADOS DE EDICIÓN AL ENVIAR NUEVA SOLICITUD
     this.state.editingFinalMessage = false;
