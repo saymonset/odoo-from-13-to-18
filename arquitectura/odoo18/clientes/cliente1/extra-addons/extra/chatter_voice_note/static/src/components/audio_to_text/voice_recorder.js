@@ -21,64 +21,59 @@ export class VoiceRecorder extends Component {
     };
 
     setup() {
+    this.customRequestPrefix = null;  // ← Inicializar
 
+    this.initServices();
+    this.initManagers();
 
-         
-        
-        this.initServices();
-        this.initManagers();
+    this.contactManager = new ContactManager(this.orm);
 
-        this.contactManager = new ContactManager(this.orm);
-
-            
-
-        
-        
-        this.state = useState({
-            recording: false,
-            isSending: false,
-            final_message: '',
-            answer_ia: '',
-            debugInfo: 'Sistema listo',
-            error: null,
-
-            editingFinalMessage: false,
-            editedFinalMessage: '',
-            showMedicalReport: false,
-            reportUserData: null,
-            reportTitle: 'Reporte Médico'
-
-        });
-        
-        this.currentRequestId = null;
-        this.pollInterval = null; 
-
-
-        // LOG INICIAL
-    onWillStart(() => {
-        console.log("%c VoiceRecorder - PROPS INICIALES:", "color: orange; font-weight: bold", this.props);
-        if (this.props.params?.resId) {
-            this.customRequestPrefix = this.props.params.customRequestPrefix 
-                || `diagnosis_${this.props.params.resId}`;
-            console.log("%c customRequestPrefix (onWillStart):", "color: green; font-weight: bold", this.customRequestPrefix);
-        }
+    this.state = useState({
+        recording: false,
+        isSending: false,
+        final_message: '',
+        answer_ia: '',
+        debugInfo: 'Sistema listo',
+        error: null,
+        editingFinalMessage: false,
+        editedFinalMessage: '',
+        showMedicalReport: false,
+        reportUserData: null,
+        reportTitle: 'Reporte Médico'
     });
 
-    // LOG CUANDO CAMBIEN
-    onWillUpdateProps((nextProps) => {
-        console.log("%c VoiceRecorder - onWillUpdateProps:", "color: cyan; font-weight: bold", nextProps);
-        if (nextProps.params?.resId) {
-            this.customRequestPrefix = nextProps.params.customRequestPrefix 
-                || `diagnosis_${nextProps.params.resId}`;
-            console.log("%c customRequestPrefix (update):", "color: lime; font-weight: bold", this.customRequestPrefix);
-        }
-    });
+    this.currentRequestId = null;
+    this.pollInterval = null;
 
-        onWillUnmount(() =>{
-            this.stopPolling(); // ← SIEMPRE
-            this.cleanup()
-        } );
+onWillStart(() => {
+    console.log('***************0***********************************');
+    console.log("%c VoiceRecorder - PROPS INICIALES:", "color: orange; font-weight: bold", this.props);
+
+    // CORRECTO: this.props.customRequestPrefix (NO this.props.params)
+    if (this.props.customRequestPrefix) {
+        this.customRequestPrefix = this.props.customRequestPrefix;
+        console.log("%c customRequestPrefix recibido del padre:", "color: gold", this.customRequestPrefix);
+        console.log('XXXxxXXXXXXXXXXXXXXXXXXXXXXxxXXXXXX')
     }
+    console.log('this.customRequestPrefix ', this.customRequestPrefix )
+    console.log('zzzzzzzzzzzz---------------------------------------oooooooo')
+});
+onWillUpdateProps((nextProps) => {
+    console.log('***************1***********************************');
+    console.log("%c VoiceRecorder - onWillUpdateProps:", "color: cyan; font-weight: bold", nextProps);
+
+    if (nextProps.customRequestPrefix && !this.customRequestPrefix) {
+        this.customRequestPrefix = nextProps.customRequestPrefix;
+        console.log("%c customRequestPrefix actualizado (padre):", "color: gold", this.customRequestPrefix);
+    }
+    console.log('this.customRequestPrefix ', this.customRequestPrefix )
+    console.log('ppppppppppp---------------------------------------oooooooo')
+});
+    onWillUnmount(() => {
+        this.stopPolling();
+        this.cleanup();
+    });
+}
 
 startPollingWhenNeeded() {
     if (this.currentRequestId && !this.state.final_message) {
@@ -235,8 +230,7 @@ stopPolling() {
         
         return `${prefix}_${userId}_${timestamp}_${uuid.substring(0, 8)}`;
     }
-
- async sendToN8N() {
+async sendToN8N() {
     const notes = this.audioNoteManager.getNotesForSending();
     const contacts = this.contactManager.getSelectedContacts();
 
@@ -245,29 +239,20 @@ stopPolling() {
         return;
     }
 
-   let prefix = this.customRequestPrefix;
+    console.log('----------------------------------------------');
+    console.log('this.customRequestPrefix:', this.customRequestPrefix);
+    console.log('this.props:', this.props);
+    console.log('----------------------------------------------');
 
-    // Si NO viene del padre → generar uno
-    if (!prefix) {
-        if (this.props.params?.resId) {
-            prefix = `diagnosis_${this.props.params.resId}`;
-        } else {
-            prefix = 'req';
-        }
-        // Generar ID único SOLO si se creó el prefix aquí
-        this.currentRequestId = this.generateUniqueRequestId(prefix);
+    if (this.customRequestPrefix) {
+        this.currentRequestId = this.customRequestPrefix;
+        console.log("%c ID del padre usado (tal cual):", "color: gold; font-weight: bold", this.currentRequestId);
     } else {
-        // Si VIENE del padre → usarlo directamente como ID completo
-        this.currentRequestId = prefix;
+        this.currentRequestId = this.generateUniqueRequestId('req');
+        console.log("%c ID generado con 'req':", "color: lime; font-weight: bold", this.currentRequestId);
     }
-    
+
     this.state.isSending = true;
-     // 🔥 LIMPIAR ESTADOS DE EDICIÓN AL ENVIAR NUEVA SOLICITUD
-    this.state.editingFinalMessage = false;
-    this.state.editedFinalMessage = '';
-    this.state.showMedicalReport = false; 
-    this.state.final_message = '';          
-    this.state.answer_ia = '';              
 
     try {
         await this.n8nService.sendToN8N(
@@ -277,16 +262,14 @@ stopPolling() {
             this.props.resId,
             this.currentRequestId
         );
-        this.startPollingWhenNeeded(); // INICIA POLLING
+        this.startPollingWhenNeeded();
     } catch (err) {
         console.error("Error envío:", err);
-        this.state.isSending = false; 
+        this.state.isSending = false;
         this.state.debugInfo = 'Error al enviar';
         this.notification.add("Error al enviar el audio", { type: "danger" });
-    } finally {
     }
 }
-
  async saveAndClose() {
         if (this.state.final_message) {
             // Si estamos editando, guardar primero
@@ -431,19 +414,20 @@ stopPolling() {
 
     // 🔥 RESET DE INTERFAZ
     resetInterface() {
-        this.audioNoteManager.reset();
-        this.contactManager.reset();
-        this.currentRequestId = null;
-        this.state.final_message = '';
-        this.state.answer_ia = '';
-        this.state.debugInfo = 'Sistema listo para nueva consulta';
-        this.state.error = null;
-        this.state.editingFinalMessage = false;
-        this.state.editedFinalMessage = '';
-        this.state.showMedicalReport = false;  
-        this.state.isSending = false; 
-        this.stopPolling(); 
-    }
+    this.audioNoteManager.reset();
+    this.contactManager.reset();
+    this.currentRequestId = null;
+    // NO: this.customRequestPrefix = null;
+    this.state.final_message = '';
+    this.state.answer_ia = '';
+    this.state.debugInfo = 'Sistema listo para nueva consulta';
+    this.state.error = null;
+    this.state.editingFinalMessage = false;
+    this.state.editedFinalMessage = '';
+    this.state.showMedicalReport = false;  
+    this.state.isSending = false; 
+    this.stopPolling(); 
+}
 
     async toggleRecording() {
         if (this.state.recording) {
