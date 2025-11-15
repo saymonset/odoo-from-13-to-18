@@ -1,5 +1,6 @@
 /** @odoo-module **/
-import { Component, useState, onWillUnmount, markup } from "@odoo/owl";
+import { Component, useState, onWillUnmount, markup, useEffect, onWillUpdateProps, onWillStart } from "@odoo/owl";
+
 import { useService } from "@web/core/utils/hooks";
 import { ContactManager } from "./contact_manager";
 import { ContactManagerComponent } from "./contact_manager_component";
@@ -11,6 +12,9 @@ import { N8NService } from "./n8n_service";
 
 export class VoiceRecorder extends Component {
     static template = "chatter_voice_note.VoiceRecorder";
+    static props = {
+        params: { type: Object, required: false },
+    };
     static components = {
         ContactManagerComponent,
         MedicalReport
@@ -26,8 +30,9 @@ export class VoiceRecorder extends Component {
 
         this.contactManager = new ContactManager(this.orm);
 
-         // 🔥 OBTENER PREFIJO PERSONALIZADO DESDE CONTEXTO
-        this.customRequestPrefix = this.props.context?.default_custom_request_id || null;
+            
+
+        
         
         this.state = useState({
             recording: false,
@@ -47,6 +52,27 @@ export class VoiceRecorder extends Component {
         
         this.currentRequestId = null;
         this.pollInterval = null; 
+
+
+        // LOG INICIAL
+    onWillStart(() => {
+        console.log("%c VoiceRecorder - PROPS INICIALES:", "color: orange; font-weight: bold", this.props);
+        if (this.props.params?.resId) {
+            this.customRequestPrefix = this.props.params.customRequestPrefix 
+                || `diagnosis_${this.props.params.resId}`;
+            console.log("%c customRequestPrefix (onWillStart):", "color: green; font-weight: bold", this.customRequestPrefix);
+        }
+    });
+
+    // LOG CUANDO CAMBIEN
+    onWillUpdateProps((nextProps) => {
+        console.log("%c VoiceRecorder - onWillUpdateProps:", "color: cyan; font-weight: bold", nextProps);
+        if (nextProps.params?.resId) {
+            this.customRequestPrefix = nextProps.params.customRequestPrefix 
+                || `diagnosis_${nextProps.params.resId}`;
+            console.log("%c customRequestPrefix (update):", "color: lime; font-weight: bold", this.customRequestPrefix);
+        }
+    });
 
         onWillUnmount(() =>{
             this.stopPolling(); // ← SIEMPRE

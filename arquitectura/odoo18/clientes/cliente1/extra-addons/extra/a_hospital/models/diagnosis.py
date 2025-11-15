@@ -1,6 +1,8 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo import _
+import logging 
+_logger = logging.getLogger(__name__)
 
 class Diagnosis(models.Model):
     _name = 'a_hospital.diagnosis'
@@ -62,15 +64,11 @@ class Diagnosis(models.Model):
   
     def action_open_voice_recorder(self):
         self.ensure_one()
+        if not self.id:
+            raise ValidationError(_("Debe guardar el diagnóstico antes de grabar por voz."))
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Grabar Diagnóstico por Voz',
-            'res_model': 'chatter_voice_note.voice_recorder_wizard',
-            'view_mode': 'form',
+            'type': 'ir.actions.client',
+            'tag': 'chatter_voice_note.audio_to_text',
             'target': 'new',
-            'context': {
-                'default_res_model': 'a_hospital.diagnosis',
-                'default_res_id': self.id,
-                'default_custom_request_id': f'diagnosis_{self.id}',
-            }
+            'name': 'Grabador de Voz',
         }

@@ -8,12 +8,17 @@
     'version': '18.0',
 
     
-    'depends': ['base', 'calendar','website','chatter_voice_note'],
+    'depends': ['base', 'calendar','website','bus','chatter_voice_note'],
 
     'external_dependencies': {
         'python': [],
     },
-
+    'assets': {
+    'web.assets_backend': [
+        'a_hospital/static/src/components/bus/diagnosis_bus.js',
+        'chatter_voice_note/static/src/components/voice_recorder/voice_recorder.js',
+            ],
+        },
     "data": [
         "security/a_hospital_groups.xml",
         "security/a_hospital_security.xml",
@@ -44,6 +49,7 @@
     'auto_install': False,
 
     'images': [
-        'static/description/icon.png'
+        'a_hospital/static/description/icon.png'
+        
     ],
 }
