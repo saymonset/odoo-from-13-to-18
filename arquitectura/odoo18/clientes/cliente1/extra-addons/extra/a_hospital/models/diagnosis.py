@@ -59,16 +59,9 @@ class Diagnosis(models.Model):
         readonly=True
     )
 
-    # Método para actualizar desde el módulo de voz
-    def update_description_from_voice(self, final_message):
-        """Actualiza el campo description con el mensaje del módulo de voz"""
-        if final_message:
-            self.write({'description': final_message})
-        return True
-
-    # 🔥 CORREGIDO: Método para abrir el grabador de voz
+  
     def action_open_voice_recorder(self):
-        """Abre el wizard de grabación de voz para este diagnóstico"""
+        self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
             'name': 'Grabar Diagnóstico por Voz',
@@ -78,6 +71,6 @@ class Diagnosis(models.Model):
             'context': {
                 'default_res_model': 'a_hospital.diagnosis',
                 'default_res_id': self.id,
-                'default_custom_request_id': f'diagnosis_{self.id}',  # 🔥 PREFIJO ESPECÍFICO
+                'default_custom_request_id': f'diagnosis_{self.id}',
             }
         }

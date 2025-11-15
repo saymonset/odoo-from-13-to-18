@@ -145,7 +145,7 @@ source .venv/bin/activate
 
 
 # actualizqar un modulo
-./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u chatter_voice_note
+./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u a_hospital
 
 #Entrar al shell
 ./odoo/odoo-bin shell -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg

@@ -19,10 +19,12 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_open_voice_recorder" 
-                            type="object" 
-                            string="Grabar Diagnóstico por Voz"
-                            class="btn-primary"/>
+                       <button name="action_open_voice_recorder"
+                                type="object"
+                                string="Grabar Diagnóstico por Voz"
+                                class="btn-primary"/>
+
+
                 </header>
                 <sheet>
                     <group>
