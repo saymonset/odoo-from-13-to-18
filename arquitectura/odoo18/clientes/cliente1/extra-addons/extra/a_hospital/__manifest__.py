@@ -15,6 +15,11 @@
     },
     'assets': {
     'web.assets_backend': [
+        # Archivos de a_hospital
+        'a_hospital/static/src/views/diagnosis_form_controller.js',
+        'a_hospital/static/src/css/diagnosis_form.css',
+        
+        # Archivos de chatter_voice_note (ya incluidos)
         'chatter_voice_note/static/src/components/voice_recorder/voice_recorder.js',
             ],
         },

@@ -63,12 +63,35 @@ class Diagnosis(models.Model):
 
   
     def action_open_voice_recorder(self):
+        """Abrir el grabador de voz existente de chatter_voice_note"""
         self.ensure_one()
+        
+        # Si es un registro nuevo, guardarlo primero
         if not self.id:
-            raise ValidationError(_("Debe guardar el diagnóstico antes de grabar por voz."))
+            # Verificar campos mínimos requeridos
+            if not self.visit_id or not self.doctor_id or not self.patient_id:
+                raise ValidationError(_("Debe completar los campos de visita, doctor y paciente antes de grabar."))
+            
+            # Crear el registro
+            create_vals = {
+                'visit_id': self.visit_id.id,
+                'doctor_id': self.doctor_id.id,
+                'patient_id': self.patient_id.id,
+                'description': self.description or '',
+            }
+            if self.disease_id:
+                create_vals['disease_id'] = self.disease_id.id
+                
+            self = self.create(create_vals)
+        
+        # Retornar la acción del cliente para abrir el grabador
         return {
             'type': 'ir.actions.client',
             'tag': 'chatter_voice_note.audio_to_text',
             'target': 'new',
             'name': 'Grabador de Voz',
+            'params': {
+                'res_model': self._name,
+                'res_id': self.id,
+            }
         }

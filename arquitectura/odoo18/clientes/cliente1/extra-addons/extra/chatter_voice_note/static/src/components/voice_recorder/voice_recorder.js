@@ -387,8 +387,11 @@ export class VoiceRecorder extends Component {
         this.state.editedFinalMessage = this.state.final_message;
         this.state.editingFinalMessage = true;
 
-        //cerramos wizqard de otros modulos
-        this.saveAndClose()
+        if (this.props.resModel === 'a_hospital.diagnosis' && this.props.resId) {
+            // Actualizar automáticamente el diagnóstico
+            this.updateDiagnosisAutomatically();
+        }
+
 
 
         this.notification.add(
@@ -398,6 +401,31 @@ export class VoiceRecorder extends Component {
 
 
     }
+
+    async updateDiagnosisAutomatically() {
+            try {
+                await this.orm.write(
+                    this.props.resModel,
+                    [this.props.resId],
+                    { description: this.state.final_message }
+                );
+                
+                this.notification.add(
+                    "✅ Diagnóstico actualizado automáticamente",
+                    { type: "success" }
+                );
+                
+                // Opcional: cerrar después de actualizar
+                // this.env.services.action.close();
+                
+            } catch (error) {
+                console.error("❌ Error al actualizar diagnóstico:", error);
+                this.notification.add(
+                    "❌ Error al actualizar el diagnóstico",
+                    { type: "danger" }
+                );
+            }
+        }
 
     cleanup() {
         if (this.state.recording) {

@@ -11,40 +11,41 @@
             </list>
         </field>
     </record>
-
- <!-- Form view for Diagnosis model -->
-    <record id="view_diagnosis_form" model="ir.ui.view">
-        <field name="name">Diagnosis Form</field>
-        <field name="model">a_hospital.diagnosis</field>
-        <field name="arch" type="xml">
-            <form>
-                <header>
-                      <button name="action_open_voice_recorder"
-                                type="object"
-                                string="Grabar Diagnóstico por Voz"
-                                class="btn-primary"
-                                invisible="id == False"/>
-
-
-                </header>
-                <sheet>
-                    <group>
-                        <group string="Diagnosis Information">
-                             <field name="description" 
-                               placeholder="Escriba el diagnóstico o use el botón para grabar voz..."/>
+<record id="view_diagnosis_form" model="ir.ui.view">
+    <field name="name">Diagnosis Form</field>
+    <field name="model">a_hospital.diagnosis</field>
+    <field name="arch" type="xml">
+        <form>
+            <header>
+                <button name="action_open_voice_recorder"
+                        type="object"
+                        string="Grabar Diagnóstico por Voz"
+                        class="btn-primary"/>
+            </header>
+            <sheet>
+                <group>
+                    <group string="Diagnosis Information">
+                        <!-- Grupo separado para el grabador - corregido el alert -->
+                        <group string="Grabación de Voz">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fa fa-microphone"/> 
+                                Use el botón "Grabar Diagnóstico por Voz" en la parte superior para grabar audio.
+                            </div>
                         </group>
+                        
+                        <field name="description" 
+                               placeholder="El texto del diagnóstico aparecerá aquí después de grabar..."/>
                     </group>
-                    <!-- Nueva sección para archivos adjuntos -->
-                    <notebook>
-                        <page string="Archivos Adjuntos">
-                            <field name="attachment_ids" widget="many2many_binary"/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-    </record>
- 
+                </group>
+                <notebook>
+                    <page string="Archivos Adjuntos">
+                        <field name="attachment_ids" widget="many2many_binary"/>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
 
     <!-- Action to open Diagnosis views (list, form, pivot) -->
     <record id="action_a_hospital_diagnosis" model="ir.actions.act_window">

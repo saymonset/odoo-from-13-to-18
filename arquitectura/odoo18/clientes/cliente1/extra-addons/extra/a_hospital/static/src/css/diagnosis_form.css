@@ -1,0 +1,28 @@
+/* a_hospital/static/src/css/diagnosis_form.css */
+.embedded_voice_recorder_section {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+}
+
+.embedded_voice_recorder_section label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Estilos para el VoiceRecorder embebido */
+.embedded_voice_recorder .o_action {
+    box-shadow: none;
+    border: none;
+}
+
+.embedded_voice_recorder .o_action .Layout {
+    padding: 0;
+}
+
+.embedded_voice_recorder .voice-recorder-container {
+    min-height: auto;
+}

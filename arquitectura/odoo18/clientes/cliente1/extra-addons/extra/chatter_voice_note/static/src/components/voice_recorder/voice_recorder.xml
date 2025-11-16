@@ -69,14 +69,20 @@
                             contactManager="contactManager"
                             onSend="sendToN8N.bind(this)"/>
 
-                    <!-- <div class="mt-3" t-if="props.resModel === 'a_hospital.diagnosis'">
-                        <button type="button"
-                                class="btn btn-lg btn-primary"
-                                t-on-click="saveAndClose"
-                                t-att-disabled="!state.final_message">
-                            💾 Guardar en Diagnóstico y Cerrar
-                        </button>
-                    </div>         -->
+                   <div class="mt-3" t-if="props.resModel === 'a_hospital.diagnosis' and props.resId">
+                            <button type="button"
+                                    class="btn btn-lg btn-primary"
+                                    t-on-click="saveAndClose"
+                                    t-att-disabled="!state.final_message">
+                                💾 Guardar en Diagnóstico y Cerrar
+                            </button>
+                            
+                            <button type="button"
+                                    class="btn btn-lg btn-secondary ml-2"
+                                    t-on-click="env.services.action.close">
+                                ❌ Cerrar sin Guardar
+                            </button>
+                        </div>
 
                 
                 </div>
