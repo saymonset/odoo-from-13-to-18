@@ -349,7 +349,6 @@ async sendToN8N() {
     async tryControllerCall(requestId) {
             try {
                 console.log("Buscando respuesta via controlador para:", requestId);
-                
                 const payload = { request_id: requestId };
 
                 const response = await fetch('/chatter_voice_note/get_response', {

@@ -57,14 +57,7 @@ class DiagnosisVoiceController(http.Controller):  # ✅ CORREGIDO: "Controller" 
                     diagnosis.write({'description': final_message})
                     _logger.info(f"✅ Diagnóstico {diagnosis_id} actualizado: {final_message[:100]}...")
                     
-                     # 🔹 Enviar mensaje a bus.bus para actualizar el formulario en tiempo real
-                    request.env['bus.bus'].sudo().sendmany([(
-                        request.env.cr.dbname,                 # Nombre de la base de datos
-                        'a_hospital_diagnosis_channel',        # Nombre del canal
-                        diagnosis.id,                          # ID del registro
-                        {'description': final_message}         # Datos que se envían
-                    )])
-                    
+                     
                     return request.make_response(
                         json.dumps({
                             'success': True, 
