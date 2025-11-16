@@ -63,43 +63,49 @@ export class MedicalReport extends Component {
         }
     }
 
-    async loadUserDetailsFromDB(userId) {
-        try {
-            console.log("🔄 Cargando detalles adicionales del usuario, ID:", userId);
-            
-            const users = await this.orm.searchRead(
-                "res.users",
-                [["id", "=", userId]],
-                ["name", "job_title", "function"],
-                { limit: 1 }
-            );
-            
-            if (users && users.length > 0) {
-                const user = users[0];
-                
-                // Actualizar puesto de trabajo si está disponible
-                if (user.job_title) {
-                    this.state.userJobTitle = user.job_title;
-                } else if (user.function) {
-                    this.state.userJobTitle = user.function;
-                }
-                
-                console.log("✅ Detalles del usuario cargados:", {
-                    name: user.name,
-                    jobTitle: this.state.userJobTitle
-                });
-                
-            } else {
-                console.warn("⚠️ No se encontraron detalles adicionales del usuario");
-                this.enhanceUserData();
-            }
-            
-        } catch (error) {
-            console.error("❌ Error cargando detalles del usuario:", error);
-            this.enhanceUserData();
-        }
+async loadUserDetailsFromDB(userId) {
+    if (!userId) {
+        console.warn("No userId para cargar detalles");
+        this.enhanceUserData();
+        return;
     }
 
+    try {
+        console.log("Cargando detalles del usuario, ID:", userId);
+
+        // CAMPOS REALES EN res.users
+        const users = await this.orm.searchRead(
+            "res.users",
+            [["id", "=", userId]],
+            ["name", "job_id", "phone", "mobile", "image_1920"],
+            { limit: 1 }
+        );
+
+        if (users?.length > 0) {
+            const user = users[0];
+
+            // job_id es [id, "Nombre del puesto"]
+            const jobTitle = user.job_id ? user.job_id[1] : "Médico";
+
+            this.state.userJobTitle = jobTitle;
+
+            console.log("Detalles del usuario cargados:", {
+                name: user.name,
+                jobTitle: jobTitle
+            });
+        } else {
+            console.warn("Usuario no encontrado en DB");
+            this.enhanceUserData();
+        }
+    } catch (error) {
+        console.error("Error RPC al cargar usuario:", error);
+        // Fallback seguro
+        this.state.userJobTitle = this.props.userData?.name?.includes("Dr.") 
+            ? "Médico" 
+            : "Profesional de Salud";
+        this.enhanceUserData();
+    }
+}
     // 🔥 MÉTODO PARA ESTABLECER DATOS POR DEFECTO
     setDefaultUserData() {
         this.state.userName = 'Dr. ' + this.getRandomDoctorName();

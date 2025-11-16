@@ -3,7 +3,7 @@ import { registry } from "@web/core/registry";
 import { Layout } from "@web/search/layout";
 import { Component, onWillStart } from "@odoo/owl";
 import { useState } from "@odoo/owl";
-import { VoiceRecorder } from "./voice_recorder";
+import { VoiceRecorder } from "../voice_recorder/voice_recorder";
 
 export class AudioToText extends Component {
     static template = "chatter_voice_note.Audio_to_text";

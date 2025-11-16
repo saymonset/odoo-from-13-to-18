@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { VoiceRecorder } from "./voice_recorder";
+import { VoiceRecorder } from "../voice_recorder/voice_recorder";
 
 // Registrar el componente como widget
 const voiceRecorderWidget = {

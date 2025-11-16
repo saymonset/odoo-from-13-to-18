@@ -3,7 +3,7 @@
     <!-- Main menu for Hospital Management -->
     <menuitem
         id="a_hospital_menu_root"
-        web_icon="odoo_school_library,static/description/icon.png"
+        web_icon="a_hospital,static/description/icon.png"
         name="Hospital Management"
         sequence="10"/>
 

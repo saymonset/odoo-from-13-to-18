@@ -30,8 +30,8 @@
             "chatter_voice_note/static/src/components/audio_to_text/medical_report.xml",
             
             # 4. Componente principal
-            "chatter_voice_note/static/src/components/audio_to_text/voice_recorder.js",
-            "chatter_voice_note/static/src/components/audio_to_text/voice_recorder.xml",
+            "chatter_voice_note/static/src/components/voice_recorder/voice_recorder.js",
+            "chatter_voice_note/static/src/components/voice_recorder/voice_recorder.xml",
             
             # 5. Widget para el wizard (NUEVO - agregar esto)
             "chatter_voice_note/static/src/components/audio_to_text/voice_recorder_widget.js",
