@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-  <template id="custom_footer_remove" inherit_id="website.layout" name="Remove Odoo Watermark">
-    <xpath expr="//div[contains(@class, 'o_footer_copyright')]" position="replace">
-    </xpath>
-  </template>
-</odoo>

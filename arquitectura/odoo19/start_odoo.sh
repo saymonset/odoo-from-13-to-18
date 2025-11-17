@@ -19,7 +19,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # Puerto por defecto de Odoo
-PORT=8069
+#PORT=8069
+PORT=18069
 
 # Base de datos
 DB="dbcliente1_19"

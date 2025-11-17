@@ -1,5 +1,7 @@
 ## Para debuguear , siempre en el ssh abrir los fuentes desde ODOO-13-19
-
+```bash
+cd /home/odoo/odoo-from-13-to-18/arquitectura/odoo19
+```
 ## Buscar un modulo
 
 ## ejemplo , find con eso
@@ -81,8 +83,18 @@ CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 ## Para docker
 ```bash
 \q
-psql -U odoo19 -d postgres
-CREATE DATABASE dbcliente1_19;
+docker exec -it odoo-db18 bash
+   psql -U odoo18 -d postgres
+   CREATE USER odoo19 WITH PASSWORD 'odoo';
+   ALTER USER odoo19 WITH SUPERUSER;
+
+   \q
+   docker exec -it odoo-db18 bash
+   psql -U odoo19 -d postgres
+   CREATE DATABASE dbcliente1_19;
+   GRANT ALL PRIVILEGES ON DATABASE dbcliente1_19 TO odoo19;
+
+
 ```
 
 # Para listar los roles y permisos
