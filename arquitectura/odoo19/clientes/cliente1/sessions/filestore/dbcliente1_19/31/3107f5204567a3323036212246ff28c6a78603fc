@@ -1,0 +1,20 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//PYVOBJECT//NONSGML Version 1//EN
+BEGIN:VEVENT
+UID:20251117T205723Z - 69823@vmi2870902
+DTSTART:20251122T000000
+DTEND:20251122T000000
+ATTENDEE:MAILTO:admin@example.com
+ATTENDEE:MAILTO:azure.Interior24@example.com
+CREATED:20251117T205723Z
+DESCRIPTION:*Organized by*\nMitchell Admin\nadmin@example.com [1]\n+1 555-5
+ 55-5555 [2]\n*Contact Details*\nAzure Interior\nazure.Interior24@example.c
+ om [3]\n(870)-931-0505 [4]\n\n[1] mailto:admin@example.com\n[2] tel:+1%205
+ 55-555-5555\n[3] mailto:azure.Interior24@example.com\n[4] tel:(870)-931-05
+ 05
+DTSTAMP:20251117T205723Z
+ORGANIZER;CN="YourCompany, Mitchell Admin":MAILTO:admin@example.com
+SUMMARY:Changes in Designing
+END:VEVENT
+END:VCALENDAR

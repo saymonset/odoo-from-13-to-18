@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//PYVOBJECT//NONSGML Version 1//EN
+BEGIN:VEVENT
+UID:20251117T205723Z - 14489@vmi2870902
+DTSTART:20251120T080000Z
+DTEND:20251120T103000Z
+ATTENDEE:MAILTO:wood.corner26@example.com
+ATTENDEE:MAILTO:mark.brown23@example.com
+CREATED:20251117T205723Z
+DESCRIPTION:*Organized by*\nMarc Demo\nmark.brown23@example.com [1]\n(441)-
+ 695-2334 [2]\n*Contact Details*\nWood Corner\nwood.corner26@example.com [3
+ ]\n(623)-853-7197 [4]\n\n[1] mailto:mark.brown23@example.com\n[2] tel:(441
+ )-695-2334\n[3] mailto:wood.corner26@example.com\n[4] tel:(623)-853-7197
+DTSTAMP:20251117T205723Z
+ORGANIZER;CN="YourCompany, Marc Demo":MAILTO:mark.brown23@example.com
+SUMMARY:Requirements review
+END:VEVENT
+END:VCALENDAR
