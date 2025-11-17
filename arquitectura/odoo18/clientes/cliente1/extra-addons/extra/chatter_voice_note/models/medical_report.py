@@ -11,7 +11,9 @@ class MailMail(models.Model):
     def create_and_send_medical_report(self, email_data):
         _logger.info("🔄 Iniciando envío de reporte médico")
         try:
-            # Extraer datos
+            # =======================
+            # Extracción de datos
+            # =======================
             pdf_data = email_data.get('pdf_data')
             pdf_name = email_data.get('pdf_name', 'reporte_medico.pdf')
             contacts = email_data.get('contacts', [])
@@ -28,7 +30,9 @@ class MailMail(models.Model):
                 _logger.error("❌ No se proporcionaron contactos")
                 return {'error': 'No hay destinatarios'}
 
+            # =======================
             # Preparar destinatarios
+            # =======================
             partner_ids = []
             for contact in contacts:
                 partner_id = contact.get('id')
@@ -40,7 +44,9 @@ class MailMail(models.Model):
                 _logger.error("❌ Ningún contacto tiene ID válido")
                 return {'error': 'No hay destinatarios válidos'}
 
+            # =======================
             # Decodificar PDF
+            # =======================
             try:
                 pdf_binary = base64.b64decode(pdf_data)
                 _logger.info(f"PDF decodificado correctamente, tamaño={len(pdf_binary)} bytes")
@@ -48,17 +54,9 @@ class MailMail(models.Model):
                 _logger.error(f"❌ Error decodificando PDF: {e}")
                 return {'error': 'Error decodificando PDF'}
 
-            # Crear attachment
-            attachment = self.env['ir.attachment'].create({
-                'name': pdf_name,
-                'type': 'binary',
-                'datas': base64.b64encode(pdf_binary).decode('utf-8'),  # ⚡ Convertir a string
-                'res_model': 'mail.compose.message',
-                'res_id': 0,
-            })
-            _logger.info(f"Attachment creado: {attachment.name} (ID: {attachment.id})")
-
-            # Crear cuerpo de email
+            # =======================
+            # Crear mail
+            # =======================
             current_time = fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             email_body = f"""
 Reporte Médico
@@ -71,18 +69,37 @@ Médico: {self.env.user.name}
             """.strip()
             _logger.info("Cuerpo de email preparado")
 
-            # Crear mail
             mail_values = {
                 'subject': subject,
                 'body_html': f'<pre>{email_body}</pre>',
-                'attachment_ids': [(6, 0, [attachment.id])],
                 'partner_ids': [(6, 0, partner_ids)],
                 'author_id': self.env.user.partner_id.id,
+                'email_from': self.env.user.email or 'admin@yourcompany.example.com',
             }
 
             mail = self.create(mail_values)
-            _logger.info(f"Mail creado (ID: {mail.id}), enviando...")
+            _logger.info(f"Mail creado (ID: {mail.id})")
 
+            # =======================
+            # Crear attachment asociado al mail
+            # =======================
+            attachment = self.env['ir.attachment'].create({
+                'name': pdf_name,
+                'type': 'binary',
+                'datas': base64.b64encode(pdf_binary).decode('utf-8'),
+                'res_model': 'mail.mail',
+                'res_id': mail.id,
+                'mimetype': 'application/pdf',
+                'public': False,  # Asegura que no sea accesible públicamente
+            })
+            _logger.info(f"Attachment creado: {attachment.name} (ID: {attachment.id})")
+
+            # Vincular attachment al mail
+            mail.attachment_ids = [(6, 0, [attachment.id])]
+
+            # =======================
+            # Enviar correo
+            # =======================
             mail.send()
             _logger.info(f"✅ Reporte médico enviado a {len(partner_ids)} contactos")
 
