@@ -15,7 +15,6 @@ export class AudioToText extends Component {
     }
 
     extractParameters() {
-        debugger
         const actionService = this.env.services.action;
         const controller = actionService.currentController;
 

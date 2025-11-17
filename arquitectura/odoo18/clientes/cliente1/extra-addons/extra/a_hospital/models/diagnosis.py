@@ -12,7 +12,6 @@ class Diagnosis(models.Model):
     attachment_ids = fields.Many2many(
         'ir.attachment',
         string='Archivos Adjuntos',
-        help='Documentos, imágenes u otros archivos relacionados con el diagnóstico'
     )
     
     visit_id = fields.Many2one(
@@ -35,18 +34,13 @@ class Diagnosis(models.Model):
         string='Patient',
     )
 
-    # ⭐⭐ SOLO UNA DEFINICIÓN - YA CORREGIDO
     description = fields.Text(
         string='Diagnosis Description',
-        help='Additional information or notes regarding the diagnosis'
     )
 
     is_approved = fields.Boolean(
         string='Approved',
         default=False,
-        help="""This sign indicates that the given diagnosis,
-                made by the mentor doctor,
-                has been verified and approved by his mentor."""
     )
 
     doctor_approved = fields.Char(
@@ -61,18 +55,17 @@ class Diagnosis(models.Model):
         readonly=True
     )
 
-  
     def action_open_voice_recorder(self):
         """Abrir el grabador de voz existente de chatter_voice_note"""
         self.ensure_one()
         
+        _logger.info(f"🔍 Diagnóstico actual: ID={self.id}")
+            
         # Si es un registro nuevo, guardarlo primero
         if not self.id:
-            # Verificar campos mínimos requeridos
             if not self.visit_id or not self.doctor_id or not self.patient_id:
                 raise ValidationError(_("Debe completar los campos de visita, doctor y paciente antes de grabar."))
             
-            # Crear el registro
             create_vals = {
                 'visit_id': self.visit_id.id,
                 'doctor_id': self.doctor_id.id,
@@ -83,6 +76,10 @@ class Diagnosis(models.Model):
                 create_vals['disease_id'] = self.disease_id.id
                 
             self = self.create(create_vals)
+            
+            self = self.env['a_hospital.diagnosis'].browse(self.id)
+            
+            _logger.info(f"🎯 Enviando res_id: {self.id} al grabador de voz")
         
         # Retornar la acción del cliente para abrir el grabador
         return {
@@ -95,3 +92,25 @@ class Diagnosis(models.Model):
                 'res_id': self.id,
             }
         }
+
+    # ⭐⭐ MÉTODO CRÍTICO PARA ACTUALIZAR LA DESCRIPCIÓN
+    @api.model
+    def update_description_from_voice(self, res_id, text):
+        """Método llamado por el grabador de voz para actualizar la descripción"""
+        diagnosis = self.browse(res_id)
+        if diagnosis.exists():
+            diagnosis.write({'description': text})
+            _logger.info(f"✅ Descripción actualizada para diagnóstico {res_id}: {text}")
+            return True
+        _logger.error(f"❌ No se pudo encontrar diagnóstico con ID: {res_id}")
+        return False
+
+    # Método alternativo por si el anterior no funciona
+    def write_description(self, text):
+        """Método alternativo para escribir la descripción"""
+        self.ensure_one()
+        if text and text.strip():
+            self.description = text
+            _logger.info(f"✅ Descripción escrita para diagnóstico {self.id}")
+            return True
+        return False

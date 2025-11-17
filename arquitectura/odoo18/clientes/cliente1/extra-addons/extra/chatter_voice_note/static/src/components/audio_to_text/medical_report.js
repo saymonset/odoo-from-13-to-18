@@ -676,6 +676,19 @@ sendEmail = async () => {
             return;
         }
 
+
+         // EXTRAER SOLO LOS EMAILS
+        // const emails = contacts
+        //     .map(c => c.email)
+        //     .filter(email => !!email); // Solo los que tengan email
+
+        // if (emails.length === 0) {
+        //     this.notification.add("⚠️ Ningún contacto tiene email válido", { type: "warning" });
+        //     return;
+        // }
+
+        
+
         // Preparar datos para enviar
         const emailData = {
             pdf_data: pdfBase64,
@@ -745,6 +758,7 @@ Este es un mensaje automático, por favor no responder.
 // 🔥 ENVIAR EMAIL USANDO ODOO
 sendEmailViaOdoo = async (emailData) => {
     try {
+        
         const result = await this.orm.call(
             'mail.mail',
             'create_and_send_medical_report',
