@@ -124,7 +124,7 @@ CREATE ROLE odoo19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 \q
 \exit
  psql -U odoo19 -d postgres
- CREATE DATABASE dbodoo19;
+ CREATE DATABASE dbcliente1_19;
  ```
 
 # Para listar los roles y permisos
@@ -169,7 +169,7 @@ source .venv/bin/activate
 ```
 # Inicializamos BD
 ```bash
-./odoo/odoo-bin -d dbodoo19 -i base -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbcliente1_19 -i base -c clientes/cliente1/conf/odoo.cfg
 ```
 
 # Arrancamos odoo de manera regular
@@ -181,11 +181,11 @@ source .venv/bin/activate
 ```
 
 ```bash
- ./odoo/odoo-bin -d dbodoo19 -c clientes/cliente1/conf/odoo.cfg --dev=all
+ ./odoo/odoo-bin -d dbcliente1_19 -c clientes/cliente1/conf/odoo.cfg --dev=all
 ```
 # actualizar modulo
 ```bash
- ./odoo/odoo-bin -d dbodoo19 -c clientes/cliente1/conf/odoo.cfg -u all
+ ./odoo/odoo-bin -d dbcliente1_19 -c clientes/cliente1/conf/odoo.cfg -u all
 ```
 # Accedemos
 ```bash
@@ -193,7 +193,7 @@ http://5.189.161.7:18069/
 ```
 
 ```bash
- ./odoo/odoo-bin --test-enable --stop-after-init  -d dbodoo19 -i a_hospital_19 -c clientes/cliente1/conf/odoo.cfg 
+ ./odoo/odoo-bin --test-enable --stop-after-init  -d dbcliente1_19 -i a_hospital_19 -c clientes/cliente1/conf/odoo.cfg 
  ```
 # Coloca lo que haga en los fuentes a los addons de docker
 ```bash

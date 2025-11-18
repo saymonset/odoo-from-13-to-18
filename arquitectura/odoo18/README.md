@@ -29,6 +29,7 @@ sudo snap install astral-uv --classic
 
 ```bash
   git clone -b 18.0 --single-branch --depth 1 https://github.com/odoo/odoo.git odoo
+  
 ```
 
 # Instalar version python con uv
