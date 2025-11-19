@@ -36,13 +36,13 @@ sudo snap install astral-uv --classic
 # Instalar version python con uv
 
 ```bash
-uv python install 3.11
+uv python install 3.12
 ```
 
 # colocar el enviroment
 
 ```bash
-uv venv --python 3.11
+uv venv --python 3.12
 ```
 
 # activarlo
