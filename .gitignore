@@ -24,4 +24,5 @@
 # /arquitectura/odoo*/clientes/*/extra-addons/*/*/*/*.py
 /arquitectura/odoo*/clientes/cliente1/extra-addons/extra/react-odoo/generated/*
 !/arquitectura/odoo*/clientes/cliente1/extra-addons/extra/react-odoo/generated/.gitkeep
- arquitectura/odoo*/clientes/*/sessions/**
+ /arquitectura/odoo*/clientes/*/sessions/**
+ /arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chatter_voice_note/uses_cases/__pycache__/**
