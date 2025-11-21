@@ -83,6 +83,10 @@
                             🖨️ Imprimir
                         </button>
                         <button type="button" class="btn btn-primary btn-sm"
+                            t-on-click="downloadPDF">
+                        📄 Descargar PDF
+                    </button>
+                        <button type="button" class="btn btn-primary btn-sm"
                                 t-on-click="sendEmail"
                                 t-att-disabled="!props.contacts or props.contacts.length === 0"
                                 t-att-class="(!props.contacts or props.contacts.length === 0) ? 'btn-secondary' : 'btn-primary'">

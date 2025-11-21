@@ -28,7 +28,8 @@ sudo snap install astral-uv --classic
 # Bajar fuentes
 
 ```bash
-  git clone -b 18.0 --single-branch --depth 1 https://github.com/odoo/odoo.git odoo
+  ls
+  
   
 ```
 

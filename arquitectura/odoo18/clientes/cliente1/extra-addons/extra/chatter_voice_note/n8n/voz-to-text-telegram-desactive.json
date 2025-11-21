@@ -1,21 +1,471 @@
 {
-  "name": "voz-to-text",
+  "name": "tests-voz-to-text",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "audios",
+        "path": "test-audios",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2336,
-        80
+        -3408,
+        32
       ],
-      "id": "945932de-c003-48cc-89e8-527b8446f929",
+      "id": "e4135fb0-7062-4d8e-8c8f-22c929e9372d",
       "name": "Webhook",
-      "webhookId": "cd021541-d2a5-49c2-9ec1-61000d467e00"
+      "webhookId": "245eace2-dcfe-47b2-aa65-f6ecdc37eca0"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Eres un asistente especializado en proporcionar recomendaciones médicas profesionales, interpretación de estudios clínicos y guías basadas en evidencia científica. Tu objetivo es ofrecer respuestas directas, resumidas y bastante concretas, evitando divagaciones o información excesiva.\n\nFunciones Principales:\nIdentificar la especialidad médica relevante.\n\nAnalizar el contexto clínico del usuario.\n\nProporcionar recomendaciones basadas en evidencia científica.\n\nInterpretar hallazgos clave de estudios médicos cuando sea necesario.\n\nMantener un tono profesional y preciso.\n\nEstructura de Respuesta (Resumida):\nÁrea médica identificada: Especialidad y contexto.\n\nAnálisis/Interpretación clave: Hallazgos relevantes y fundamentos científicos.\n\nRecomendaciones concretas: Acciones específicas basadas en guías clínicas.\n\nPróximos pasos: Seguimiento o derivación necesaria.\n\nAdvertencias: Señalar signos de alarma o limitaciones.\n\nÁreas Médicas Cubiertas:\nMedicina interna, laboratorio, imagenología, farmacología, urgencias, pediatría, ginecología, cirugía, entre otras.\n\nDirectrices Clave:\nRespuestas breves y concretas.\n\nBasarse en guías clínicas reconocidas (ej. NICE, OMS).\n\nSiempre aclarar que no sustituyes una consulta médica presencial.\n\nDestacar signos de alarma que requieran atención inmediata.\n\nEjemplo de Respuesta Resumida:\nUsuario: \"Tengo un paciente con TSH elevada y T4 normal\"\n\nAsistente:\nÁrea: Endocrinología - Función tiroidea.\nInterpretación: TSH elevada + T4 normal sugiere hipotiroidismo subclínico.\nRecomendaciones:\n\nConfirmar con anticuerpos anti-TPO.\n\nRepetir perfil tiroideo en 3-6 meses.\n\nConsiderar levotiroxina si TSH >10 mUI/L o síntomas.\nPróximos pasos: Derivar a endocrinología si persiste o empeora.\n⚠️ Advertencia: No reemplaza consulta presencial. Evaluar contexto clínico completo.\n\nAhora, procede a analizar el mensaje del usuario y responde de manera resumida y concreta, priorizando la información esencial.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1920,
+        64
+      ],
+      "id": "2be7d92d-a70a-433b-9ca2-155fb9cb28c3",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Tomar_data').item.json.request_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1952,
+        272
+      ],
+      "id": "a94cb25f-84b2-4394-be53-7858de7343d6",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2064,
+        272
+      ],
+      "id": "ac86e8d3-aa17-4cfd-9920-072447928b12",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Obtener_binary_junto_con_resto_data').item.json.email }}",
+        "subject": "={{ $('Obtener_binary_junto_con_resto_data').item.json.subject }}",
+        "message": "={{ $('Obtener_binary_junto_con_resto_data').item.json.body }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        -240
+      ],
+      "id": "dc1226a7-6025-4991-86f1-af156c058e90",
+      "name": "Send a message",
+      "webhookId": "d473d52c-fe54-4651-adce-7efd21013f07",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GGox6idrEobuo72S",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot{{ $('Prepare Voice Message Data').item.json.telegramToken }}/{{ $json.result.file_path }}",
+        "options": {}
+      },
+      "id": "f0c23603-9c8f-4d1d-acf8-0e13158b3f1c",
+      "name": "Download Voice File",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -2480,
+        -896
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $json.telegramToken }}/getFile?file_id={{ $json.voice_file_id }}",
+        "options": {}
+      },
+      "id": "08b740e6-578f-4f6d-980e-19363f022ef6",
+      "name": "Get File Path",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -2368,
+        -752
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e0deb0df-a5f8-4d13-8af6-92d0e1f0ad74",
+              "name": "user_id",
+              "type": "number",
+              "value": "={{ $json.message.from.id }}"
+            },
+            {
+              "id": "d5b76796-10f1-41ef-bff6-1602fb434ad8",
+              "name": "chat_id",
+              "type": "number",
+              "value": "={{ $json.message.chat.id }}"
+            },
+            {
+              "id": "59bda82b-6c18-40fd-b120-ed078a5d4c96",
+              "name": "voice_file_id",
+              "type": "string",
+              "value": "={{ $json.message.voice.file_id }}"
+            },
+            {
+              "id": "9412f498-5e52-4ea9-81a3-9d76379406c0",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "id": "telegramToken",
+              "name": "telegramToken",
+              "type": "string",
+              "value": "8407433385:AAG98DkKC9nJK4ke2XLujtwyJGuyuDJin9M"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "31dfb7f9-3266-4a3f-8c8b-f6df18c99669",
+      "name": "Prepare Voice Message Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2672,
+        -752
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "text-user-id",
+              "name": "user_id",
+              "type": "number",
+              "value": "={{ $json.message.from.id }}"
+            },
+            {
+              "id": "text-chat-id",
+              "name": "chat_id",
+              "type": "number",
+              "value": "={{ $json.message.chat.id }}"
+            },
+            {
+              "id": "text-message-text",
+              "name": "message_text",
+              "type": "string",
+              "value": "={{ $json.message.text }}"
+            },
+            {
+              "id": "text-message-id",
+              "name": "message_id",
+              "type": "number",
+              "value": "={{ $json.message.message_id }}"
+            },
+            {
+              "id": "text-timestamp",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "68ac02e1-9669-42f8-b920-d8444f872bbd",
+      "name": "Prepare Text Message Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2944,
+        -512
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "876dc746-b9cb-4b7f-a0e2-1542f67fbe05",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "leftValue": "={{ Boolean($json.message.voice) }}",
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9f9d3ed9-5b44-459e-9525-02a8bb0eb75a",
+      "name": "Is Voice Message?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -2960,
+        -752
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "53a2a156-eb98-441a-9b8e-f7c05bc9e9ac",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -3232,
+        -752
+      ],
+      "webhookId": "0e5ab5e6-ede6-4df5-bfb1-b9e545d0aea7",
+      "typeVersion": 1.1,
+      "credentials": {
+        "telegramApi": {
+          "id": "GQvXK3j6MPBEQhxd",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2176,
+        -944
+      ],
+      "id": "d14dfe14-11d1-4e92-b221-ebf7361b78b0",
+      "name": "Transcribe a recording1",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ad248fca-e1de-4d6e-93ab-7759d2ac9f74",
+              "name": "final_message",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "92bea91a-3229-4394-a24d-054845f95273",
+              "name": "chatInput",
+              "value": "oraclefedora@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "7b1ba407-5484-4b31-bbf0-5adedae46fc3",
+              "name": "sessionId",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1888,
+        -928
+      ],
+      "id": "1abecc90-c15f-4c34-a34d-de073dc663bd",
+      "name": "final_message_voice1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Toda respuesta es en español: Analiza el texto proporcionado y extrae todas las direcciones de correo electrónico que encuentres. Luego, formatea la información para enviar un mensaje usando la herramienta 'Send a message' de la siguiente manera:\n\nINSTRUCCIONES:\n1. Identifica y extrae todas las direcciones de email válidas del texto\n2. Si se menciona un destinatario principal o hay contexto sobre a quién va dirigido el mensaje, úsalo para determinar el campo 'to'\n3. Organiza la información en este formato:\n\nTO: [email extraído o el contenido de chatInput si no se encuentra email]\nSUBJECT: [asunto del mensaje si se menciona, o crear uno apropiado basado en el contexto]\nBODY: [final_message]\n\n4. Si no se encuentra ningún correo electrónico en el texto, utiliza el contenido de la variable `chatInput` como destinatario (TO)\n5. Si no hay suficiente información para el asunto, usa valores predeterminados apropiados\n6. Si hay múltiples emails, prioriza el que parezca ser el destinatario principal\n7. Siempre verifica que el campo TO tenga un valor válido (email o contenido de chatInput)\n8. Para el campo BODY, utiliza siempre el contenido de la variable `final_message`\n\nEjemplo de flujo:\n- Si el texto contiene: \"Enviar a maria@empresa.com sobre la reunión\"\n- TO: maria@empresa.com\n- SUBJECT: Reunión\n- BODY: [contenido de final_message]\n\n- Si NO contiene email: usar chatInput como TO\n- BODY: [siempre usar final_message]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1600,
+        -896
+      ],
+      "id": "543af3d5-8143-44f8-8ca3-60693dbdb907",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "=<!DOCTYPE html> <html> <head>     <style>         body {             font-family: Arial, sans-serif;             line-height: 1.6;             color: #333;             max-width: 800px;             margin: 0 auto;             padding: 20px;         }         .header {             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             color: white;             padding: 20px;             border-radius: 8px 8px 0 0;             text-align: center;         }         .table-container {             margin: 20px 0;             border: 1px solid #ddd;             border-radius: 0 0 8px 8px;             overflow: hidden;         }         table {             width: 100%;             border-collapse: collapse;         }         th {             background-color: #f8f9fa;             padding: 12px 15px;             text-align: left;             font-weight: bold;             border-bottom: 2px solid #dee2e6;         }         td {             padding: 12px 15px;             border-bottom: 1px solid #dee2e6;         }         tr:last-child td {             border-bottom: none;         }         .message-table {             margin-bottom: 30px;         }         .message-title {             background-color: #007bff;             color: white;             padding: 10px 15px;             font-weight: bold;             margin: 0;         }         .info-row {             background-color: #f8f9fa;         }         .message-content {             background-color: #fff;             padding: 15px;             border-left: 4px solid #007bff;         }     </style> </head> <body>     <div class=\"header\">         <h1> UNISA - Traductor Inteligente</h1>         <p>Procesamiento completado exitosamente</p>     </div>            <!-- Tabla para final_message OBLIGATORIA -->     <div class=\"message-table\">         <div class=\"message-title\">Mensaje Final del Usuario</div>         <div class=\"table-container\">             <table>                 <tbody>                     <tr>                         <td class=\"message-content\">                             {{ $json.final_message }}                         </td>                     </tr>                 </tbody>             </table>         </div>     </div>      </body> </html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -1360,
+        -592
+      ],
+      "id": "5a4c1640-38e9-44ae-ae6e-b488e878045d",
+      "name": "Send a message in Gmail",
+      "webhookId": "ec611720-6d85-45cc-afbd-60019724b131",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GGox6idrEobuo72S",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1600,
+        -688
+      ],
+      "id": "71304e5c-0f89-4137-93b0-5552ad6f048b",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1744,
+        -688
+      ],
+      "id": "5aa02187-e14f-4a78-ae72-613c9856aacf",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.final_message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1024,
+        -864
+      ],
+      "id": "e092f4b7-1531-4bea-b368-3a755bb0125a",
+      "name": "Send a text message",
+      "webhookId": "bfb7af44-3e52-4389-a616-07c56fe6f22f",
+      "credentials": {
+        "telegramApi": {
+          "id": "GQvXK3j6MPBEQhxd",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5889cfb4-cb14-46e7-9aca-219206d9608b",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "19b5fb36-2556-4f92-8fda-158b16da4a17",
+              "name": "final_message",
+              "value": "={{ $('final_message_voice1').item.json.final_message }}",
+              "type": "string"
+            },
+            {
+              "id": "761a919a-d751-4272-a8c7-04467eaba06a",
+              "name": "message.chat.id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1248,
+        -896
+      ],
+      "id": "461dffa2-3c37-47b8-9d5b-545f06bd0a9a",
+      "name": "Edit Fields2"
     },
     {
       "parameters": {
@@ -58,11 +508,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1920,
-        80
+        -2992,
+        32
       ],
-      "id": "5e079c08-00de-48bf-8e94-4ab1011eeea5",
-      "name": "Edit Fields"
+      "id": "e0a50780-8739-44ec-9c2a-02534a892a7c",
+      "name": "Tomar_data"
     },
     {
       "parameters": {
@@ -92,49 +542,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1360,
-        80
+        -2432,
+        32
       ],
-      "id": "56940008-5fd7-4f16-8e6c-4a3ab34675a9",
-      "name": "If"
-    },
-    {
-      "parameters": {
-        "operation": "toBinary",
-        "sourceProperty": "voice_message",
-        "options": {
-          "mimeType": "audio/ogg"
-        }
-      },
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
-      "position": [
-        -1440,
-        432
-      ],
-      "id": "34c91f14-dd8a-4bc7-b80f-0ae8fb628fea",
-      "name": "Convert to File"
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.8,
-      "position": [
-        -1248,
-        432
-      ],
-      "id": "3fd3e092-1bdb-4359-99fc-3aa9598b0685",
-      "name": "Transcribe a recording",
-      "credentials": {
-        "openAiApi": {
-          "id": "c91JIIvd58bA5WHe",
-          "name": "OpenAi account"
-        }
-      }
+      "id": "3b4ba302-c293-43bf-845f-4f58aa1fa61c",
+      "name": "Es texto?"
     },
     {
       "parameters": {
@@ -171,11 +583,60 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1248,
-        -144
+        -2320,
+        -192
       ],
-      "id": "3e1ddb2e-05a0-4924-852d-e496b4a16d1b",
-      "name": "final_message_txt"
+      "id": "a99ae19f-8d44-4675-9e10-8fe59d374883",
+      "name": "Continuar_data"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2112,
+        -192
+      ],
+      "id": "aac8de22-4f07-48b2-ba39-44bb1fc8f11a",
+      "name": "FIN"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "voice_message",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2512,
+        384
+      ],
+      "id": "222bf949-6291-48fe-8a5e-f1a33fe6afb5",
+      "name": "Procesar_archivo"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2320,
+        384
+      ],
+      "id": "62440e74-2cef-44ed-bbd9-4a3d390ee3d6",
+      "name": "Transcribir_audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "c91JIIvd58bA5WHe",
+          "name": "OpenAi account"
+        }
+      }
     },
     {
       "parameters": {
@@ -196,13 +657,13 @@
             {
               "id": "9a2a4980-ae22-4ada-ada8-11ec9086870f",
               "name": "apikey",
-              "value": "={{ $('Edit Fields').item.json.request_id }}",
+              "value": "={{ $('Tomar_data').item.json.request_id }}",
               "type": "string"
             },
             {
               "id": "78124e4c-ab90-4520-950b-79a5ff167a62",
               "name": "contacts",
-              "value": "={{ $('Edit Fields').item.json.contacts }}",
+              "value": "={{ $('Tomar_data').item.json.contacts }}",
               "type": "string"
             },
             {
@@ -218,130 +679,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1056,
-        112
+        -2128,
+        64
       ],
-      "id": "128ef997-d47c-4c23-b060-9975dc784b4c",
-      "name": "final_message_voice"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://5.189.161.7:8020/webhook/n8n-messages-upsert",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "sender",
-              "value": "={{ $('If').item.json.sender }}"
-            },
-            {
-              "name": "message_type",
-              "value": "={{ $('If').item.json.message_type }}"
-            },
-            {
-              "name": "remoteJid",
-              "value": "={{ $json.body.data.key.remoteJid }}"
-            },
-            {
-              "name": "instance",
-              "value": "={{ $json.body.instance }}"
-            },
-            {
-              "name": "conversation",
-              "value": "={{ $json.final_message }}"
-            },
-            {
-              "name": "apiKey",
-              "value": "={{ $json.apikey }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -752,
-        -144
-      ],
-      "id": "d002fcf9-aeeb-492f-8ead-d950ed23d5fb",
-      "name": "HTTP Request1"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Obtener todos los elementos de entrada\nconst items = $input.all();\nlet newItems = [];\nlet conta = 0; // Reinicia el contador por cada ejecución\n\nfor (const item of items) {\n  // Parsear contactos\n  const contacts = JSON.parse(item.json.contacts);\n\n  for (const contact of contacts) {\n    const newItem = {\n      ...contact,\n      to: item.json.email,\n      sessionId: ++conta,\n      final_message: item.json.final_message,\n      answer_ia: item.json.answer_ia\n    };\n\n    // ENVOLVER en { json: ... }\n    newItems.push({ json: newItem });\n  }\n}\n\n// Devolver en formato n8n\nreturn newItems;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -496,
-        384
-      ],
-      "id": "d3e31abc-3567-4932-aadd-d495124afa33",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
-        "options": {
-          "systemMessage": "=Eres un asistente especializado en proporcionar recomendaciones médicas profesionales, interpretación de estudios clínicos y guías basadas en evidencia científica. Tu objetivo es ofrecer respuestas directas, resumidas y bastante concretas, evitando divagaciones o información excesiva.\n\nFunciones Principales:\nIdentificar la especialidad médica relevante.\n\nAnalizar el contexto clínico del usuario.\n\nProporcionar recomendaciones basadas en evidencia científica.\n\nInterpretar hallazgos clave de estudios médicos cuando sea necesario.\n\nMantener un tono profesional y preciso.\n\nEstructura de Respuesta (Resumida):\nÁrea médica identificada: Especialidad y contexto.\n\nAnálisis/Interpretación clave: Hallazgos relevantes y fundamentos científicos.\n\nRecomendaciones concretas: Acciones específicas basadas en guías clínicas.\n\nPróximos pasos: Seguimiento o derivación necesaria.\n\nAdvertencias: Señalar signos de alarma o limitaciones.\n\nÁreas Médicas Cubiertas:\nMedicina interna, laboratorio, imagenología, farmacología, urgencias, pediatría, ginecología, cirugía, entre otras.\n\nDirectrices Clave:\nRespuestas breves y concretas.\n\nBasarse en guías clínicas reconocidas (ej. NICE, OMS).\n\nSiempre aclarar que no sustituyes una consulta médica presencial.\n\nDestacar signos de alarma que requieran atención inmediata.\n\nEjemplo de Respuesta Resumida:\nUsuario: \"Tengo un paciente con TSH elevada y T4 normal\"\n\nAsistente:\nÁrea: Endocrinología - Función tiroidea.\nInterpretación: TSH elevada + T4 normal sugiere hipotiroidismo subclínico.\nRecomendaciones:\n\nConfirmar con anticuerpos anti-TPO.\n\nRepetir perfil tiroideo en 3-6 meses.\n\nConsiderar levotiroxina si TSH >10 mUI/L o síntomas.\nPróximos pasos: Derivar a endocrinología si persiste o empeora.\n⚠️ Advertencia: No reemplaza consulta presencial. Evaluar contexto clínico completo.\n\nAhora, procede a analizar el mensaje del usuario y responde de manera resumida y concreta, priorizando la información esencial.\n\n"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2.2,
-      "position": [
-        -848,
-        112
-      ],
-      "id": "f02ffbb5-de1a-4b91-9c20-52ae1e0f3cd9",
-      "name": "AI Agent1"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Edit Fields').item.json.request_id }}"
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        -880,
-        320
-      ],
-      "id": "14f2d9a4-fc42-4d9f-aa6d-de4620ac595c",
-      "name": "Simple Memory1"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-4.1-mini"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -992,
-        320
-      ],
-      "id": "abfb3387-8768-41cd-82a2-90a5f24e6acc",
-      "name": "OpenAI Chat Model1",
-      "credentials": {
-        "openAiApi": {
-          "id": "c91JIIvd58bA5WHe",
-          "name": "OpenAi account"
-        }
-      }
+      "id": "c6bf7d49-1d6a-4b5e-a81a-59d8dc6a91f7",
+      "name": "Obtener_texto_del_audio"
     },
     {
       "parameters": {
@@ -356,13 +698,13 @@
             {
               "id": "c52ad1d3-e110-4fbd-a467-2822dc856ad7",
               "name": "final_message",
-              "value": "={{ $('final_message_voice').item.json.chatInput }}",
+              "value": "={{ $('Obtener_texto_del_audio').item.json.chatInput }}",
               "type": "string"
             },
             {
               "id": "2ded8448-23f5-44ac-a8e5-350e930163be",
               "name": "request_id",
-              "value": "={{ $('Edit Fields').item.json.request_id }}",
+              "value": "={{ $('Tomar_data').item.json.request_id }}",
               "type": "string"
             }
           ]
@@ -372,16 +714,16 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -496,
-        112
+        -1584,
+        64
       ],
-      "id": "1ff49927-d83c-42c9-b5bd-f0c2aa2f6f41",
-      "name": "wait_out1"
+      "id": "6f27ddb8-a6cf-403a-8842-fecf33bbb6c9",
+      "name": "Respuesta_IA"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://lead.jumpjibe.com/chatter_voice_note/audio_to_text",
+        "url": "https://jumpjibe.com/chatter_voice_note/audio_to_text",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -413,32 +755,84 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -288,
-        112
+        -848,
+        64
       ],
-      "id": "e1ad64b4-880e-4d9f-a8e8-312faef09307",
-      "name": "HTTP Request"
+      "id": "ab64732c-4fd9-43df-9c0a-6760460ba419",
+      "name": "Refresca_Pantalla_OWL_odoo"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test-medical-report",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -432,
+        -240
+      ],
+      "id": "9ab11974-f8c8-47de-a709-88d8f2badd86",
+      "name": "Reporte",
+      "webhookId": "1ecf0e9d-31dd-40be-ad70-394a4573b8ec"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        -96
+      ],
+      "id": "01a79140-b1a9-4c1f-8a5e-aa7eed256d04",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
             {
-              "id": "4d514641-b9db-4504-9afe-1be1973e7c8e",
-              "name": "final_message",
-              "value": "={{ $json.received.final_message }}",
-              "type": "string"
-            },
-            {
               "id": "f4d68058-6980-4416-9d4a-c417aa0f53e1",
-              "name": "answer_ia",
-              "value": "={{ $json.received.answer_ia }}",
+              "name": "pdf_data",
+              "value": "={{ $json.body.pdf_data }}",
               "type": "string"
             },
             {
               "id": "7b026c08-3bd0-4041-9a34-97c1f06bb938",
               "name": "contacts",
-              "value": "={{ $('Edit Fields').item.json.contacts }}",
+              "value": "={{ $json.body.contacts }}",
+              "type": "string"
+            },
+            {
+              "id": "f7749d38-cfa7-43e9-9324-ffc77327502d",
+              "name": "pdf_name",
+              "value": "={{ $json.body.pdf_name }}",
+              "type": "string"
+            },
+            {
+              "id": "3f5bda86-2c83-4b1c-b668-769326206f4d",
+              "name": "subject",
+              "value": "={{ $json.body.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "cb98bc9f-6ad5-4eef-8a32-2d5039dda5f2",
+              "name": "body",
+              "value": "={{ $json.body.body }}",
+              "type": "string"
+            },
+            {
+              "id": "270102bc-a22f-4eaf-b4c4-29d174a34424",
+              "name": "doctor_name",
+              "value": "={{ $json.body.doctor_name }}",
+              "type": "string"
+            },
+            {
+              "id": "0b79b4f6-a3ba-44d4-bef7-dd0c285eda5d",
+              "name": "doctor_title",
+              "value": "={{ $json.body.doctor_title }}",
               "type": "string"
             }
           ]
@@ -448,257 +842,118 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -704,
-        384
+        -160,
+        -240
       ],
-      "id": "7f739d56-ce75-433d-99d8-9c0ee6a679de",
-      "name": "Edit Fields1"
+      "id": "0d7448b9-5a1b-4f2f-9454-7c40967ad9f2",
+      "name": "Obtener_data"
     },
     {
       "parameters": {
-        "sendTo": "={{ $json.email }}",
-        "subject": "Audio a texto con IA",
-        "message": "=<!DOCTYPE html>\n<html>\n<head>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333;\n            max-width: 800px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            color: white;\n            padding: 20px;\n            border-radius: 8px 8px 0 0;\n            text-align: center;\n        }\n        .table-container {\n            margin: 20px 0;\n            border: 1px solid #ddd;\n            border-radius: 0 0 8px 8px;\n            overflow: hidden;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n        }\n        th {\n            background-color: #f8f9fa;\n            padding: 12px 15px;\n            text-align: left;\n            font-weight: bold;\n            border-bottom: 2px solid #dee2e6;\n        }\n        td {\n            padding: 12px 15px;\n            border-bottom: 1px solid #dee2e6;\n        }\n        tr:last-child td {\n            border-bottom: none;\n        }\n        .message-table {\n            margin-bottom: 30px;\n        }\n        .message-title {\n            background-color: #007bff;\n            color: white;\n            padding: 10px 15px;\n            font-weight: bold;\n            margin: 0;\n        }\n        .info-row {\n            background-color: #f8f9fa;\n        }\n        .message-content {\n            background-color: #fff;\n            padding: 15px;\n            border-left: 4px solid #007bff;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h1> UNISA - Traductor Inteligente</h1>\n        <p>Procesamiento completado exitosamente</p>\n    </div>\n\n    <!-- Tabla de información general OBLIGATORIA -->\n    <div class=\"table-container\">\n        <table>\n            <thead>\n                <tr>\n                    <th colspan=\"2\" style=\"text-align: center;\">Información del Contacto</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr class=\"info-row\">\n                    <td><strong>ID:</strong></td>\n                    <td>{{ $json.id }}</td>\n                </tr>\n                <tr>\n                    <td><strong>Nombre:</strong></td>\n                    <td>{{ $json.name }}</td>\n                </tr>\n                <tr class=\"info-row\">\n                    <td><strong>Email:</strong></td>\n                    <td>{{ $json.email }}</td>\n                </tr>\n                <tr>\n                    <td><strong>Teléfono:</strong></td>\n                    <td>{{ $json.phone }}</td>\n                </tr>\n            </tbody>\n        </table>\n    </div>\n\n    <!-- Tabla para final_message OBLIGATORIA -->\n    <div class=\"message-table\">\n        <div class=\"message-title\">Mensaje Final del Usuario</div>\n        <div class=\"table-container\">\n            <table>\n                <tbody>\n                    <tr>\n                        <td class=\"message-content\">\n                            {{ $json.final_message }}\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </div>\n\n    <!-- Tabla para answer_ia OBLIGATORIA -->\n    <div class=\"message-table\">\n        <div class=\"message-title\">Respuesta de IA Procesada</div>\n        <div class=\"table-container\">\n            <table>\n                <tbody>\n                    <tr>\n                        <td class=\"message-content\">\n                            {{ $json.answer_ia || \"Procesamiento en curso - Sin respuesta de IA aún\" }}\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n        </div>\n    </div>\n</body>\n</html>",
-        "options": {
-          "appendAttribution": false
-        }
+        "jsCode": "const items = $input.all();\nlet newItems = [];\nlet conta = 0; // Reinicia el contador por cada ejecución\n\nfor (const item of items) {\n  // Parsear contactos\n  const contacts = JSON.parse(item.json.contacts);\n\n  for (const contact of contacts) {\n    const newItem = {\n      ...contact,\n      to: item.json.email,\n      sessionId: ++conta,\n      doctor_name: item.json.doctor_name,\n      doctor_title: item.json.doctor_title,\n      body: item.json.body,\n      subject: item.json.subject,\n      pdf_name: item.json.pdf_name,\n      // pdf_data: item.json.pdf_data, // Ya no lo necesitas en json\n    };\n\n    // Aquí creas el binario para n8n\n    newItems.push({\n      json: newItem,\n      binary: {\n        data: {\n          data: item.json.pdf_data, // base64\n          mimeType: 'application/pdf',\n          fileName: item.json.pdf_name || 'documento.pdf'\n        }\n      }\n    });\n  }\n}\n\nreturn newItems;\n"
       },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        -272,
-        368
+        128,
+        -240
       ],
-      "id": "f3b7ac60-f06b-4713-8097-121449632bc5",
-      "name": "Send a message",
-      "webhookId": "05cbbd81-a686-434e-8aca-e5a94945a514",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "GGox6idrEobuo72S",
-          "name": "Gmail account"
-        }
-      }
+      "id": "52b20b5c-5b7a-4c0c-abd6-c2ce0010a29f",
+      "name": "Obtener_binary_junto_con_resto_data"
     },
     {
       "parameters": {
-        "url": "=https://api.telegram.org/file/bot{{ $('Prepare Voice Message Data').item.json.telegramToken }}/{{ $json.result.file_path }}",
+        "content": "## Enviar Correo con attachment",
+        "height": 592,
+        "width": 1424
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        -496
+      ],
+      "typeVersion": 1,
+      "id": "b0387a1e-dd88-4ef3-908e-c4cf06e48929",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Trae ubn audio, lo lleva a texto, ese texto lo procesa la ia y saca otro texto de ia para orientarlo, ",
+        "height": 912,
+        "width": 2800,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3456,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "83a38638-b4b7-415c-88b0-326614279c49",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://jumpjibe.com/hospital/voice_callback",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=final_message",
+              "value": "={{ $json.final_message }}"
+            },
+            {
+              "name": "answer_ia",
+              "value": "={{ $('AI Agent1').item.json.output }}"
+            },
+            {
+              "name": "request_id",
+              "value": "={{ $json.request_id }}"
+            }
+          ]
+        },
         "options": {}
       },
-      "id": "c7b77b64-6ea1-4db7-a8d9-874613d53693",
-      "name": "Download Voice File",
       "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
-        -2016,
-        -784
+        -1360,
+        64
       ],
-      "typeVersion": 3
-    },
-    {
-      "parameters": {
-        "url": "=https://api.telegram.org/bot{{ $json.telegramToken }}/getFile?file_id={{ $json.voice_file_id }}",
-        "options": {}
-      },
-      "id": "990785dd-3f2f-4d41-b12c-9fae2606d042",
-      "name": "Get File Path",
-      "type": "n8n-nodes-base.httpRequest",
-      "position": [
-        -1904,
-        -640
-      ],
-      "typeVersion": 4.2
+      "id": "72d5f6a9-4532-4f1e-bec3-7b16bee6c544",
+      "name": "Enviar_Odoo",
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
             {
-              "id": "e0deb0df-a5f8-4d13-8af6-92d0e1f0ad74",
-              "name": "user_id",
-              "type": "number",
-              "value": "={{ $json.message.from.id }}"
+              "id": "fdb10435-c0fb-46df-a82e-267dbc32b62a",
+              "name": "answer_ia",
+              "value": "={{ $json.output }}",
+              "type": "string"
             },
             {
-              "id": "d5b76796-10f1-41ef-bff6-1602fb434ad8",
-              "name": "chat_id",
-              "type": "number",
-              "value": "={{ $json.message.chat.id }}"
-            },
-            {
-              "id": "59bda82b-6c18-40fd-b120-ed078a5d4c96",
-              "name": "voice_file_id",
-              "type": "string",
-              "value": "={{ $json.message.voice.file_id }}"
-            },
-            {
-              "id": "9412f498-5e52-4ea9-81a3-9d76379406c0",
-              "name": "timestamp",
-              "type": "string",
-              "value": "={{ new Date().toISOString() }}"
-            },
-            {
-              "id": "telegramToken",
-              "name": "telegramToken",
-              "type": "string",
-              "value": "8407433385:AAG98DkKC9nJK4ke2XLujtwyJGuyuDJin9M"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "a53e1da1-a7e2-43ed-aab3-f575355cef4d",
-      "name": "Prepare Voice Message Data",
-      "type": "n8n-nodes-base.set",
-      "position": [
-        -2208,
-        -640
-      ],
-      "typeVersion": 3.4
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "text-user-id",
-              "name": "user_id",
-              "type": "number",
-              "value": "={{ $json.message.from.id }}"
-            },
-            {
-              "id": "text-chat-id",
-              "name": "chat_id",
-              "type": "number",
-              "value": "={{ $json.message.chat.id }}"
-            },
-            {
-              "id": "text-message-text",
-              "name": "message_text",
-              "type": "string",
-              "value": "={{ $json.message.text }}"
-            },
-            {
-              "id": "text-message-id",
-              "name": "message_id",
-              "type": "number",
-              "value": "={{ $json.message.message_id }}"
-            },
-            {
-              "id": "text-timestamp",
-              "name": "timestamp",
-              "type": "string",
-              "value": "={{ new Date().toISOString() }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "8b8e29e0-a62a-4a4f-82b3-a8ad4483478a",
-      "name": "Prepare Text Message Data",
-      "type": "n8n-nodes-base.set",
-      "position": [
-        -2480,
-        -400
-      ],
-      "typeVersion": 3.4
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "version": 2,
-            "leftValue": "",
-            "caseSensitive": true,
-            "typeValidation": "strict"
-          },
-          "combinator": "and",
-          "conditions": [
-            {
-              "id": "876dc746-b9cb-4b7f-a0e2-1542f67fbe05",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              },
-              "leftValue": "={{ Boolean($json.message.voice) }}",
-              "rightValue": ""
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "c011b7c2-1b65-425f-91c1-ede00ea4f022",
-      "name": "Is Voice Message?",
-      "type": "n8n-nodes-base.if",
-      "position": [
-        -2496,
-        -640
-      ],
-      "typeVersion": 2.2
-    },
-    {
-      "parameters": {
-        "updates": [
-          "message"
-        ],
-        "additionalFields": {}
-      },
-      "id": "1d231586-d3a2-4b6d-8a5d-8b9f5b85ebb4",
-      "name": "Telegram Trigger",
-      "type": "n8n-nodes-base.telegramTrigger",
-      "position": [
-        -2768,
-        -640
-      ],
-      "webhookId": "8dadd8e7-a415-46d3-99d5-b577014bae48",
-      "typeVersion": 1.1,
-      "credentials": {
-        "telegramApi": {
-          "id": "GQvXK3j6MPBEQhxd",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.8,
-      "position": [
-        -1712,
-        -832
-      ],
-      "id": "53531334-922e-4070-8bf3-1fddf68b3a39",
-      "name": "Transcribe a recording1",
-      "credentials": {
-        "openAiApi": {
-          "id": "c91JIIvd58bA5WHe",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "ad248fca-e1de-4d6e-93ab-7759d2ac9f74",
+              "id": "c52ad1d3-e110-4fbd-a467-2822dc856ad7",
               "name": "final_message",
-              "value": "={{ $json.text }}",
+              "value": "={{ $('Obtener_texto_del_audio').item.json.chatInput }}",
               "type": "string"
             },
             {
-              "id": "92bea91a-3229-4394-a24d-054845f95273",
-              "name": "chatInput",
-              "value": "oraclefedora@gmail.com",
-              "type": "string"
-            },
-            {
-              "id": "7b1ba407-5484-4b31-bbf0-5adedae46fc3",
-              "name": "sessionId",
-              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+              "id": "2ded8448-23f5-44ac-a8e5-350e930163be",
+              "name": "request_id",
+              "value": "={{ $('Tomar_data').item.json.request_id }}",
               "type": "string"
             }
           ]
@@ -708,236 +963,75 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1424,
-        -816
+        -1120,
+        64
       ],
-      "id": "1e0f83c8-ec82-4808-ac3e-d354875acea5",
-      "name": "final_message_voice1"
+      "id": "94eee46a-233d-4f5b-befb-f741f1f203b4",
+      "name": "Refresca_vista_owl"
     },
     {
       "parameters": {
-        "options": {
-          "systemMessage": "=Toda respuesta es en español: Analiza el texto proporcionado y extrae todas las direcciones de correo electrónico que encuentres. Luego, formatea la información para enviar un mensaje usando la herramienta 'Send a message' de la siguiente manera:\n\nINSTRUCCIONES:\n1. Identifica y extrae todas las direcciones de email válidas del texto\n2. Si se menciona un destinatario principal o hay contexto sobre a quién va dirigido el mensaje, úsalo para determinar el campo 'to'\n3. Organiza la información en este formato:\n\nTO: [email extraído o el contenido de chatInput si no se encuentra email]\nSUBJECT: [asunto del mensaje si se menciona, o crear uno apropiado basado en el contexto]\nBODY: [final_message]\n\n4. Si no se encuentra ningún correo electrónico en el texto, utiliza el contenido de la variable `chatInput` como destinatario (TO)\n5. Si no hay suficiente información para el asunto, usa valores predeterminados apropiados\n6. Si hay múltiples emails, prioriza el que parezca ser el destinatario principal\n7. Siempre verifica que el campo TO tenga un valor válido (email o contenido de chatInput)\n8. Para el campo BODY, utiliza siempre el contenido de la variable `final_message`\n\nEjemplo de flujo:\n- Si el texto contiene: \"Enviar a maria@empresa.com sobre la reunión\"\n- TO: maria@empresa.com\n- SUBJECT: Reunión\n- BODY: [contenido de final_message]\n\n- Si NO contiene email: usar chatInput como TO\n- BODY: [siempre usar final_message]"
-        }
+        "content": "## Telegram recibe audio y transforma",
+        "height": 832,
+        "width": 2688
       },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2.2,
+      "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -1136,
-        -784
+        -3456,
+        -1120
       ],
-      "id": "b8449efc-92b6-4fe7-adc2-e30baaf3d053",
-      "name": "AI Agent2"
-    },
-    {
-      "parameters": {
-        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
-        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
-        "message": "=<!DOCTYPE html> <html> <head>     <style>         body {             font-family: Arial, sans-serif;             line-height: 1.6;             color: #333;             max-width: 800px;             margin: 0 auto;             padding: 20px;         }         .header {             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             color: white;             padding: 20px;             border-radius: 8px 8px 0 0;             text-align: center;         }         .table-container {             margin: 20px 0;             border: 1px solid #ddd;             border-radius: 0 0 8px 8px;             overflow: hidden;         }         table {             width: 100%;             border-collapse: collapse;         }         th {             background-color: #f8f9fa;             padding: 12px 15px;             text-align: left;             font-weight: bold;             border-bottom: 2px solid #dee2e6;         }         td {             padding: 12px 15px;             border-bottom: 1px solid #dee2e6;         }         tr:last-child td {             border-bottom: none;         }         .message-table {             margin-bottom: 30px;         }         .message-title {             background-color: #007bff;             color: white;             padding: 10px 15px;             font-weight: bold;             margin: 0;         }         .info-row {             background-color: #f8f9fa;         }         .message-content {             background-color: #fff;             padding: 15px;             border-left: 4px solid #007bff;         }     </style> </head> <body>     <div class=\"header\">         <h1> UNISA - Traductor Inteligente</h1>         <p>Procesamiento completado exitosamente</p>     </div>            <!-- Tabla para final_message OBLIGATORIA -->     <div class=\"message-table\">         <div class=\"message-title\">Mensaje Final del Usuario</div>         <div class=\"table-container\">             <table>                 <tbody>                     <tr>                         <td class=\"message-content\">                             {{ $json.final_message }}                         </td>                     </tr>                 </tbody>             </table>         </div>     </div>      </body> </html>",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmailTool",
-      "typeVersion": 2.1,
-      "position": [
-        -896,
-        -480
-      ],
-      "id": "cbb1c218-552f-4889-b84b-a26c21e49b73",
-      "name": "Send a message in Gmail",
-      "webhookId": "3d2135dc-1b90-4f69-8cac-ddb54ef0a650",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "GGox6idrEobuo72S",
-          "name": "Gmail account"
-        }
-      }
-    },
-    {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        -1136,
-        -576
-      ],
-      "id": "ca209e1c-c2b0-43f0-a66d-22f6e9701a19",
-      "name": "Simple Memory2"
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-4.1-mini"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -1280,
-        -576
-      ],
-      "id": "0b01d251-2014-4248-a751-b9659cb52ccc",
-      "name": "OpenAI Chat Model2",
-      "credentials": {
-        "openAiApi": {
-          "id": "c91JIIvd58bA5WHe",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "={{ $json.final_message }}",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -560,
-        -752
-      ],
-      "id": "4cc42433-a558-425a-a079-180bacc91247",
-      "name": "Send a text message",
-      "webhookId": "f9251e14-07c7-4e65-81e3-2c9a286f96f9",
-      "credentials": {
-        "telegramApi": {
-          "id": "GQvXK3j6MPBEQhxd",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "5889cfb4-cb14-46e7-9aca-219206d9608b",
-              "name": "",
-              "value": "",
-              "type": "string"
-            },
-            {
-              "id": "19b5fb36-2556-4f92-8fda-158b16da4a17",
-              "name": "final_message",
-              "value": "={{ $('final_message_voice1').item.json.final_message }}",
-              "type": "string"
-            },
-            {
-              "id": "761a919a-d751-4272-a8c7-04467eaba06a",
-              "name": "message.chat.id",
-              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -784,
-        -784
-      ],
-      "id": "1cbe8a1a-065e-4b4d-bf2b-d298e7b589ce",
-      "name": "Edit Fields2"
+      "typeVersion": 1,
+      "id": "e21babee-6b84-4ea1-aae9-ba4a866cfb76",
+      "name": "Sticky Note2"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "headers": {
+            "connection": "upgrade",
+            "host": "n8n.jumpjibe.com",
+            "content-length": "4745",
+            "user-agent": "Odoo-Medical-Report/1.0",
+            "accept-encoding": "gzip, deflate",
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "pdf_data": "JVBERi0xLjMKJbrfrOAKMyAwIG9iago8PC9UeXBlIC9QYWdlCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyAyIDAgUgovTWVkaWFCb3ggWzAgMCA1OTUuMjc5OTk5OTk5OTk5OTcyNyA4NDEuODg5OTk5OTk5OTk5OTg2NF0KL0NvbnRlbnRzIDQgMCBSCj4+CmVuZG9iago0IDAgb2JqCjw8Ci9MZW5ndGggMjQKPj4Kc3RyZWFtCjAuNTY3MDAwMDAwMDAwMDAwMSB3CjAgRwplbmRzdHJlYW0KZW5kb2JqCjEgMCBvYmoKPDwvVHlwZSAvUGFnZXMKL0tpZHMgWzMgMCBSIF0KL0NvdW50IDEKPj4KZW5kb2JqCjUgMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9IZWx2ZXRpY2EKL1N1YnR5cGUgL1R5cGUxCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKNiAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9IZWx2ZXRpY2EtT2JsaXF1ZQovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iago4IDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGRPYmxpcXVlCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9Db3VyaWVyCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjEwIDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvQ291cmllci1Cb2xkCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjExIDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvQ291cmllci1PYmxpcXVlCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjEyIDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvQ291cmllci1Cb2xkT2JsaXF1ZQovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iagoxMyAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL1RpbWVzLVJvbWFuCi9TdWJ0eXBlIC9UeXBlMQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRmlyc3RDaGFyIDMyCi9MYXN0Q2hhciAyNTUKPj4KZW5kb2JqCjE0IDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9CYXNlRm9udCAvVGltZXMtQm9sZAovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iagoxNSAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL1RpbWVzLUl0YWxpYwovU3VidHlwZSAvVHlwZTEKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL0ZpcnN0Q2hhciAzMgovTGFzdENoYXIgMjU1Cj4+CmVuZG9iagoxNiAwIG9iago8PAovVHlwZSAvRm9udAovQmFzZUZvbnQgL1RpbWVzLUJvbGRJdGFsaWMKL1N1YnR5cGUgL1R5cGUxCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKMTcgMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9aYXBmRGluZ2JhdHMKL1N1YnR5cGUgL1R5cGUxCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKMTggMCBvYmoKPDwKL1R5cGUgL0ZvbnQKL0Jhc2VGb250IC9TeW1ib2wKL1N1YnR5cGUgL1R5cGUxCi9GaXJzdENoYXIgMzIKL0xhc3RDaGFyIDI1NQo+PgplbmRvYmoKMiAwIG9iago8PAovUHJvY1NldCBbL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSV0KL0ZvbnQgPDwKL0YxIDUgMCBSCi9GMiA2IDAgUgovRjMgNyAwIFIKL0Y0IDggMCBSCi9GNSA5IDAgUgovRjYgMTAgMCBSCi9GNyAxMSAwIFIKL0Y4IDEyIDAgUgovRjkgMTMgMCBSCi9GMTAgMTQgMCBSCi9GMTEgMTUgMCBSCi9GMTIgMTYgMCBSCi9GMTMgMTcgMCBSCi9GMTQgMTggMCBSCj4+Ci9YT2JqZWN0IDw8Cj4+Cj4+CmVuZG9iagoxOSAwIG9iago8PAovUHJvZHVjZXIgKGpzUERGIDIuNS4xKQovQ3JlYXRpb25EYXRlIChEOjIwMjUxMTIxMTEzNjI5LTA0JzAwJykKPj4KZW5kb2JqCjIwIDAgb2JqCjw8Ci9UeXBlIC9DYXRhbG9nCi9QYWdlcyAxIDAgUgovT3BlbkFjdGlvbiBbMyAwIFIgL0ZpdEggbnVsbF0KL1BhZ2VMYXlvdXQgL09uZUNvbHVtbgo+PgplbmRvYmoKeHJlZgowIDIxCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDIyNiAwMDAwMCBuIAowMDAwMDAyMDQzIDAwMDAwIG4gCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDE1MiAwMDAwMCBuIAowMDAwMDAwMjgzIDAwMDAwIG4gCjAwMDAwMDA0MDggMDAwMDAgbiAKMDAwMDAwMDUzOCAwMDAwMCBuIAowMDAwMDAwNjcxIDAwMDAwIG4gCjAwMDAwMDA4MDggMDAwMDAgbiAKMDAwMDAwMDkzMSAwMDAwMCBuIAowMDAwMDAxMDYwIDAwMDAwIG4gCjAwMDAwMDExOTIgMDAwMDAgbiAKMDAwMDAwMTMyOCAwMDAwMCBuIAowMDAwMDAxNDU2IDAwMDAwIG4gCjAwMDAwMDE1ODMgMDAwMDAgbiAKMDAwMDAwMTcxMiAwMDAwMCBuIAowMDAwMDAxODQ1IDAwMDAwIG4gCjAwMDAwMDE5NDcgMDAwMDAgbiAKMDAwMDAwMjI5MSAwMDAwMCBuIAowMDAwMDAyMzc3IDAwMDAwIG4gCnRyYWlsZXIKPDwKL1NpemUgMjEKL1Jvb3QgMjAgMCBSCi9JbmZvIDE5IDAgUgovSUQgWyA8MDg3NDBFODY5QjBFQzE2OTk1QTdGM0I3NzQ2ODc3NkM+IDwwODc0MEU4NjlCMEVDMTY5OTVBN0YzQjc3NDY4Nzc2Qz4gXQo+PgpzdGFydHhyZWYKMjQ4MQolJUVPRg==",
+            "pdf_name": "Reporte_Medico_1763739389622.pdf",
+            "contacts": [
+              {
+                "id": 42,
+                "name": "Simon Oracle Alberto ",
+                "email": "oraclefedora@gmail.com",
+                "phone": "04142711347"
+              }
+            ],
+            "subject": "Reporte Médico - 21 de noviembre de 2025",
+            "body": "Estimado(a) paciente,\n\nAdjuntamos su reporte médico generado el 21 de noviembre de 2025, 11:36.\n\nDr. Mitchell Admin\nProfesional de Salud\nYourCompany\n\n---\nEste es un mensaje automático, por favor no responder.",
+            "res_model": null,
+            "res_id": null,
+            "timestamp": "2025-11-21T15:36:29.623Z",
+            "company_name": "YourCompany",
+            "doctor_name": "Dr. Mitchell Admin",
+            "doctor_title": "Profesional de Salud"
+          },
+          "webhookUrl": "https://n8n.jumpjibe.com/webhook/medical-report",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
   "connections": {
     "Webhook": {
       "main": [
         [
           {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "final_message_txt",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Convert to File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convert to File": {
-      "main": [
-        [
-          {
-            "node": "Transcribe a recording",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Transcribe a recording": {
-      "main": [
-        [
-          {
-            "node": "final_message_voice",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "final_message_voice": {
-      "main": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "final_message_txt": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Send a message",
+            "node": "Tomar_data",
             "type": "main",
             "index": 0
           }
@@ -970,40 +1064,7 @@
       "main": [
         [
           {
-            "node": "wait_out1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "wait_out1": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields1": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript",
+            "node": "Respuesta_IA",
             "type": "main",
             "index": 0
           }
@@ -1148,17 +1209,178 @@
           }
         ]
       ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Tomar_data": {
+      "main": [
+        [
+          {
+            "node": "Es texto?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es texto?": {
+      "main": [
+        [
+          {
+            "node": "Continuar_data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Procesar_archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuar_data": {
+      "main": [
+        [
+          {
+            "node": "FIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar_archivo": {
+      "main": [
+        [
+          {
+            "node": "Transcribir_audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribir_audio": {
+      "main": [
+        [
+          {
+            "node": "Obtener_texto_del_audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener_texto_del_audio": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta_IA": {
+      "main": [
+        [
+          {
+            "node": "Enviar_Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refresca_Pantalla_OWL_odoo": {
+      "main": [
+        []
+      ]
+    },
+    "Reporte": {
+      "main": [
+        [
+          {
+            "node": "Obtener_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Obtener_data": {
+      "main": [
+        [
+          {
+            "node": "Obtener_binary_junto_con_resto_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener_binary_junto_con_resto_data": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar_Odoo": {
+      "main": [
+        [
+          {
+            "node": "Refresca_vista_owl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refresca_vista_owl": {
+      "main": [
+        [
+          {
+            "node": "Refresca_Pantalla_OWL_odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8db66d64-8982-4b13-be1e-c1e4e3b16689",
+  "versionId": "da9ab12c-4bfd-4a40-a100-c1133885f82c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "15bcb76b27af2157af7908eb77d2379c6eabf07b96d8f87a740ef7ffe3480343"
   },
-  "id": "pyGkhz7xXgwAnbj1",
-  "tags": []
+  "id": "uBbuaB9sgsiPJPxH",
+  "tags": [
+    {
+      "createdAt": "2025-11-09T20:41:03.444Z",
+      "updatedAt": "2025-11-09T20:41:03.444Z",
+      "id": "pJyPPYQ0dXrWCWfI",
+      "name": "chatter_voice_note"
+    }
+  ]
 }
