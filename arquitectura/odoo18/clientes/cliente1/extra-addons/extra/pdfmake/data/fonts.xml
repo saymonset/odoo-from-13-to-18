@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="default_printer" model="pdfmake.printer">
+        <field name="name">Servidor de Impresión PDF</field>
+        <field name="use_local_fonts">True</field>
+    </record>
+</odoo>
