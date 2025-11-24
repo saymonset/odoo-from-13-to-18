@@ -1,5 +1,0 @@
-<record id="test_pdf_report_demo" model="test.pdf.report">
-    <field name="name">ACME Corporation</field>
-    <field name="amount">25899.95</field>
-    <field name="active">1</field>
-</record>
