@@ -1,4 +1,3 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_pdfmake_printer_manager,pdfmake_printer_manager,model_pdfmake_printer,base.group_system,1,1,1,1
 access_test_pdf_report_user,test_pdf_report_user,model_test_pdf_report,base.group_user,1,1,1,1
 access_test_pdf_report_manager,test_pdf_report_manager,model_test_pdf_report,base.group_system,1,1,1,1

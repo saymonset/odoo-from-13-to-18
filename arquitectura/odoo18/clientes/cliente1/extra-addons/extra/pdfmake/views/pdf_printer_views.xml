@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- VISTAS DEL PRINTER -->
-    <record id="view_pdf_printer_form" model="ir.ui.view">
-        <field name="name">pdfmake.printer.form</field>
-        <field name="model">pdfmake.printer</field>
-        <field name="arch" type="xml">
-            <form>
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="use_local_fonts"/>
-                        </group>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="view_pdf_printer_tree" model="ir.ui.view">
-        <field name="name">pdfmake.printer.tree</field>
-        <field name="model">pdfmake.printer</field>
-        <field name="arch" type="xml">
-            <list>
-                <field name="name"/>
-                <field name="use_local_fonts"/>
-            </list>
-        </field>
-    </record>
-
-    <record id="action_pdf_printer" model="ir.actions.act_window">
-        <field name="name">PDF Printers</field>
-        <field name="res_model">pdfmake.printer</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
-    <menuitem 
-        id="menu_pdf_printer" 
-        name="PDF Printer" 
-        parent="base.menu_administration"
-        action="action_pdf_printer"
-        sequence="100"/>
 
     <!-- VISTAS PARA EL MODELO DE PRUEBA (test.pdf.report) -->
     <record id="view_test_pdf_report_tree" model="ir.ui.view">
