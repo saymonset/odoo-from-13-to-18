@@ -14,8 +14,8 @@
         'web.assets_backend': [
             'pdfmake/static/src/fonts/*',
             # pdfmake desde CDN
-            'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js',
             
           # Nuestros archivos JS - SOLO los esenciales
             'pdfmake/static/src/js/pdfmake_service.js',
