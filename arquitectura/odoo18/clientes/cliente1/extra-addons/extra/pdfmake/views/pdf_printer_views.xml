@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-
     <!-- VISTAS PARA EL MODELO DE PRUEBA (test.pdf.report) -->
     <record id="view_test_pdf_report_tree" model="ir.ui.view">
         <field name="name">test.pdf.report.tree</field>
@@ -9,7 +8,8 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="amount"/>
+                <field name="employee_position"/>
+                <field name="employer_company"/>
                 <field name="active"/>
             </list>
         </field>
@@ -21,10 +21,15 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_generate_pdf" 
+                    <button name="action_generate_employment_letter" 
                             type="object" 
-                            string="Generar PDF" 
-                            class="btn-primary"/>
+                            string="Generar Constancia de Empleo" 
+                            class="btn-primary"
+                            invisible="not is_employee_record"/>
+                    <button name="action_generate_hello_world" 
+                            type="object" 
+                            string="Generar Hola Mundo" 
+                            class="btn-secondary"/>
                 </header>
                 <sheet>
                     <group>
@@ -32,6 +37,16 @@
                         <field name="amount"/>
                         <field name="active"/>
                         <field name="partner_id"/>
+                        <field name="is_employee_record"/>
+                    </group>
+                    <group string="Datos de Empleo" invisible="not is_employee_record">
+                        <field name="employee_position"/>
+                        <field name="employee_start_date"/>
+                        <field name="employee_hours_per_week"/>
+                        <field name="employee_work_schedule"/>
+                        <field name="employer_name"/>
+                        <field name="employer_position"/>
+                        <field name="employer_company"/>
                     </group>
                 </sheet>
             </form>

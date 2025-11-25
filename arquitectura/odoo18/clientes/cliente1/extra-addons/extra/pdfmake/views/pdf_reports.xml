@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- REPORTE HOLA MUNDO -->
+    <template id="hello_world_report">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <h1 style="text-align: center; margin-top: 100px;">HOLA MUNDO</h1>
+                    <p style="text-align: center; margin-top: 50px;">
+                        Este es un reporte generado desde Odoo PDFMake
+                    </p>
+                    <p style="text-align: center; margin-top: 30px;">
+                        Fecha: <span t-esc="datetime.now().strftime('%d/%m/%Y %H:%M:%S')"/>
+                    </p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+
+    <!-- REPORTE CONSTANCIA DE EMPLEO CORREGIDO -->
+    <template id="employment_letter_report">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page" style="padding: 50px;">
+                    <h1 style="text-align: center; margin-bottom: 50px;">CONSTANCIA DE EMPLEO</h1>
+                    
+                    <p style="text-align: justify; line-height: 1.6; margin-bottom: 20px;">
+                        Yo, <strong t-esc="employee_data.get('employer_name', 'Nombre del Empleador')"/>, 
+                        en mi calidad de <strong t-esc="employee_data.get('employer_position', 'Cargo del Empleador')"/> 
+                        de <strong t-esc="employee_data.get('employer_company', 'Nombre de la Empresa')"/>, 
+                        por medio de la presente certifico que 
+                        <strong t-esc="employee_data.get('employee_name', 'Nombre del Empleado')"/> 
+                        ha sido empleado en nuestra empresa desde el 
+                        <strong t-esc="employee_data.get('employee_start_date', 'Fecha de Inicio')"/>.
+                    </p>
+                    
+                    <p style="text-align: justify; line-height: 1.6; margin-bottom: 20px;">
+                        Durante su empleo, el Sr./Sra. <strong t-esc="employee_data.get('employee_name', 'Nombre del Empleado')"/> 
+                        ha desempeñado el cargo de <strong t-esc="employee_data.get('employee_position', 'Cargo del Empleado')"/>, 
+                        demostrando responsabilidad, compromiso y habilidades profesionales en sus labores.
+                    </p>
+                    
+                    <p style="text-align: justify; line-height: 1.6; margin-bottom: 20px;">
+                        La jornada laboral del Sr./Sra. <strong t-esc="employee_data.get('employee_name', 'Nombre del Empleado')"/> 
+                        es de <strong t-esc="employee_data.get('employee_hours', 40)"/> horas semanales, 
+                        con un horario de <strong t-esc="employee_data.get('employee_work_schedule', 'Horario de Trabajo')"/>, 
+                        cumpliendo con las políticas y procedimientos establecidos por la empresa.
+                    </p>
+                    
+                    <p style="text-align: justify; line-height: 1.6; margin-bottom: 40px;">
+                        Esta constancia se expide a solicitud del interesado para los fines que considere conveniente.
+                    </p>
+                    
+                    <div style="margin-top: 60px;">
+                        <p style="margin-bottom: 10px;">Atentamente,</p>
+                        <p style="margin-bottom: 5px;"><strong t-esc="employee_data.get('employer_name', 'Nombre del Empleador')"/></p>
+                        <p style="margin-bottom: 5px;"><strong t-esc="employee_data.get('employer_position', 'Cargo del Empleador')"/></p>
+                        <p style="margin-bottom: 5px;"><strong t-esc="employee_data.get('employer_company', 'Nombre de la Empresa')"/></p>
+                        <p style="margin-top: 20px;">
+                            Fecha de emisión: <strong t-esc="employee_data.get('issue_date', 'Fecha')"/>
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 80px; text-align: center; font-style: italic; font-size: 10px;">
+                        Este documento es una constancia de empleo y no representa un compromiso laboral.
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ACCIONES DE REPORTE -->
+    <record id="action_report_hello_world" model="ir.actions.report">
+        <field name="name">Hola Mundo PDF</field>
+        <field name="model">test.pdf.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pdfmake.hello_world_report</field>
+        <field name="print_report_name">'hola_mundo.pdf'</field>
+        <field name="binding_model_id" ref="model_test_pdf_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_employment_letter" model="ir.actions.report">
+        <field name="name">Constancia de Empleo</field>
+        <field name="model">test.pdf.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pdfmake.employment_letter_report</field>
+        <field name="print_report_name">'constancia_empleo.pdf'</field>
+        <field name="binding_model_id" ref="model_test_pdf_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>
