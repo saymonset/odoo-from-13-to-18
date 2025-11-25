@@ -12,18 +12,19 @@ class TestPdfReport(models.Model):
     partner_id = fields.Many2one('res.partner', string="Contacto")
     
     def action_generate_pdf(self):
-        """Acción para generar PDF"""
+        """Acción para generar PDF - VERSIÓN SIMPLIFICADA"""
         self.ensure_one()
         
+        # ✅ VERSIÓN SIMPLIFICADA: Pasar parámetros directamente en params
         return {
             'type': 'ir.actions.client',
-            'tag': 'pdfmake_download',  # Debe coincidir con el nombre del registro
+            'tag': 'pdfmake_download',
             'params': {
-                'name': self.name,
-                'amount': self.amount,
-                'active': self.active,
+                'name': self.name or 'Sin nombre',
+                'amount': float(self.amount or 0),
+                'active': bool(self.active),
                 'partner_name': self.partner_id.display_name if self.partner_id else 'Ninguno',
                 'record_id': self.id
             }
-        }
-
+        } 
+        

@@ -3,108 +3,122 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
-const { Component, xml } = owl;
+const { Component, xml, onWillStart } = owl;
 
 class PdfmakeDownloadAction extends Component {
     setup() {
         this.notification = useService("notification");
         this.action = useService("action");
         
-        // Ejecutar inmediatamente al cargar el componente
-        this.generatePdf();
+        onWillStart(async () => {
+            await this.diagnoseAndGenerate();
+        });
     }
 
-    async generatePdf() {
-        try {
-            console.log("🔧 PdfmakeDownloadAction iniciado con params:", this.props.params);
-            
-            if (typeof pdfMake === 'undefined') {
-                throw new Error("PDFMake no está disponible en el navegador");
+    async diagnoseAndGenerate() {
+        console.group("🔍 DIAGNÓSTICO COMPLETO PDFMAKE");
+        
+        // Diagnosticar todas las posibles fuentes de parámetros
+        console.log("1. this.props:", this.props);
+        console.log("2. this.props.params:", this.props.params);
+        console.log("3. this.props.action:", this.props.action);
+        console.log("4. this.props.action?.params:", this.props.action?.params);
+        console.log("5. this.props.action?.context:", this.props.action?.context);
+        
+        // Probar diferentes formas de acceder a los parámetros
+        const sources = {
+            'direct_params': this.props.params,
+            'action_params': this.props.action?.params,
+            'action_context': this.props.action?.context,
+            'window_params': window.pdfmakeParams // Por si acaso
+        };
+        
+        console.log("6. Todas las fuentes posibles:", sources);
+        
+        // Intentar encontrar los parámetros en cualquier lugar
+        let finalParams = {};
+        
+        for (const [sourceName, source] of Object.entries(sources)) {
+            if (source && typeof source === 'object' && Object.keys(source).length > 0) {
+                console.log(`✅ Parámetros encontrados en: ${sourceName}`, source);
+                finalParams = source;
+                break;
             }
+        }
+        
+        console.log("7. Parámetros finales a usar:", finalParams);
+        console.groupEnd();
+        
+        if (Object.keys(finalParams).length === 0) {
+            console.error("❌ No se encontraron parámetros en ninguna fuente");
+            this.notification.add(
+                "Error: No se recibieron datos para el PDF",
+                { type: 'danger', sticky: true }
+            );
+            setTimeout(() => {
+                this.action.doAction({ type: 'ir.actions.act_window_close' });
+            }, 3000);
+            return;
+        }
+        
+        await this.generatePdf(finalParams);
+    }
 
-            // VALIDAR Y SANITIZAR PARÁMETROS
-            const params = this.props.params || {};
-            const name = params.name || 'Sin nombre';
-            const amount = Number(params.amount) || 0;
-            const active = params.active || false;
-            const partner_name = params.partner_name || 'Ninguno';
+    async generatePdf(params) {
+        try {
+            console.log("🎯 Generando PDF con parámetros:", params);
+            
+            // Extraer valores
+            const name = String(params.name || 'Sin nombre').trim();
+            const amount = parseFloat(params.amount) || 0;
+            const active = Boolean(params.active);
+            const partner_name = String(params.partner_name || 'Ninguno').trim();
+            const record_id = params.record_id || null;
 
-            console.log("📊 Parámetros sanitizados:", { name, amount, active, partner_name });
+            console.log("📊 Valores extraídos:", { name, amount, active, partner_name, record_id });
+
+            if (typeof pdfMake === 'undefined') {
+                throw new Error("PDFMake no está disponible");
+            }
 
             const docDefinition = {
                 content: [
-                    {text: 'REPORTE PDFMAKE DESDE ODOO', style: 'title'},
-                    {text: '✅ ¡Generado correctamente!', style: 'subtitle'},
-                    {text: '\n'},
-                    {text: 'Datos del registro:', style: 'header'},
+                    {text: 'REPORTE PDFMAKE - DIAGNÓSTICO', style: 'title'},
+                    {text: 'Parámetros recibidos:', style: 'header'},
                     {
                         table: {
-                            widths: ['*', '*'],
+                            widths: ['40%', '60%'],
                             body: [
-                                ['Campo', 'Valor'],
+                                ['Fuente', 'Valor'],
                                 ['Nombre', name],
                                 ['Importe', `€${amount.toFixed(2)}`],
                                 ['Activo', active ? 'Sí' : 'No'],
                                 ['Contacto', partner_name],
+                                ['ID', record_id || 'N/A'],
                             ]
                         }
                     },
-                    {text: '\n'},
-                    {text: `Generado el: ${new Date().toLocaleString('es-ES')}`, style: 'footer'},
+                    {text: `Generado: ${new Date().toLocaleString('es-ES')}`, style: 'footer'},
                 ],
                 styles: {
-                    'title': {
-                        fontSize: 18, 
-                        bold: true, 
-                        color: '#1976d2', 
-                        alignment: 'center',
-                        margin: [0, 0, 0, 10]
-                    },
-                    'subtitle': {
-                        fontSize: 14, 
-                        italics: true, 
-                        color: '#424242', 
-                        alignment: 'center',
-                        margin: [0, 0, 0, 15]
-                    },
-                    'header': {
-                        fontSize: 16, 
-                        bold: true, 
-                        margin: [0, 15, 0, 8]
-                    },
-                    'footer': {
-                        fontSize: 10, 
-                        color: '#666666', 
-                        alignment: 'center'
-                    }
+                    'title': { fontSize: 16, bold: true, alignment: 'center', margin: [0, 0, 0, 10] },
+                    'header': { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
+                    'footer': { fontSize: 10, color: '#666666', alignment: 'center' }
                 }
             };
 
-            const fileName = `Reporte_${name.replace(/\s+/g, '_')}.pdf`;
+            const fileName = `Diagnostico_${name}_${Date.now()}.pdf`;
+            pdfMake.createPdf(docDefinition).download(fileName);
             
-            // Usar callback para saber cuando se completa la descarga
-            pdfMake.createPdf(docDefinition).download(fileName, () => {
-                console.log("✅ PDF descargado exitosamente:", fileName);
-                
-                this.notification.add(
-                    `PDF generado: ${fileName}`,
-                    { type: 'success' }
-                );
-
-                // Cerrar la acción después de descargar
-                setTimeout(() => {
-                    this.action.doAction({ type: 'ir.actions.act_window_close' });
-                }, 1000);
-            });
+            this.notification.add(`PDF generado: ${fileName}`, { type: 'success' });
+            
+            setTimeout(() => {
+                this.action.doAction({ type: 'ir.actions.act_window_close' });
+            }, 1500);
             
         } catch (error) {
-            console.error('❌ Error en PdfmakeDownloadAction:', error);
-            
-            this.notification.add(
-                `Error generando PDF: ${error.message}`,
-                { type: 'danger' }
-            );
-
+            console.error('❌ Error:', error);
+            this.notification.add(`Error: ${error.message}`, { type: 'danger' });
             setTimeout(() => {
                 this.action.doAction({ type: 'ir.actions.act_window_close' });
             }, 3000);
@@ -112,16 +126,18 @@ class PdfmakeDownloadAction extends Component {
     }
 }
 
-// ✅ CORREGIDO: Usar xml tag para el template
 PdfmakeDownloadAction.template = xml`
     <div class="text-center p-4">
         <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Generando PDF...</span>
+            <span class="visually-hidden">Diagnosticando...</span>
         </div>
-        <p class="mt-2">Generando PDF, por favor espere...</p>
+        <p class="mt-2">Analizando parámetros y generando PDF...</p>
+        <p class="text-muted small">Revise la consola para ver el diagnóstico</p>
     </div>
 `;
 
-registry.category("actions").add("pdfmake_download", PdfmakeDownloadAction);
+PdfmakeDownloadAction.props = {
+    params: { type: Object, optional: true },
+};
 
-console.log("✅ Acción pdfmake_download registrada correctamente");
+registry.category("actions").add("pdfmake_download", PdfmakeDownloadAction);
