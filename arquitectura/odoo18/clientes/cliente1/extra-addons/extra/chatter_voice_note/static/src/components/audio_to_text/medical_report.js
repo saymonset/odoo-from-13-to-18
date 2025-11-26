@@ -184,27 +184,21 @@ async generatePDFWithORM(medicalData) {
     }
 }
 
-// MÉTODO CORREGIDO para endpoint JSON
+// MÉTODO SIMPLIFICADO - Usa JSON simple
 async generatePDFWithHTTP(medicalData) {
     try {
         console.log("Enviando datos al endpoint JSON:", medicalData);
         
-        // Usar fetch directamente para tener control total
+        // Enviar JSON simple como Postman
         const response = await fetch('/pdfmake/medical-report/service', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
             },
             body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'call',
-                params: {
-                    medical_data: medicalData
-                },
-                id: Math.floor(Math.random() * 1000)
+                medical_data: medicalData
             }),
-            credentials: 'include' // Importante para incluir cookies de sesión
+            credentials: 'include'
         });
 
         console.log("Estado de respuesta:", response.status, response.statusText);
@@ -216,21 +210,13 @@ async generatePDFWithHTTP(medicalData) {
         const result = await response.json();
         console.log("Respuesta completa:", result);
         
-        // En endpoints JSON-RPC, la respuesta viene en result.result
-        return result.result || result;
+        return result;
         
     } catch (error) {
         console.error('Error en generatePDFWithHTTP:', error);
-        
-        // Debug adicional
-        if (error.response) {
-            const errorText = await error.response.text();
-            console.error('Contenido del error:', errorText);
-        }
         throw error;
     }
 }
-
 // Método alternativo usando endpoint QWEB (sin validación estricta)
 async generatePDFWithQWEB(medicalData) {
     try {
