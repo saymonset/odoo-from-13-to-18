@@ -18,7 +18,11 @@ export class MedicalReport extends Component {
         super.setup();
         this.notification = useService("notification");
         this.orm = useService("orm");
-
+        
+        // SOLUCIÓN: Usar el servicio HTTP en lugar de RPC
+        this.http = useService("http");
+        
+       
         this.state = useState({
             companyLogo: null,
             companyName: '',
@@ -31,7 +35,7 @@ export class MedicalReport extends Component {
     }
 
     // ==================================================================
-    // CARGA DE DATOS
+    // CARGA DE DATOS (Mantener igual)
     // ==================================================================
     async loadCompanyData() {
         try {
@@ -71,7 +75,7 @@ export class MedicalReport extends Component {
     }
 
     // ==================================================================
-    // UTILIDADES
+    // UTILIDADES (Mantener igual)
     // ==================================================================
     get currentDate() {
         return new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -89,50 +93,369 @@ export class MedicalReport extends Component {
     }
 
     // ==================================================================
-    // MÉTODO PRINCIPAL CON FALLBACK AUTOMÁTICO
+    // SOLUCIÓN: Método mejorado para generar PDF
     // ==================================================================
-    async generatePDF(onlyBase64 = false) {
-        // Intento 1: jsPDF puro (el más bonito y rápido)
-        if (window.jspdf?.jsPDF) {
+
+downloadPDF = async () => {
+    try {
+        debugger;
+        this.notification.add("Generando PDF...", { type: "info" });
+
+        // Preparar datos médicos
+        const medicalData = await this.prepareMedicalDataForPDFMake();
+          
+        // DEBUG: Verificar datos antes de enviar (usando console.log directamente)
+        console.log("=== DATOS MÉDICOS PARA PDF ===");
+        console.log("Diagnóstico:", medicalData.diagnosis);
+        console.log("Tipo de diagnóstico:", typeof medicalData.diagnosis);
+        console.log("Datos completos:", medicalData);
+        
+        // Verificar específicamente el diagnóstico
+        if (!medicalData.diagnosis || medicalData.diagnosis.trim() === '') {
+            throw new Error("El diagnóstico está vacío");
+        }
+
+        let result;
+
+        // PRIMERO: Usar HTTP endpoint
+        try {
+            console.log("1. Intentando endpoint HTTP...");
+            result = await this.generatePDFWithHTTP(medicalData);
+            console.log("✅ HTTP exitoso:", result);
+        } catch (httpError) {
+            console.warn("HTTP falló:", httpError);
+            
+            // SEGUNDO: Intentar con QWEB endpoint
             try {
-                const doc = await this._buildPDFWithJsPDF();
-                return onlyBase64 ? doc.output("datauristring").split(",")[1] : doc;
-            } catch (err) {
-                console.warn("jsPDF puro falló, usando fallback html2canvas", err);
+                console.log("2. Intentando endpoint QWEB...");
+                result = await this.generatePDFWithHTTP(medicalData);
+                console.log("✅ QWEB exitoso");
+            } catch (qwebError) {
+                console.warn("QWEB falló:", qwebError);
+                
+                // TERCERO: Fallback a jsPDF
+                try {
+                    console.log("3. Usando fallback jsPDF...");
+                    result = await this.generatePDFFallback(medicalData);
+                    console.log("✅ jsPDF exitoso");
+                } catch (fallbackError) {
+                    console.warn("jsPDF falló:", fallbackError);
+                    throw new Error("Todos los métodos de generación fallaron");
+                }
             }
         }
 
-        // Intento 2: Fallback con html2canvas (siempre funciona)
-        console.log("Generando PDF con fallback html2canvas + jsPDF");
-        this.notification.add("Generando PDF (modo seguro)...", { type: "info" });
-
-        const { jsPDF } = await this._loadJsPDFDynamic(); // carga jsPDF si no está
-        const canvas = await this._renderReportToCanvas();
-        const imgData = canvas.toDataURL("image/png");
-
-        const doc = new jsPDF("p", "mm", "a4");
-        const imgWidth = 210;
-        const pageHeight = 295;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-
-        let position = 0;
-        doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            doc.addPage();
-            doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+        if (result.success) {
+            this.downloadPDFFile(result.pdf_content, result.filename);
+            this.notification.add("PDF descargado exitosamente", { type: "success" });
+        } else {
+            throw new Error(result.error || "Error desconocido generando PDF");
         }
 
-        return onlyBase64 ? doc.output("datauristring").split(",")[1] : doc;
+    } catch (err) {
+        console.error("Error generando PDF:", err);
+        this.notification.add(`Error generando PDF: ${err.message}`, { type: "danger" });
+    }
+};
+    // ==================================================================
+    // MÉTODOS MEJORADOS PARA GENERAR PDF
+    // ==================================================================
+
+   
+  // MÉTODO PRINCIPAL RECOMENDADO - ORM
+async generatePDFWithORM(medicalData) {
+    try {
+        debugger
+        console.log("Generando PDF via ORM (método recomendado):", medicalData);
+        
+        const result = await this.orm.call(
+            "pdfmake.service",           // Modelo
+            "generate_medical_pdf",      // Método (según tu controlador)
+            [medicalData],               // Parámetros como lista
+            {}                           // Opciones adicionales
+        );
+
+        console.log("✅ ORM call exitoso:", result);
+        return result;
+        
+    } catch (error) {
+        console.error('Error en generatePDFWithORM:', error);
+        throw error;
+    }
+}
+
+// MÉTODO CORREGIDO para endpoint JSON
+async generatePDFWithHTTP(medicalData) {
+    try {
+        console.log("Enviando datos al endpoint JSON:", medicalData);
+        
+        // Usar fetch directamente para tener control total
+        const response = await fetch('/pdfmake/medical-report/service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'call',
+                params: {
+                    medical_data: medicalData
+                },
+                id: Math.floor(Math.random() * 1000)
+            }),
+            credentials: 'include' // Importante para incluir cookies de sesión
+        });
+
+        console.log("Estado de respuesta:", response.status, response.statusText);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Respuesta completa:", result);
+        
+        // En endpoints JSON-RPC, la respuesta viene en result.result
+        return result.result || result;
+        
+    } catch (error) {
+        console.error('Error en generatePDFWithHTTP:', error);
+        
+        // Debug adicional
+        if (error.response) {
+            const errorText = await error.response.text();
+            console.error('Contenido del error:', errorText);
+        }
+        throw error;
+    }
+}
+
+// Método alternativo usando endpoint QWEB (sin validación estricta)
+async generatePDFWithQWEB(medicalData) {
+    try {
+        // Convertir datos a parámetros URL
+        const params = new URLSearchParams();
+        
+        // Asegurarse de que todos los valores sean strings
+        Object.keys(medicalData).forEach(key => {
+            let value = medicalData[key];
+            if (value === null || value === undefined) {
+                value = '';
+            } else if (typeof value === 'boolean') {
+                value = value.toString();
+            }
+            params.append(key, String(value));
+        });
+
+        const url = `/pdfmake/medical-report-qweb?${params.toString()}`;
+        console.log("URL QWEB:", url);
+
+        const response = await fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Obtener el PDF como blob y convertirlo a base64
+        const pdfBlob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve({
+                    success: true,
+                    pdf_content: base64,
+                    filename: `reporte_medico_${medicalData.patient_name || 'paciente'}.pdf`
+                });
+            };
+            reader.onerror = () => reject(new Error('Error leyendo el blob del PDF'));
+            reader.readAsDataURL(pdfBlob);
+        });
+        
+    } catch (error) {
+        console.error('Error en generatePDFWithQWEB:', error);
+        throw error;
+    }
+}
+    // Método 3: Fallback con jsPDF
+    async generatePDFFallback(medicalData) {
+        if (window.jspdf?.jsPDF) {
+            const doc = await this._buildPDFWithJsPDF();
+            const pdfOutput = doc.output('datauristring').split(',')[1]; // Extraer base64
+            return {
+                success: true,
+                pdf_content: pdfOutput,
+                filename: `Reporte_Medico_${new Date().toISOString().slice(0,10)}.pdf`
+            };
+        } else {
+            throw new Error("No hay método de generación de PDF disponible");
+        }
     }
 
     // ==================================================================
-    // 1. Generación con jsPDF puro (el bueno)
+    // MANTENER LOS MÉTODOS EXISTENTES (con pequeñas mejoras)
     // ==================================================================
+
+async prepareMedicalDataForPDFMake() {
+    const extractedData = this.extractMedicalDataFromContent();
+    
+    // FUNCIÓN PARA CONVERTIR OBJETO A STRING
+    const convertToString = (data) => {
+        if (typeof data === 'string') return data;
+        if (typeof data === 'object' && data !== null) {
+            // Si es un objeto con claves numéricas (como {0: 'H', 1: 'o', ...})
+            if (Object.keys(data).every(key => !isNaN(key))) {
+                return Object.values(data).join('');
+            }
+            // Si es un objeto normal, convertirlo a JSON string
+            return JSON.stringify(data);
+        }
+        return String(data || '');
+    };
+
+    // Convertir todos los campos que puedan ser objetos a strings
+    const diagnosis = convertToString(extractedData.diagnosis || this.props.content || 'Diagnóstico no especificado.');
+    const originalContent = convertToString(this.props.content);
+    
+    const medicalData = {
+        patient_name: convertToString(extractedData.patientName || 'Paciente'),
+        patient_age: convertToString(extractedData.patientAge || ''),
+        patient_gender: convertToString(extractedData.patientGender || ''),
+        diagnosis: diagnosis,
+        recommendations: convertToString(extractedData.recommendations || 'Seguir controles médicos periódicos.'),
+        treatment: convertToString(extractedData.treatment || ''),
+        doctor_name: convertToString(this.state.userName),
+        doctor_specialty: convertToString(this.state.userJobTitle),
+        medical_center: convertToString(this.state.companyName),
+        report_type: 'detailed',
+        include_signature: true,
+        issue_date: this.currentDate,
+        current_datetime: this.currentDateTime,
+        original_content: originalContent,
+        source_module: 'chatter_voice_note',
+        res_model: this.props.resModel,
+        res_id: this.props.resId
+    };
+
+    // VERIFICACIÓN FINAL: Asegurar que diagnosis sea string no vacío
+    if (!medicalData.diagnosis || medicalData.diagnosis.trim() === '') {
+        medicalData.diagnosis = 'Diagnóstico no especificado.';
+    }
+
+    return medicalData;
+} 
+extractMedicalDataFromContent() {
+    // Convertir content a string primero
+    const convertToString = (data) => {
+        if (typeof data === 'string') return data;
+        if (typeof data === 'object' && data !== null) {
+            if (Object.keys(data).every(key => !isNaN(key))) {
+                return Object.values(data).join('');
+            }
+            return JSON.stringify(data);
+        }
+        return String(data || '');
+    };
+
+    const content = convertToString(this.props.content || '');
+    const extracted = {
+        patientName: '',
+        patientAge: '',
+        patientGender: '',
+        diagnosis: '',
+        recommendations: '',
+        treatment: ''
+    };
+
+    try {
+        const patterns = {
+            patientName: /(paciente|sr|sra|srta)[:\s]*([^\n,.]+)/i,
+            patientAge: /(\d+)\s*años|edad[:\s]*(\d+)/i,
+            patientGender: /(masculino|femenino|hombre|mujer)/i,
+            diagnosis: /(diagnóstico|dx|impresión)[:\s]*([^]+?)(?=tratamiento|recomendaciones|$)/i,
+            treatment: /(tratamiento|rx|medicación)[:\s]*([^]+?)(?=recomendaciones|$)/i,
+            recommendations: /(recomendaciones|indicaciones)[:\s]*([^]+?)$/i
+        };
+
+        const nameMatch = content.match(patterns.patientName);
+        if (nameMatch) {
+            extracted.patientName = nameMatch[2]?.trim() || nameMatch[1]?.trim();
+        }
+
+        const ageMatch = content.match(patterns.patientAge);
+        if (ageMatch) {
+            extracted.patientAge = ageMatch[1] || ageMatch[2];
+        }
+
+        const genderMatch = content.match(patterns.patientGender);
+        if (genderMatch) {
+            extracted.patientGender = this.formatGender(genderMatch[1]);
+        }
+
+        // Si no encontramos diagnóstico específico, usar todo el contenido
+        if (!extracted.diagnosis) {
+            extracted.diagnosis = content;
+        }
+
+    } catch (error) {
+        console.warn("Error extrayendo datos médicos:", error);
+        extracted.diagnosis = content;
+    }
+
+    return extracted;
+}
+    formatGender(gender) {
+        const genderMap = {
+            'masculino': 'Masculino',
+            'hombre': 'Masculino', 
+            'femenino': 'Femenino',
+            'mujer': 'Femenino'
+        };
+        return genderMap[gender.toLowerCase()] || gender;
+    }
+
+    downloadPDFFile(pdfBase64, filename = null) {
+        try {
+            const byteCharacters = atob(pdfBase64);
+            const byteNumbers = new Array(byteCharacters.length);
+            
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            const finalFilename = filename || 
+                `Reporte_Medico_${this.state.userName.replace('Dr. ', '').replace(/ /g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+            
+            link.download = finalFilename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Error descargando PDF:", error);
+            throw new Error("Error al descargar el archivo PDF");
+        }
+    }
+
+    // ==================================================================
+    // MÉTODOS ORIGINALES (mantener para compatibilidad)
+    // ==================================================================
+
     async _buildPDFWithJsPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -191,53 +514,6 @@ export class MedicalReport extends Component {
         return doc;
     }
 
-    // ==================================================================
-    // 2. Fallback: renderizar el componente a canvas
-    // ==================================================================
-    async _renderReportToCanvas() {
-        const html2canvas = window.html2canvas || (await this._loadHtml2Canvas());
-        const element = this.__owl__.root.el.querySelector(".medical-report-container") || this.el;
-
-        // Forzar estilos de impresión
-        const originalDisplay = element.style.display;
-        element.style.display = "block";
-
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            logging: false,
-        });
-
-        element.style.display = originalDisplay;
-        return canvas;
-    }
-
-    // ==================================================================
-    // Carga dinámica de librerías (si no están ya)
-    // ==================================================================
-    async _loadJsPDFDynamic() {
-        if (window.jspdf?.jsPDF) return window.jspdf;
-        return new Promise((resolve) => {
-            const script = document.createElement("script");
-            script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-            script.onload = () => resolve(window.jspdf);
-            document.head.appendChild(script);
-        });
-    }
-
-    async _loadHtml2Canvas() {
-        return new Promise((resolve) => {
-            const script = document.createElement("script");
-            script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-            script.onload = () => resolve(window.html2canvas);
-            document.head.appendChild(script);
-        });
-    }
-
-    // ==================================================================
-    // Helpers
-    // ==================================================================
     _extractCleanText() {
         const div = document.createElement("div");
         div.innerHTML = this.props.content || "";
@@ -265,20 +541,8 @@ export class MedicalReport extends Component {
     }
 
     // ==================================================================
-    // ACCIONES PÚBLICAS
+    // MÉTODOS DE EMAIL E IMPRESIÓN (mantener igual)
     // ==================================================================
-    downloadPDF = async () => {
-        try {
-            this.notification.add("Generando PDF...", { type: "info" });
-            const doc = await this.generatePDF(false);
-            const filename = `Reporte_Medico_${new Date().toISOString().slice(0,10).replace(/-/g,'')}_${Date.now()}.pdf`;
-            doc.save(filename);
-            this.notification.add("PDF descargado", { type: "success" });
-        } catch (err) {
-            this.notification.add("Error crítico generando PDF", { type: "danger" });
-            console.error(err);
-        }
-    };
 
     sendEmail = async () => {
         if (!this.props.contacts?.length) {
@@ -288,10 +552,16 @@ export class MedicalReport extends Component {
 
         try {
             this.notification.add("Preparando envío...", { type: "info" });
-            const pdfBase64 = await this.generatePDF(true);
+            
+            const medicalData = await this.prepareMedicalDataForPDFMake();
+            const result = await this.generatePDFWithORM(medicalData); // Usar ORM para email
+
+            if (!result.success) {
+                throw new Error(result.error || "Error generando PDF para email");
+            }
 
             const payload = {
-                pdf_data: pdfBase64,
+                pdf_data: result.pdf_content,
                 pdf_name: `Reporte_Medico_${Date.now()}.pdf`,
                 contacts: this.props.contacts,
                 subject: `Reporte Médico - ${this.currentDate}`,
@@ -316,15 +586,12 @@ Mensaje automático.
                 doctor_title: this.state.userJobTitle,
             };
 
-            const response = await fetch("/medical_report/send_to_n8n", {
-                method: "POST",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ params: payload }),
+            const response = await this.http.post("/medical_report/send_to_n8n", {
+                params: payload
             });
 
-            const result = await response.json();
-            if (result.error) throw new Error(result.error);
+            const emailResult = response;
+            if (emailResult.error) throw new Error(emailResult.error);
 
             this.notification.add("Enviado correctamente", { type: "success" });
         } catch (err) {

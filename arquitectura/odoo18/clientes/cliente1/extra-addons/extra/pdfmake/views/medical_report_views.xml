@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ACCIÓN PARA ABRIR EL WIZARD DESDE test.pdf.report -->
+    <record id="action_medical_report_wizard" model="ir.actions.act_window">
+        <field name="name">Generar Reporte Médico</field>
+        <field name="res_model">medical.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_test_pdf_report"/>
+        <field name="binding_type">action</field>
+    </record>
+
+    <!-- ACCIONES DE REPORTE MÉDICO -->
+<record id="action_report_medical_basic" model="ir.actions.report">
+    <field name="name">Reporte Médico Básico</field>
+    <field name="model">test.pdf.report</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">pdfmake.medical_report_basic</field>
+    <field name="print_report_name">'reporte_medico_basico.pdf'</field>
+    <field name="binding_model_id" ref="model_test_pdf_report"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="action_report_medical_detailed" model="ir.actions.report">
+    <field name="name">Reporte Médico Detallado</field>
+    <field name="model">test.pdf.report</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">pdfmake.medical_report_detailed</field>
+    <field name="print_report_name">'reporte_medico_detallado.pdf'</field>
+    <field name="binding_model_id" ref="model_test_pdf_report"/>
+    <field name="binding_type">report</field>
+</record>
+
+    <!-- VISTA DEL FORMULARIO DEL WIZARD -->
+    <record id="view_medical_report_wizard_form" model="ir.ui.view">
+        <field name="name">medical.report.wizard.form</field>
+        <field name="model">medical.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Datos del Paciente">
+                            <field name="patient_name" required="1"/>
+                            <field name="patient_age"/>
+                            <field name="patient_gender"/>
+                        </group>
+                        <group string="Datos del Médico">
+                            <field name="doctor_name"/>
+                            <field name="doctor_specialty"/>
+                            <field name="medical_center"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Información Médica">
+                        <field name="diagnosis" required="1" nolabel="1" placeholder="Ingrese el diagnóstico médico completo..." style="height: 120px;"/>
+                    </group>
+                    
+                    <group>
+                        <group string="Tratamiento">
+                            <field name="treatment" nolabel="1" placeholder="Describa el tratamiento recomendado..." style="height: 100px;"/>
+                        </group>
+                        <group string="Recomendaciones">
+                            <field name="recommendations" nolabel="1" placeholder="Indique recomendaciones adicionales..." style="height: 100px;"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Opciones del Reporte">
+                        <field name="report_type" widget="radio"/>
+                        <field name="include_signature"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate_medical_report" string="Generar Reporte PDF" type="object" class="btn-primary"/>
+                    <button name="action_send_to_chatter_module" string="Enviar a Chatter Module" type="object" class="btn-secondary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

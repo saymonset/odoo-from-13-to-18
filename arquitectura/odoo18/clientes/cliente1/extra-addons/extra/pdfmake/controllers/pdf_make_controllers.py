@@ -9,7 +9,105 @@ from datetime import datetime
 _logger = logging.getLogger(__name__)
 
 class PdfMakeController(http.Controller):
+    
+    # ENDPOINTS MÉDICOS CON QWEB
+    @http.route('/pdfmake/medical-report-qweb', type='http', auth='user', methods=['GET'])
+    def medical_report_qweb(self, **kw):
+        """Endpoint principal para reportes médicos con QWeb"""
+        try:
+            _logger.info("🎯 Generando reporte médico con QWeb")
+            
+            # Recoger todos los parámetros
+            medical_data = {
+                'patient_name': kw.get('patient_name', 'Paciente'),
+                'patient_age': kw.get('patient_age', ''),
+                'patient_gender': kw.get('patient_gender', ''),
+                'diagnosis': kw.get('diagnosis', 'Diagnóstico no especificado.'),
+                'recommendations': kw.get('recommendations', 'Seguir controles médicos periódicos.'),
+                'treatment': kw.get('treatment', ''),
+                'doctor_name': kw.get('doctor_name', 'Dr. Médico'),
+                'doctor_specialty': kw.get('doctor_specialty', 'Médico General'),
+                'medical_center': kw.get('medical_center', 'Centro Médico'),
+                'report_type': kw.get('report_type', 'basic'),
+                'include_signature': kw.get('include_signature', 'True') == 'True',
+                'issue_date': kw.get('issue_date', ''),
+                'current_datetime': kw.get('current_datetime', ''),
+            }
+            
+            # Determinar qué template usar según el tipo
+            template_map = {
+                'basic': 'pdfmake.medical_report_basic',
+                'detailed': 'pdfmake.medical_report_detailed',
+                'prescription': 'pdfmake.medical_prescription'
+            }
+            
+            template = template_map.get(medical_data['report_type'], 'pdfmake.medical_report_basic')
+            
+            pdf = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
+                template,
+                [],
+                data={'medical_data': medical_data}
+            )
+            
+            if pdf and len(pdf) == 1:
+                filename = f"reporte_medico_{medical_data['patient_name'].replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+                
+                return Response(
+                    pdf[0],
+                    headers=[
+                        ('Content-Type', 'application/pdf'),
+                        ('Content-Disposition', f'attachment; filename="{filename}"')
+                    ]
+                )
+            else:
+                raise Exception("No se pudo generar el PDF")
+                
+        except Exception as e:
+            _logger.error(f"Error en medical_report_qweb: {str(e)}")
+            return Response(
+                f"Error generando PDF médico: {str(e)}",
+                content_type='text/plain',
+                status=500
+            )
 
+    @http.route('/pdfmake/medical-report/service', type='http', auth='user', methods=['POST'], csrf=False)
+    def medical_report_service0(self, **post):
+        """Endpoint HTTP para que Chatter Voice Note genere PDFs médicos"""
+        try:
+            import json
+            
+            # Obtener datos del body JSON
+            raw_data = request.httprequest.data.decode('utf-8')
+            json_data = json.loads(raw_data)
+            medical_data = json_data.get('medical_data', {})
+            
+            _logger.info(f"Datos recibidos: {medical_data}")
+            
+            if not medical_data.get('diagnosis'):
+                return json.dumps({'success': False, 'error': 'El diagnóstico es requerido'})
+            
+            # Usar el servicio PDFMake
+            pdf_service = request.env['pdfmake.service'].sudo()
+            pdf_content = pdf_service.generate_medical_pdf(medical_data)
+            
+            if pdf_content:
+                # Convertir a base64 para fácil transporte
+                pdf_b64 = base64.b64encode(pdf_content).decode('utf-8')
+                
+                response = {
+                    'success': True,
+                    'pdf_content': pdf_b64,
+                    'filename': f"reporte_medico_{medical_data.get('patient_name', 'paciente').replace(' ', '_')}.pdf",
+                    'message': 'PDF generado exitosamente por PDFMake'
+                }
+                return json.dumps(response)
+            else:
+                return json.dumps({'success': False, 'error': 'No se pudo generar el PDF'})
+                
+        except Exception as e:
+            _logger.error(f"Error en servicio médico: {str(e)}")
+            return json.dumps({'success': False, 'error': str(e)})
+        
     @http.route('/pdfmake/audioreports', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def audioReports(self, **kw):
         try:

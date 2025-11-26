@@ -5,11 +5,12 @@
     'author': '',
     'website': '',
     'category': 'Tools',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'web','mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/pdf_printer_views.xml',
         'views/pdf_reports.xml', 
+        'views/medical_report_views.xml', 
     ],
     'assets': {
         'web.assets_backend': [

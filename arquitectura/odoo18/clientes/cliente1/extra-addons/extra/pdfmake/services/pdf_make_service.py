@@ -10,7 +10,7 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 class PdfMakeService(models.TransientModel):
-    _name = 'pdf_make.service'
+    _name = 'pdf_makexx.service'
     _description = 'Pdf Service Layer'
     
     @api.model
