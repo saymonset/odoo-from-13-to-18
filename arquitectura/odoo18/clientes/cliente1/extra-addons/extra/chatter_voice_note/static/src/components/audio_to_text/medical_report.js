@@ -98,7 +98,7 @@ export class MedicalReport extends Component {
 
 downloadPDF = async () => {
     try {
-        debugger;
+        
         this.notification.add("Generando PDF...", { type: "info" });
 
         // Preparar datos médicos
@@ -531,60 +531,103 @@ extractMedicalDataFromContent() {
     // ==================================================================
 
     sendEmail = async () => {
-        if (!this.props.contacts?.length) {
-            this.notification.add("Selecciona al menos un contacto", { type: "warning" });
-            return;
-        }
+                    if (!this.props.contacts?.length) {
+                        this.notification.add("Selecciona al menos un contacto", { type: "warning" });
+                        return;
+                    }
+                debugger
+                    try {
+                        this.notification.add("📧 Preparando envío de email...", { type: "info" });
+                        
+                        // 1. Generar PDF
+                        const medicalData = await this.prepareMedicalDataForPDFMake();
+                        const pdfResult = await this.generatePDFWithHTTP(medicalData);
 
-        try {
-            this.notification.add("Preparando envío...", { type: "info" });
-            
-            const medicalData = await this.prepareMedicalDataForPDFMake();
-            const result = await this.generatePDFWithORM(medicalData); // Usar ORM para email
+                        if (!pdfResult.success) {
+                            throw new Error(pdfResult.error || "Error generando PDF para email");
+                        }
 
-            if (!result.success) {
-                throw new Error(result.error || "Error generando PDF para email");
-            }
+                        // 2. Preparar payload para el email - FORMATO CORREGIDO
+                        const payload = {
+                            pdf_data: pdfResult.pdf_content,
+                            pdf_name: pdfResult.filename,
+                            contacts: this.props.contacts,
+                            subject: `Reporte Médico - ${medicalData.patient_name} - ${this.currentDate}`,
+                            body: this.generateEmailBody(medicalData),
+                            res_model: this.props.resModel,
+                            res_id: this.props.resId,
+                            timestamp: new Date().toISOString(),
+                            company_name: this.state.companyName,
+                            doctor_name: this.state.userName,
+                            doctor_title: this.state.userJobTitle,
+                        };
 
-            const payload = {
-                pdf_data: result.pdf_content,
-                pdf_name: `Reporte_Medico_${Date.now()}.pdf`,
-                contacts: this.props.contacts,
-                subject: `Reporte Médico - ${this.currentDate}`,
-                body: `
-Estimado/a paciente,
+                        console.log("📤 Enviando email con payload:", payload);
 
-Adjuntamos su reporte médico generado el ${this.currentDateTime}.
+                        // 3. SOLUCIÓN: Usar fetch directamente con el formato correcto
+                        const response = await fetch("/medical_report/send_to_n8n", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: JSON.stringify({
+                                params: payload  // Envolver en "params" para JSON-RPC
+                            }),
+                            credentials: 'include'
+                        });
 
-Atentamente,
-${this.state.userName}
-${this.state.userJobTitle}
-${this.state.companyName}
+                        console.log("Estado de respuesta:", response.status, response.statusText);
 
----
-Mensaje automático.
-                `.trim(),
-                res_model: this.props.resModel || null,
-                res_id: this.props.resId || null,
-                timestamp: new Date().toISOString(),
-                company_name: this.state.companyName,
-                doctor_name: this.state.userName,
-                doctor_title: this.state.userJobTitle,
-            };
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error("❌ Error response:", errorText);
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
 
-            const response = await this.http.post("/medical_report/send_to_n8n", {
-                params: payload
-            });
+                        const emailResult = await response.json();
+                        console.log("✅ Respuesta del envío de email:", emailResult);
 
-            const emailResult = response;
-            if (emailResult.error) throw new Error(emailResult.error);
+                        if (emailResult.error) {
+                            throw new Error(emailResult.error);
+                        }
 
-            this.notification.add("Enviado correctamente", { type: "success" });
-        } catch (err) {
-            console.error(err);
-            this.notification.add(`Error al enviar: ${err.message}`, { type: "danger" });
-        }
-    };
+                        this.notification.add(
+                            `✅ ${emailResult.message || 'Email enviado correctamente'}`,
+                            { type: "success" }
+                        );
+                        
+                    } catch (err) {
+                        console.error("❌ Error en sendEmail:", err);
+                        this.notification.add(
+                            `❌ Error enviando email: ${err.message}`,
+                            { type: "danger" }
+                        );
+                    }
+                };
+            // Método auxiliar para generar el cuerpo del email
+            generateEmailBody(medicalData) {
+                        return `
+                    Estimado/a ${medicalData.patient_name},
+
+                    Adjuntamos su reporte médico generado el ${this.currentDateTime}.
+
+                    **Resumen del reporte:**
+                    - Paciente: ${medicalData.patient_name}
+                    - Diagnóstico: ${medicalData.diagnosis.substring(0, 150)}${medicalData.diagnosis.length > 150 ? '...' : ''}
+                    - Médico: ${medicalData.doctor_name}
+                    - Centro Médico: ${medicalData.medical_center}
+
+                    Atentamente,
+                    ${medicalData.doctor_name}
+                    ${medicalData.doctor_specialty}
+                    ${medicalData.medical_center}
+
+                    ---
+                    *Este es un mensaje automático generado por el sistema.*
+                        `.trim();
+                    }
+
 
     printReport = () => window.print();
 }
