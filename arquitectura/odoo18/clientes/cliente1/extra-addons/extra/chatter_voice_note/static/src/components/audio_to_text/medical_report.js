@@ -535,7 +535,6 @@ extractMedicalDataFromContent() {
                         this.notification.add("Selecciona al menos un contacto", { type: "warning" });
                         return;
                     }
-                debugger
                     try {
                         this.notification.add("📧 Preparando envío de email...", { type: "info" });
                         
