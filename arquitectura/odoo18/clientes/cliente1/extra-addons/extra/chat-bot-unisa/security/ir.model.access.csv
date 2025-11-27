@@ -1,0 +1,4 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_reactodoo_micontacto_manager,Reactodoo Micontacto Manager,model_reactodoo_micontacto,,1,1,1,1
+access_OpenAIConfig_manager,OpenAIConfig_manager,model_openai_config,,1,1,1,1
+access_openai_service_manager,openai_service_manager,model_openai_service,,1,1,1,1

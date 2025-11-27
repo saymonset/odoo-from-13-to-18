@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View MiContacto View List -->
+    <record id="view_MiContacto_list" model="ir.ui.view">
+        <field name="name">view.reactodoo.micontacto.list</field>
+        <field name="model">reactodoo.micontacto</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="es_preferido"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- View MiContacto form -->
+    <record id="view_MiContacto_form" model="ir.ui.view">
+        <field name="name">view.reactodoo.micontacto.form</field>
+        <field name="model">reactodoo.micontacto</field>
+        <field name="arch" type="xml">
+            <form string="MiContacto">
+                 <sheet>
+                    <group>
+                        <field name="es_preferido"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+   
+
+    <!-- Action MiContacto -->
+    <record id="action_MiContacto" model="ir.actions.act_window">
+        <field name="name">reactodoo.micontacto</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">reactodoo.micontacto</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new MiContacto.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="contact_main_menu" name="n8n saymon" sequence="1"/>
+
+        <menuitem id="hostel_type_menu" name="conctando" parent="contact_main_menu" 
+            action="action_MiContacto" 
+            sequence="1"/>
+
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ 
+   <!-- Acción cliente -->
+<record id="action_profit_margin_owl" model="ir.actions.client">
+    <field name="name">Owl Service</field>
+    <field name="tag">chat-bot-n8n-ia.FirstStepsApp</field>
+    <field name="target">main</field>
+</record>
+
+
+<!-- Menú raíz "React" -->
+<menuitem id="menu_react_root" name="IA Chat BOT" sequence="10"/>
+
+<!-- Submenú "Margen de Ganancia" bajo "React" -->
+<menuitem id="menu_profit_margin" 
+          name="Chat Bot"
+          parent="menu_react_root"
+          action="action_profit_margin_owl"
+          sequence="11"/>
+<!-- 
+
+<record id="action_openai_owl" model="ir.actions.client">
+    <field name="name">Open AI</field>
+    <field name="tag">chat-bot-n8n-ia.OpenAI</field>
+    <field name="target">main</field>
+</record>
+<menuitem id="menu_openain" 
+          name="Open AI"
+          parent="menu_react_root"
+          action="action_openai_owl"
+          sequence="12"/> -->
+
+     
+</odoo>

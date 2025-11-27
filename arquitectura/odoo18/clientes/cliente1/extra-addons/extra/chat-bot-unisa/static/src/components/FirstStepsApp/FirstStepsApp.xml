@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+ <t t-name="chat-bot-n8n-ia.FirstStepsApp">
+    <div>
+        <h1>Chat  Interno</h1>
+        <!-- <t t-foreach="state.itemsInCart2" t-as="item" t-key="item.productName">
+            <ItemCounter name2="item.productName" quantity2="item.quantity"/>
+        </t> -->
+    </div>
+
+    <!-- Reutilización del ChatBotWrapper -->
+    <ChatBotWrapper webhookUrl="state.chatWebhook"/>
+
+</t>
+
+</templates>
