@@ -49,7 +49,21 @@ class PdfMakeService(models.Model):
             
             template_name = template_map.get(medical_data.get('report_type', 'basic'), 'pdfmake.medical_report_basic')
             _logger.info(f"🔄 Usando template: {template_name}")
-            
+                        # LOGO 100% SEGURO PARA ODOO 18 (FUNCIONA SIEMPRE)
+            logo_str = ''
+            try:
+                if company.logo:
+                    if isinstance(company.logo, bytes):
+                        logo_str = company.logo.decode('utf-8', errors='ignore')
+                    else:
+                        logo_str = str(company.logo)
+                elif company.image_1920:
+                    logo_str = base64.b64encode(company.image_1920).decode('utf-8')
+            except Exception as e:
+                _logger.warning(f"Error procesando logo: {e}")
+                logo_str = ''
+
+            _logger.info(f"Logo procesado correctamente: {bool(logo_str)} (longitud: {len(logo_str)})")
             # ✅ Renderizar el template con el contexto CORRECTO
             html_content = request.env['ir.ui.view'].sudo()._render_template(
                 template_name,
@@ -57,7 +71,8 @@ class PdfMakeService(models.Model):
                     'medical_data': medical_data,
                     'company': company,  # ✅ Pasar el objeto compañía completo
                     'datetime': datetime,
-                    # ❌ NO pasar logo_str, usar company.logo directamente
+                    'logo_str': logo_str,
+                    'current_date': datetime.now().strftime('%d/%m/%Y %H:%M'),
                 }
             )
             
