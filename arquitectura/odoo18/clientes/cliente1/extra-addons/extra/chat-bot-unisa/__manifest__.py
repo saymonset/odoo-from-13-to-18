@@ -9,10 +9,6 @@
     'depends': ['base', 'web'],
     "data": [
         "security/ir.model.access.csv",
-        "views/mi_contacto_views.xml",
-        "views/OpenAIConfig_views.xml",
-        "views/n8n_chat_bot_views.xml",
-        "views/templates.xml"
     ],
     'assets': {
           "web.assets_frontend": [

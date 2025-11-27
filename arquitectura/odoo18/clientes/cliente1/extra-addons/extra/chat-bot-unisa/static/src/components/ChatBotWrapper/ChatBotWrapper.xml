@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <t t-name="chat-bot-n8n-ia.ChatBotWrapper">
+    <t t-name="chat-bot-unisa.ChatBotWrapper">
         <div class="chatbot-wrapper">
             <t t-if="state.error">
                 <div class="alert alert-warning mt-2">
