@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- LAYOUT FINAL QUE FUNCIONA EN ODOO 18 (SIN web.external_layout, SIN header, SOLO TU LOGO) -->
+    <template id="external_layout_logo_corner" name="Solo Logo Esquina Derecha">
+
+        <div class="page" style="position: relative; min-height: 297mm; padding: 50px 60px 80px 60px; font-family: 'Helvetica', Arial, sans-serif;">
+
+            <!-- LOGO EN ESQUINA SUPERIOR DERECHA -->
+            <div style="position: absolute; top: 35px; right: 60px; z-index: 9999;">
+                <t t-if="logo_str">
+                    <img t-att-src="'data:image/png;base64,' + logo_str"
+                         style="max-height: 70px; max-width: 190px; height: auto; width: auto;"
+                         alt="Logo"/>
+                </t>
+                <t t-else="">
+                    <div style="background: #875A7B; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 15px;">
+                        <t t-esc="company.name"/>
+                    </div>
+                </t>
+            </div>
+
+            <!-- TU CONTENIDO MÉDICO -->
+            <div style="margin-top: 100px;">
+                <t t-out="0"/>
+            </div>
+
+        </div>
+    </template>
+
+</odoo>

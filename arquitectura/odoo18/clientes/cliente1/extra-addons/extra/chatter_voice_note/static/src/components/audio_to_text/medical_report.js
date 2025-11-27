@@ -38,6 +38,7 @@ export class MedicalReport extends Component {
     // CARGA DE DATOS (Mantener igual)
     // ==================================================================
     async loadCompanyData() {
+        debugger
         try {
             const companies = await this.orm.searchRead("res.company", [], ["logo", "name"], { limit: 1 });
             if (companies?.length) {

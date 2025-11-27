@@ -8,6 +8,7 @@
     'depends': ['base', 'web','mail'],
     'data': [
         'security/ir.model.access.csv',
+        'views/layout_logo_only.xml',
         'views/pdf_printer_views.xml',
         'views/pdf_reports.xml', 
         'views/medical_report_views.xml', 
