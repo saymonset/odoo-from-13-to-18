@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="external_layout_logo_corner" name="Solo Logo Arriba Derecha">
+    <template id="external_layout_logo_corner" name="Logo Pegado Arriba (Máximo Aprovechamiento)">
         <t t-name="pdfmake.external_layout_logo_corner">
-            <div style="position: relative; min-height: 297mm; padding: 30px 60px 60px 60px; font-family: Helvetica, Arial, sans-serif;">
+            <div style="position: relative; min-height: 297mm; padding: 1px 20px 20px 20px; font-family: Helvetica, Arial, sans-serif; box-sizing: border-box;">
 
-                <!-- LOGO BIEN ARRIBA -->
-                <div style="position: absolute; top: 8px; right: 60px; z-index: 9999;">
+                <!-- LOGO PEGADO AL BORDE SUPERIOR -->
+                <div style="position: absolute; top: 2px; right: 20px; z-index: 9999; margin: 0;">
                     <t t-if="logo_str and logo_str.strip()">
                         <img t-att-src="'data:image/png;base64,' + logo_str"
-                             style="max-height: 75px; max-width: 220px; height: auto; width: auto;"
+                             style="max-height: 65px; max-width: 200px; height: auto; width: auto; border-radius: 3px; box-shadow: 0 1px 5px rgba(0,0,0,0.1);"
                              alt="Logo"/>
                     </t>
                     <t t-else="">
-                        <div style="background: #875A7B; color: white; padding: 12px 28px; border-radius: 10px; font-weight: bold; font-size: 18px;">
+                        <div style="background: #875A7B; color: white; padding: 2px 20px; border-radius: 5px; font-weight: bold; font-size: 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.1);">
                             <t t-out="company.name"/>
                         </div>
                     </t>
                 </div>
 
-                <!-- CONTENIDO MÉDICO -->
-                <div style="margin-top: 70px;">
+                <!-- CONTENIDO PRINCIPAL - EMPIEZA JUSTO DEBAJO DEL LOGO -->
+                <div style="margin-top: 70px; padding: 0;">
                     <t t-out="0"/>
                 </div>
 
