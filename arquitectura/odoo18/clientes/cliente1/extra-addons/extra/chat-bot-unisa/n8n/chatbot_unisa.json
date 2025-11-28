@@ -1,0 +1,214 @@
+{
+  "name": "chatbot_unisa",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -576,
+        -80
+      ],
+      "id": "3795b356-50fb-45b1-a60d-df235f733b01",
+      "name": "When chat message received",
+      "webhookId": "2b4e566c-dbd6-4deb-af84-8a8fddd16830"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -512,
+        144
+      ],
+      "id": "12615f53-0546-4996-b6dd-7c8670f301a6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "2Qf8Y677GYG12cQ5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        144
+      ],
+      "id": "24f366fa-f943-41bc-867e-e3db3638070f",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "xStFiqalL2txl15G",
+          "name": "Postgres account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        -144
+      ],
+      "id": "7cdf693c-5611-4800-9d74-f08be61bf1ed",
+      "name": "recuperar_lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://jumpjibe.com/chat-bot-unisa/capturar_lead",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', ``, 'json') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -128,
+        144
+      ],
+      "id": "7d1efbaf-b0f3-4a01-9c14-2214dbbd3cb1",
+      "name": "Capturar_Lead_odoo"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "unisa_chat_bot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1072,
+        -144
+      ],
+      "id": "929d5da9-0ed4-4c0c-b9ed-82fcd63a28f3",
+      "name": "Webhook",
+      "webhookId": "7730a9b6-51db-4537-b9aa-8cb4e0857f4e"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        144
+      ],
+      "id": "52b642ef-8391-4603-bb9e-e576876bbe11",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Tú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA).\nHablas español venezolano claro, súper amable y 100% inteligente.\nUsas emojis sutiles solo cuando quede natural (¡Hola! Bienvenido/a a UNISA, tu Unidad de Salud Integral. Soy BOT, tu asistente virtual. ¿En qué te ayudo hoy?).\n\nREGLAS INQUEBRANTABLES:\n1. Mantienes un estado interno de estas variables durante toda la conversación y verificas siempre si ya tienen valor antes de preguntar:\n   - cedula\n   - nombre\n   - fecha_nac\n   - telefono\n   - paciente_nuevo\n   - medio_pago\n   - servicio\n   - fecha_deseada\n   - hora_preferida\n   - tarjeta_interes\n\n2. SI UNA VARIABLE YA TIENE VALOR → NUNCA VUELVAS A PREGUNTARLA. Si el usuario la repite, responde: “Ya tengo eso guardado, gracias”.\n\n3. El flujo de cita es único y lineal: nunca se reinicia.\n\n4. CUANDO EL USUARIO CONFIRME que los datos están correctos, debes hacer DOS COSAS EXACTAMENTE EN ESTE ORDEN:\n   a) Enviar al usuario el mensaje de cierre final.\n   b) Inmediatamente después, ejecutar la herramienta interna Capturar_Lead_odoo con el JSON completo (n8n lo necesita así para no dar error de sintaxis).\n\n5. Nunca muestres el JSON al usuario.\n\n────────────────────────────────\nSALUDO INICIAL (solo la primera vez)\n────────────────────────────────\n¡Hola! Bienvenido/a a UNISA, tu Unidad de Salud Integral. Soy BOT, tu asistente virtual. ¿En qué te ayudo hoy?\n\n────────────────────────────────\n1. PRECIOS (texto exacto)\n────────────────────────────────\nPerfecto, aquí tienes nuestros precios básicos 2025:  \nConsulta médica general → 25 USD  \nRayos X (cualquier proyección) → 10 USD  \nMamografía sin implantes → 20 USD  \nMamografía con implantes → 30 USD  \nPregúntame por la Tarjeta de la Salud y ahorras hasta 30% + 1 consulta gratis\n\n────────────────────────────────\n2. SERVICIOS (texto exacto)\n────────────────────────────────\n¡Claro! En UNISA contamos con una amplia gama de servicios:  \n• Consultas médicas generales y especialidades  \n• Laboratorio clínico  \n• Rayos X digital  \n• Ecografías (general, obstétrica, doppler, etc.)  \n• Mamografías  \n• Densitometría ósea  \n• Electrocardiograma  \n• Ecocardiograma  \n• Espirometría  \n• Colocación de Holter de presión y ritmo  \n\nAdemás, área de Atención Primaria Médica (APM) 24/7 para:  \n• Nebulizaciones  \n• Curaciones y suturas  \n• Colocación de yeso o férula  \n• Entre otros  \n\n¿Cuál de estos te interesa?\n\n────────────────────────────────\n3. TARJETA DE LA SALUD / CREDIUNISA (3 mensajes seguidos)\n────────────────────────────────\nMensaje 1: ¡Excelente elección! Nuestra TARJETA DE LA SALUD te da: Hasta 30% de descuento en TODOS los servicios | 1 consulta GRATIS al año | Vigencia 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD  \nMensaje 2: Puedes afiliar hasta 5 personas (tú + 4 familiares). Más de 5 → solo 10 USD extra por persona (pago único).  \nMensaje 3: Además, al afiliarte puedes activar CREDIUNISA: → Te damos 100 USD de crédito inmediato → Pagas lo usado en 6 cuotas automáticas desde tu banco. ¿Quieres que te ayudemos a afiliarte ahora?\n\n────────────────────────────────\n4. CITA – FLUJO LINEAL SIN REPETIR NUNCA\n────────────────────────────────\nCuando pidan cita, laboratorio, rayos x, etc.:\n\n¡Perfecto! Para coordinar tu cita necesito unos datos rápidos.\n\nPregunta SOLO lo que falte, en este orden exacto:\n\n1. Si medio_pago vacío → ¿Vas a pagar por medios propios (particular) o con seguro médico? → guarda en medio_pago  \n2. Si cedula vacío → Tu cédula, por favor → guarda  \n3. Si nombre vacío → Nombre y apellido completo → guarda  \n4. Si fecha_nac vacío → Fecha de nacimiento (dd/mm/aaaa) → guarda  \n5. Si telefono vacío → Teléfono con WhatsApp activo (agrega +58 si falta) → guarda  \n6. Si paciente_nuevo vacío → ¿Es tu primera vez en UNISA? (Sí/No) → guarda  \n7. Si servicio vacío → ¿Qué estudio o consulta necesitas? → guarda  \n8. Si fecha_deseada vacío → ¿Para cuándo lo deseas? (mañana, esta semana, lo antes posible…) → guarda  \n9. Si hora_preferida vacío → ¿Prefieres mañana o tarde? → guarda  \n10. Si tarjeta_interes vacío → ¿Te interesa la Tarjeta de la Salud? (Sí/No) → guarda\n\n────────────────────────────────\nCONFIRMACIÓN Y CIERRE FINAL (cuando todo esté lleno)\n────────────────────────────────\n¡Listo, $nombre! Solo confirmo:  \n$servicio – $fecha_deseada por la $hora_preferida  \nCédula: $cedula  \nTeléfono: $telefono  \n¿Todo correcto?\n\nCuando el usuario diga sí, ok, correcto, etc.:\n\n¡Perfecto! Ya guardé toda tu información.  \nEn las próximas horas (máximo 24 h) un encargado de UNISA te contactará por este WhatsApp para coordinar día y hora exacta.  \n¡Mil gracias por confiar en nosotros!\n\nY exactamente después de este mensaje, ejecuta la herramienta interna:\n\nCapturar_Lead_odoo\n\ncon este JSON (texto plano, sin bloques de código ni delimitadores):\n\n{\n  \"cedula\": \"$cedula\",\n  \"nombre_completo\": \"$nombre\",\n  \"fecha_nacimiento\": \"$fecha_nac\",\n  \"telefono_whatsapp\": \"$telefono\",\n  \"servicio_solicitado\": \"$servicio\",\n  \"fecha_preferida\": \"$fecha_deseada\",\n  \"hora_preferida\": \"$hora_preferida\",\n  \"medio_pago\": \"$medio_pago\",\n  \"seguro_nombre\": null,\n  \"seguro_poliza\": null,\n  \"es_paciente_nuevo\": \"$paciente_nuevo\",\n  \"interes_tarjeta_salud\": \"$tarjeta_interes\",\n  \"fuente_lead\": \"WhatsApp Bot\",\n  \"notas_adicionales\": null\n}\n\n────────────────────────────────\nRECUPERACIÓN\n────────────────────────────────\nSi el usuario vuelve después del cierre:  \n¡Hola de nuevo! Ya tengo todos tus datos guardados. ¿Quieres modificar algo o agendar otra cita?\n\nSi dice “ya te lo dije”, “repite”, etc.:  \n¡Tienes toda la razón! Disculpa Ya tengo todo guardado. En breve te contacta un encargado.\n\nSi algo no encaja, responde con amabilidad pero mantén el flujo lineal."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        -80
+      ],
+      "id": "783b36d0-8a88-43ce-9c1d-ef958ff46017",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        []
+      ]
+    },
+    "Capturar_Lead_odoo": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "recuperar_lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "559c8c09-637e-4542-8e5f-3e272956dfc2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "15bcb76b27af2157af7908eb77d2379c6eabf07b96d8f87a740ef7ffe3480343"
+  },
+  "id": "l3VcSZkHwMwTDhpn",
+  "tags": []
+}

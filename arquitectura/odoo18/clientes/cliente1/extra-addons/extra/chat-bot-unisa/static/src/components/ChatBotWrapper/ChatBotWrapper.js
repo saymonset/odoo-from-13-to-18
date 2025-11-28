@@ -54,22 +54,15 @@ export class ChatBotWrapper extends Component {
         window.n8nCreateChat({
             webhookUrl: this.props.webhookUrl,
             initialMessages: [
-                '¡Hola! 👋',
-                'Bienvenido a UNISA. ¿En qué puedo ayudarte hoy?',
-                'Puedes consultarme sobre:\n\n' +
-                '• 💰 **Precios y tarifas**\n' +
-                '• 🏥 **Servicios disponibles**\n' +
-                '• 💳 **CREDIUNISA y Tarjeta de la Salud**\n' +
-                '• 📅 **Agendar una cita**\n\n' +
-                'Solo dime qué necesitas saber 😊'
+                '¡Hola! 😊',
             ],
             i18n: {
                 en: {
-                    title: '¡Hola! 👋',
+                    title: 'Bienvenido/a a UNISA, tu Unidad de Salud Integral.',
                     subtitle: "Inicia un chat. Estamos aquí para ayudarte 24/7.",
                     footer: '',
                     getStarted: 'Nueva Conversación',
-                    inputPlaceholder: 'Por ejemplo: Quiero saber los precios...',
+                    inputPlaceholder: 'Por ejemplo: Precios,Servicios,Citas,Tarjeta de Salud o CREDIUNISA...',
                 },
             },
             // Configuraciones actualizadas con los nuevos colores
