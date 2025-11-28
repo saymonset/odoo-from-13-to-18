@@ -3,7 +3,7 @@
     'name': 'chat-bot-unisa',
     'version': '1.0.0',
     'summary': """ chat-bot-unisa Summary """,
-    'author': '',
+    'author': 'Simon Alberto Rodriguez Pacheco',
     'website': '',
     'category': '',
     'depends': ['base', 'web'],

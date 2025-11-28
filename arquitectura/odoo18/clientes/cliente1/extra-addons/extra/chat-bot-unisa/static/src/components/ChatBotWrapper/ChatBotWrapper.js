@@ -27,10 +27,9 @@ export class ChatBotWrapper extends Component {
     }
 
     async loadDependencies() {
-        
-        // Luego el CSS de n8n
+        // Cargar CSS de n8n
         await loadCSS('https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css');
-  // Cargar CSS personalizado primero
+        // Cargar CSS personalizado
         await loadCSS('/chat-bot-unisa/static/src/css/chat-bot.css');
       
         try {
@@ -55,8 +54,14 @@ export class ChatBotWrapper extends Component {
         window.n8nCreateChat({
             webhookUrl: this.props.webhookUrl,
             initialMessages: [
-                'Hola Venezuela! 👋',
-                'Mi nombre es Simôn Alberto. ¿Cómo puedo ayudarte hoy?'
+                '¡Hola! 👋',
+                'Bienvenido a UNISA. ¿En qué puedo ayudarte hoy?',
+                'Puedes consultarme sobre:\n\n' +
+                '• 💰 **Precios y tarifas**\n' +
+                '• 🏥 **Servicios disponibles**\n' +
+                '• 💳 **CREDIUNISA y Tarjeta de la Salud**\n' +
+                '• 📅 **Agendar una cita**\n\n' +
+                'Solo dime qué necesitas saber 😊'
             ],
             i18n: {
                 en: {
@@ -64,7 +69,7 @@ export class ChatBotWrapper extends Component {
                     subtitle: "Inicia un chat. Estamos aquí para ayudarte 24/7.",
                     footer: '',
                     getStarted: 'Nueva Conversación',
-                    inputPlaceholder: 'Escribe tu pregunta..',
+                    inputPlaceholder: 'Por ejemplo: Quiero saber los precios...',
                 },
             },
             // Configuraciones actualizadas con los nuevos colores

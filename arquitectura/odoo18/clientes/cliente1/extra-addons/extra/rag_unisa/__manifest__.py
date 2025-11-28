@@ -10,9 +10,8 @@
     ],
     
     "assets": {
-        "web.assets_frontend": [
-             'chat-bot-unisa/static/src/**/*.js',
-             'chat-bot-unisa/static/src/**/*.xml',
+               "web.assets_backend": [
+            # Solo assets específicos para backend si necesarios
         ]
     },
     "installable": True,
