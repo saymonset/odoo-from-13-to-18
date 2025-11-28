@@ -3,7 +3,7 @@
 
 <template id="insertar_boton_en_home" inherit_id="website.layout" name="Insertar Botón OWL en Home"> 
      <xpath expr="//div[hasclass('wrap')]|//div[@id='wrap']|//main" position="inside"> 
-            <div class="container my-5"> 
+            <div class="container my-5">                                   
                 <owl-component name="ChatBotWrapper" props='{"webhookUrl": "https://n8n.jumpjibe.com/webhook/2b4e566c-dbd6-4deb-af84-8a8fddd16830/chat"}'/>
              </div> 
      </xpath> 
