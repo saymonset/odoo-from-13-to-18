@@ -18,7 +18,6 @@
                 ],
               'web.assets_backend': [
                   'chat-bot-unisa/static/src/css/chat-bot.css',
-                  'chat-bot-unisa/static/src/css/ItemCunter.css',
                   'chat-bot-unisa/static/src/**/*.js',
                   'chat-bot-unisa/static/src/**/*.xml',
               ],

@@ -22,26 +22,31 @@ export class ChatBotWrapper extends Component {
                 this.initializeChat();
             } catch (err) {
                 this.state.error = err.message;
+                console.error('Error in setup:', err);
             }
         });
     }
 
     async loadDependencies() {
-        // Cargar CSS de n8n
-        await loadCSS('https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css');
-        // Cargar CSS personalizado
-        await loadCSS('/chat-bot-unisa/static/src/css/chat-bot.css');
-      
         try {
+            // Cargar CSS de n8n
+            await loadCSS('https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css');
+            console.log('✅ CSS n8n loaded');
+            
+            // ✅ CORREGIDO: Ruta absoluta del módulo
+            await loadCSS('/chat-bot-unisa/static/src/css/chat-bot.css');
+            console.log('✅ Custom CSS loaded');
+        
             const module = await import('https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js');
             if (module.createChat) {
                 window.n8nCreateChat = module.createChat;
+                console.log('✅ n8n chat module loaded');
             } else {
                 throw new Error('createChat not found in module');
             }
             this.state.loaded = true;
         } catch (err) {
-            console.error('Error importing chat module:', err);
+            console.error('❌ Error loading dependencies:', err);
             throw err;
         }
     }
@@ -51,6 +56,7 @@ export class ChatBotWrapper extends Component {
             throw new Error('n8nCreateChat function not available');
         }
         
+        console.log('🚀 Initializing chat...');
         window.n8nCreateChat({
             webhookUrl: this.props.webhookUrl,
             initialMessages: [
@@ -65,15 +71,13 @@ export class ChatBotWrapper extends Component {
                     inputPlaceholder: 'Por ejemplo: Precios,Servicios,Citas,Tarjeta de Salud o CREDIUNISA...',
                 },
             },
-            // Configuraciones actualizadas con los nuevos colores
             theme: {
-                primaryColor: '#2C5AA0',      // Azul corporativo
-                secondaryColor: '#6B46C1',    // Púrpura profesional
-                // ... otras opciones de tema si el chat las soporta
+                primaryColor: '#2C5AA0',
+                secondaryColor: '#6B46C1',
             }
         });
+        console.log('✅ Chat initialized');
     }
 }
 
-// ✅ REGISTRO CORRECTO PARA ODOO 18
 registry.category("public_components").add("ChatBotWrapper", ChatBotWrapper);
