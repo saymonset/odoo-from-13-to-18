@@ -38,7 +38,6 @@ export class MedicalReport extends Component {
     // CARGA DE DATOS (Mantener igual)
     // ==================================================================
     async loadCompanyData() {
-        debugger
         try {
             const companies = await this.orm.searchRead("res.company", [], ["logo", "name"], { limit: 1 });
             if (companies?.length) {
@@ -189,7 +188,6 @@ async generatePDFWithORM(medicalData) {
 async generatePDFWithHTTP(medicalData) {
     try {
         console.log("Enviando datos al endpoint JSON:", medicalData);
-        
         // Enviar JSON simple como Postman
         const response = await fetch('/pdfmake/medical-report/service', {
             method: 'POST',

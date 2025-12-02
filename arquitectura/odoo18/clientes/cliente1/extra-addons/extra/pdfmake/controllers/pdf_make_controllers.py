@@ -16,7 +16,6 @@ class PdfMakeController(http.Controller):
         """Endpoint principal para reportes médicos con QWeb"""
         try:
             _logger.info("🎯 Generando reporte médico con QWeb")
-            
             # Recoger todos los parámetros
             medical_data = {
                 'patient_name': kw.get('patient_name', 'Paciente'),
@@ -69,7 +68,7 @@ class PdfMakeController(http.Controller):
                 content_type='text/plain',
                 status=500
             )
-
+#Reporte llamamdo desde medical_report.js
     @http.route('/pdfmake/medical-report/service', type='http', auth='user', methods=['POST'], csrf=False)
     def medical_report_service0(self, **post):
         """Endpoint HTTP para que Chatter Voice Note genere PDFs médicos"""

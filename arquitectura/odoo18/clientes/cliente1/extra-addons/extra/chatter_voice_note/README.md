@@ -1,7 +1,15 @@
-Un modulo que desde un audio que se agarra, lo traduce en un texto y tambien viene e;l texto aparte analizado con la ia
+Un modulo que desde un audio que se graba, lo traduce en un texto y tambien viene el texto aparte analizado con la ia
 Hace con ese texto un reporte pdf
 
-Recibe parametros del backend, fue rudo la solucion. en a_hospital
+######## N8N. JSON ###########
+//TEST
+// el n8n es /personal/lead/unisa/voz-to-text/tests-voz-to-text
+// En path del webhook, se coloca test-audios para entorno de pruebas
+  
+// En path del webhook, se coloca audios para entorno de produccion
+  //#  PRODUCCION
+  //el n8n es personal/lead/unisa/voz-to-text/prod-voz-to-text
+######## END N8N ###########
 
 # copiar a test
 # Pasar tu modulo a test
@@ -12,8 +20,8 @@ cp -r /home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-
 ```
 1-) En Constantes debes cambiar a test la url. La ruta de la constante.js es
 /home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chatter_voice_note/static/src/components/audio_to_text/constants.js
-2-) en  medical_report_controller debes # URL del webhook de n8n, test: test-medical-report
-3-) En Ajustes/tecnico/Parámetros del sistema configurar clave/valor
+
+2-) En Ajustes/tecnico/Parámetros del sistema configurar clave/valor
 clave: medical_report.n8n_webhook_url
 valor: https://n8n.jumpjibe.com/webhook/test-medical-report
 

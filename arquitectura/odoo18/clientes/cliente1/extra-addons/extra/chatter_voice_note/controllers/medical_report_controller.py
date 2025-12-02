@@ -55,7 +55,7 @@ class MedicalReportController(http.Controller):
                 _logger.error("❌ No contacts provided")
                 return self._json_response({'error': 'No contacts provided'}, 400)
             
-            # URL del webhook de n8n
+            # URL del webhook de n8n 
             n8n_webhook_url = request.env['ir.config_parameter'].sudo().get_param(
                 'medical_report.n8n_webhook_url',
                 'https://n8n.jumpjibe.com/webhook/medical-report'
