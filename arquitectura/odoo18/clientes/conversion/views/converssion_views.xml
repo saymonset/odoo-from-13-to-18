@@ -1,0 +1,63 @@
+<odoo>
+    <data>
+        <record id="view_conversion_list" model="ir.ui.view">
+            <field name="name">conversion.conversion.list</field>
+            <field name="model">conversion.conversion</field>
+            <field name="arch" type="xml">
+                <list string="conversion">
+                     <field name="name"/>
+                    <field name="dateCurrency"/>
+                     <field name="currency_id"/>
+                     <field name="rent_amount"/>
+                     <field name="dateCurrency"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_conversion_form" model="ir.ui.view">
+            <field name="name">conversion.conversion.form</field>
+            <field name="model">conversion.conversion</field>
+            <field name="arch" type="xml">
+                <form string="conversion">
+                    <sheet>
+                        <div class="oe_title">
+                            <h3>
+                                <table>
+                                    <tr>
+                                        <td style="padding-right:10px;"><field name="name" required="1" 
+                                        placeholder="Name" /></td>
+                                        <td style="padding-right:10px;"><field name="dateCurrency" required="1" 
+                                        placeholder="dateCurrency" /></td>
+                                        <td style="padding-right:10px;"><field name="rent_amount"/></td>
+                                        <td style="padding-right:10px;"> <field name="currency_id"/></td>
+                                        
+                                       
+                                    </tr>
+                                </table>
+                            </h3>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_conversion">
+            <field name="name">conversion</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">conversion.conversion</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Create conversion.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="conversion_main_menu" name="conversion" sequence="1"/>
+
+        <menuitem id="conversion_type_menu" name="conversion" parent="conversion_main_menu" 
+            action="action_conversion" groups="group_conversion_manager" 
+            sequence="1"/>
+
+    </data>
+</odoo>

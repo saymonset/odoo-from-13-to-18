@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View pos.payment.method form -->
+    <record id="view_pos_payment_method_form" model="ir.ui.view">
+        <field name="name">view.pos.payment.method.form</field>
+        <field name="model">pos.payment.method</field>
+        <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/group/group/field[@name='split_transactions']" position="before">
+                    <field name="is_igtf"/>   
+              </xpath>
+            <xpath expr="//form/sheet/group/group/field[@name='is_igtf']" position="after">
+                    <field name="igtf_percentage" invisible="is_igtf==False" required="True"/>
+              </xpath>
+        </field>
+    </record>
+
+  </odoo> 

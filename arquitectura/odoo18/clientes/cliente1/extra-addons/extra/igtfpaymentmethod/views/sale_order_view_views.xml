@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_view_form" model="ir.ui.view">
+        <field name="name">view.sale_order_view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Esto es en sale.order.line modificamos el list del notebook para ese page -->
+         
+            <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='order_line']/list/field[@name='price_unit']" position="after">
+            
+                <field name="price_unit_ref" 
+                    string="USD Ref"
+                    widget="monetary" 
+                    options="{'currency_field': 'currency_aux'}"
+                    attrs="{'style': 'color: red;'}"
+                    force_save="1"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='order_line']/list/field[@name='price_subtotal']" position="after">
+                <field name="price_subtotal_ref" 
+                    string="USD Ref"
+                    widget="monetary" 
+                    options="{'currency_field': 'currency_aux'}"
+                    attrs="{'style': 'color: red;'}"
+                    force_save="1"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='order_line']/list/field[@name='price_subtotal_ref']" position="after">
+                   <field name="currency_aux" invisible="0"/>
+            </xpath>
+
+           <!-- Esto es en sale.order -->
+            <xpath expr="//field[@name='tax_totals']" position="after">
+                <field name="currency_ref" invisible="1"/>
+                <field name="price_total_ref" 
+                    string="Total USD Ref" 
+                    widget="monetary" 
+                    options="{'currency_field': 'currency_ref'}"
+                    force_save="1"/>
+            </xpath>
+        </field>
+    </record>
+     
+</odoo>

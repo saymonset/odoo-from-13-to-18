@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t  
+       t-inherit="point_of_sale.PaymentScreen"
+       t-inherit-mode="extension"
+      >
+        <xpath expr="//div[@class='payment-summary d-flex flex-grow-1 flex-column gap-2 overflow-y-auto justify-content-center rounded-3 bg-view']" position="after">
+             <CustomPaymentScreen/>
+        </xpath>
+    </t>
+</templates>
+
+   

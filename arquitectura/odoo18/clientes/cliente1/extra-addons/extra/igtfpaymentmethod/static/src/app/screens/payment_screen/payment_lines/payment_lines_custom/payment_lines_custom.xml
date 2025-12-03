@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="igtfpaymentmethod.payment_lines_custom">
+        <div class="paymentlines d-flex flex-column overflow-y-auto gap-1">
+            <!-- Input para ingresar un número -->
+            <t t-if="state.paymentMethodName">
+              <t t-if="!state.is_igtf">
+                <div class="payment-infos d-flex align-items-center justify-content-end flex-grow-1 px-3 py-3 text-truncate cursor-pointer fs-2">
+                    <select id="currencySelect" class="form-select me-2" style="width: 100px;" t-on-change="onCurrencyChange">
+                        <option value="USD" t-att-selected="state.selectedCurrency === 'USD'"><t t-esc="state.ref_label" /></option>
+                        <option value="VEF" t-att-selected="state.selectedCurrency === 'VEF'">VEF</option>
+                    </select>
+                    <div class="payment-amount">
+                        <input type="number" id="numberInput" class="form-control border-0 border-bottom" 
+                            style="border-bottom: 2px solid #000; width: 150px;" 
+                            placeholder="Ingrese monto" 
+                            t-on-input="onInputChange"
+                            t-ref="numberInput"
+                            t-on-blur="onBlur" />
+                    </div>
+                </div>
+
+                <div class="payment-infos d-flex align-items-center justify-content-between flex-grow-1 px-3 py-3 text-truncate cursor-pointer fs-2">
+                   
+                    <div class="payment-amount px-3">
+                        <!-- Ensure state.result is properly formatted -->
+                        <t t-esc="env.utils.formatCurrency(state.result)" /> 
+                    </div>
+                </div>
+             </t>
+            </t>
+          </div>
+    </t>
+</templates>

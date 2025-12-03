@@ -1,0 +1,11 @@
+<templates id="template" xml:space="preserve">
+    <t t-name="conversion.CustomOrderWidget">
+        <span class="value">
+            Ref: 
+            <span t-esc="formatWithTwoDecimals((state.taxTotals.order_sign || 0) * ((state.taxTotals.order_total || 0) / (state.ref || 1)))" class="total"/>
+        </span>
+        <span class="value">
+            <span t-esc="formatMonetary((state.taxTotals.order_sign || 0) * (state.taxTotals.order_total || 0), {currencyId: state.taxTotals.currency_id})" class="total"/>
+        </span>
+    </t>
+</templates>
