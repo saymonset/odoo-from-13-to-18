@@ -19,27 +19,6 @@ export class OwlOdooServices extends Component {
         }
         // Accede directamente a this.env
         this.env = this.env; // Asegúrate de que env se pase correctamente
-          // Usar useService para acceder al servicio rpc
-     //   this.rpcService = useService("rpc");
-
-        // const subEnv = useSubEnv({
-        //     config: {
-        //         ...getDefaultConfig(),
-        //         ...this.env.config,
-        //     }
-        // });
-
-  // Ahora puedes acceder a this.env
-    
-
-        // this.cookieService = useService("cookie")
-        // console.log(this.cookieService)
-
-        // if (this.cookieService.current.dark_theme == undefined){
-        //     this.cookieService.setCookie("dark_theme", false)
-        // }
-
-    //    const router = this.env.services.router
 
         this.state = useState({
             dark_theme: false,

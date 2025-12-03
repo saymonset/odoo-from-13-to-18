@@ -25,6 +25,20 @@ sudo apt install openssh-server fail2ban libxml2-dev libxslt1-dev zlib1g-dev lib
 sudo snap install astral-uv --classic
 ```
 
+# Install wkhtmlopdf con parche para reportes
+```bash
+# En Ubuntu/Debian
+wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_amd64.deb
+sudo apt install ./wkhtmltox_0.12.6.1-3.jammy_amd64.deb
+
+# Crea los enlaces simbólicos para que Odoo los encuentre donde espera
+sudo ln -sf /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf
+sudo ln -sf /usr/local/bin/wkhtmltoimage /usr/bin/wkhtmltoimage
+
+# Verifica que ahora sí funciona
+wkhtmltopdf --version
+```
+
 # Bajar fuentes
 
 ```bash
