@@ -5,13 +5,13 @@
       "name": "backend + Debug (cliente1)",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/arquitectura/odoo18/odoo/odoo-bin",
+      "program": "${workspaceFolder}/arquitectura/odoo19/odoo/odoo-bin",
       "console": "integratedTerminal",
       "args": [
         "--config=clientes/cliente1/conf/odoo.cfg",
         "--dev=all,qweb,xml,reload"
       ],
-      "cwd": "${workspaceFolder}/arquitectura/odoo18",
+      "cwd": "${workspaceFolder}/arquitectura/odoo19",
       "justMyCode": false,
       "env": {
         "PYTHONUNBUFFERED": "1"
@@ -24,7 +24,7 @@
       "request": "launch",
       "type": "chrome",
       "url": "https://jumpjibe.com", // Cambia a tu puerto real
-      "webRoot": "${workspaceFolder}/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/"
+      "webRoot": "${workspaceFolder}/arquitectura/odoo19/clientes/cliente1/extra-addons/extra/"
     }
   ]
 }

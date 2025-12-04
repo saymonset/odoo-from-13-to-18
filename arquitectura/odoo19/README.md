@@ -1,3 +1,7 @@
+## Si vas a debug , en el archivo, cambiar el 18 por la version que vas a debuguear y en la carpeta cliente1 es la default
+'''bash
+/home/odoo/odoo-from-13-to-18/.vscode/launch.json
+```
 ## Para debuguear , siempre en el ssh abrir los fuentes desde ODOO-13-19
 ```bash
 cd /home/odoo/odoo-from-13-to-18/arquitectura/odoo19
