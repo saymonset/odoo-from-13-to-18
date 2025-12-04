@@ -1,6 +1,10 @@
 {
-    'name': 'Conversión de Moneda en POS y Ventas',
-    'summary': 'Conversión automática de moneda en Punto de Venta y Ventas',
+    'name': 'BCV Rate Update for Venezuela',
+    'summary': 'Actualización automática de tasa BCV para Venezuela',
+    'description': """
+        Obtiene diariamente la tasa de cambio oficial del BCV y actualiza
+        la moneda VES en Odoo.
+    """,
     'version': '19.0.1.0.0',
     'category': 'Sales/Point of Sale',
     'author': 'Simon Alberto Rodriguez Pacheco',
@@ -8,14 +12,15 @@
     'maintainer': 'Simon Alberto Rodriguez Pacheco',
     'license': 'LGPL-3',
     
-    'depends': [
-        'point_of_sale',
-        'sale',
-    ],
+    'depends': ['base', 'account'],
+    'external_dependencies': {
+        'python': ['requests', 'beautifulsoup4'],
+    },
     
     'data': [
-        'security/ir.model.access.csv',
-        'views/test_test_views.xml',
+         'security/ir.model.access.csv',
+         'data/cron_data.xml',
+        'views/res_currency_views.xml',
     ],
     
     'assets': {
@@ -27,7 +32,7 @@
         ],
     },
     
-    'application': True,
+    'application': False,
     'installable': True,
     'auto_install': False,
     'images': [

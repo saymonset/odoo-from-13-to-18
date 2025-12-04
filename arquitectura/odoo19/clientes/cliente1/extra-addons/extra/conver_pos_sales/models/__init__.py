@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
-from . import test_test
+from . import bcv_rate
+from . import currency_rate
