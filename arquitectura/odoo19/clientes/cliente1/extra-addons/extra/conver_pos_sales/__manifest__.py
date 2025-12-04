@@ -30,4 +30,8 @@
     'application': True,
     'installable': True,
     'auto_install': False,
+    'images': [
+        'conver_pos_sales/static/description/icon.png'
+        
+    ],
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- View test.test View Tree -->
+    <!-- Vista de lista (antes tree) -->
     <record id="view_test_test_tree" model="ir.ui.view">
-        <field name="name">view.test.test.tree</field>
+        <field name="name">test.test.list</field>
         <field name="model">test.test</field>
         <field name="arch" type="xml">
             <list>
@@ -12,50 +12,37 @@
         </field>
     </record>
 
-    <!-- View test.test form -->
-    <record id="view_test_test_form" model="ir.ui.view">
-        <field name="name">view.test.test.form</field>
-        <field name="model">test.test</field>
-        <field name="arch" type="xml">
-            <form string="Test Test">
-                <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name" placeholder="Name..."/>
-                        </h1>
-                    </div>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <!-- View test.test search -->
+    <!-- Vista de búsqueda (esta sí sigue igual) -->
     <record id="view_test_test_search" model="ir.ui.view">
-        <field name="name">view.test.test.search</field>
+        <field name="name">test.test.search</field>
         <field name="model">test.test</field>
         <field name="arch" type="xml">
             <search>
-                <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
-                </group>
+                <field name="name"/>
             </search>
         </field>
     </record>
 
-    <!-- Action test.test -->
+    <!-- Acción (aquí también hay que cambiar "tree" por "list" en view_mode) -->
     <record id="action_test_test" model="ir.actions.act_window">
-        <field name="name">Test Test</field>
-        <field name="type">ir.actions.act_window</field>
+        <field name="name">Test Records</field>
         <field name="res_model">test.test</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[]</field>
-        <field name="context">{}</field>
-        <field name="help" type="html">
-            <p class="oe_view_nocontent_create">
-                There is no examples click here to add new Test Test.
-            </p>
-        </field>
+        <field name="view_mode">list,form</field>  <!-- antes era tree,form -->
     </record>
+
+    <!-- Menú -->
+   <!-- Menú raíz -->
+<menuitem id="menu_test_root" 
+          name="Módulos Extra" 
+          sequence="100"
+           web_icon="conver_pos_sales,static/description/icon.png"/>
+              <!-- o usa un icono de FontAwesome -->
+          />
+
+<!-- Submenú -->
+<menuitem id="menu_test_test" 
+          name="Test Test" 
+          parent="menu_test_root"
+          action="action_test_test"/>
 
 </odoo>
