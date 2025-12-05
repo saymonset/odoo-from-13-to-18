@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_bcv_rate_update,access_bcv_rate_update,model_bcv_rate_update,base.group_user,1,1,1,0
+access_sale_order_line_bcv,sale.order.line BCV,sale.model_sale_order_line,base.group_user,1,1,1,0
+access_account_move_line_bcv,account.move.line BCV,account.model_account_move_line,base.group_user,1,1,1,0
+access_bcv_rate_update,bcv.rate.update,conver_pos_sales.model_bcv_rate_update,base.group_user,1,1,1,0

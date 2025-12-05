@@ -12,15 +12,24 @@
     'maintainer': 'Simon Alberto Rodriguez Pacheco',
     'license': 'LGPL-3',
     
-    'depends': ['base', 'account'],
+    'depends': [
+        'base',
+        'sale',
+        'account',
+        'point_of_sale',
+    ],
+
     'external_dependencies': {
         'python': ['requests', 'beautifulsoup4'],
     },
     
+    # SOLO ARCHIVOS DE DATOS (XML, CSV) - NO ARCHIVOS .PY
     'data': [
-         'security/ir.model.access.csv',
-         'data/cron_data.xml',
+        'security/ir.model.access.csv',
+        'data/cron_data.xml',
         'views/res_currency_views.xml',
+        'views/sale_order_views.xml',
+        'views/invoice_report_templates.xml',
     ],
     
     'assets': {
@@ -37,6 +46,5 @@
     'auto_install': False,
     'images': [
         'conver_pos_sales/static/description/icon.png'
-        
     ],
 }
