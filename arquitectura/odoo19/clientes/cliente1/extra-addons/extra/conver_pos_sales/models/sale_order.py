@@ -3,7 +3,6 @@ from odoo import models, fields, api
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
     
-    # Campos en el pedido (NO en las líneas)
     price_usd_bcv = fields.Float(
         string='Precio USD (BCV)',
         digits=(12, 4),
@@ -35,7 +34,7 @@ class SaleOrder(models.Model):
         for order in self:
             # Buscar la tasa BCV más reciente
             rate = self.env['res.currency.rate'].search([
-                ('currency_id.iso_code', '=', 'VES'),
+                ('currency_id.name', '=', 'VES'),
                 ('company_id', '=', order.company_id.id),
             ], order='name desc', limit=1)
             

@@ -1,37 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Vista temporal SIMPLIFICADA -->
-    <record id="view_test_bcv_simple" model="ir.ui.view">
-        <field name="name">test.bcv.simple</field>
+
+    <record id="view_sale_order_form_bcv" model="ir.ui.view">
+        <field name="name">sale.order.form.bcv</field>
         <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <form string="Pedido de Venta">
-                <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <!-- Solo incluir botones esenciales -->
-                    </div>
-                    <div class="oe_title">
-                        <label for="name" string="Referencia"/>
-                        <h1><field name="name"/></h1>
-                    </div>
-                    
-                    <!-- Div de prueba BCV - MUY SIMPLE -->
-                    <div style="background: #f0f8ff; padding: 10px; margin: 10px 0; border: 1px solid #007bff;">
-                        <strong>INFORMACIÓN BCV:</strong>
-                        <group>
-                            <field name="bcv_rate_value" string="Tasa BCV"/>
-                            <field name="price_usd_bcv" string="Total USD BCV"/>
-                        </group>
-                    </div>
-                    
-                    <!-- Resto del formulario básico -->
-                    <group>
-                        <field name="partner_id"/>
-                        <field name="date_order"/>
-                        <field name="amount_total"/>
-                    </group>
-                </sheet>
-            </form>
+
+            <!-- Inserta antes del subtotal -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal']" position="before">
+                <field name="price_subtotal_usd_bcv" string="Subtotal USD" readonly="1"/>
+            </xpath>
+
         </field>
     </record>
+
 </odoo>

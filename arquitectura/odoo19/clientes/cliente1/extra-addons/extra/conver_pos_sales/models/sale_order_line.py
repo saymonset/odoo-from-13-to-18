@@ -9,6 +9,13 @@ class SaleOrderLine(models.Model):
         compute='_compute_price_usd_bcv',
         store=False
     )
+    
+    price_subtotal_usd_bcv = fields.Float(
+        string='Subtotal USD (BCV)',
+        digits=(12, 4),
+        compute='_compute_price_subtotal_usd_bcv',
+        store=False
+    )
 
     bcv_rate_value = fields.Float(
         string="Tasa BCV",
@@ -28,7 +35,7 @@ class SaleOrderLine(models.Model):
 
             # Buscar la tasa BCV más reciente
             rate = self.env['res.currency.rate'].search([
-                ('currency_id.iso_code', '=', 'VES'),
+                ('currency_id.name', '=', 'VES'),
                 ('company_id', '=', line.order_id.company_id.id),
             ], order='name desc', limit=1)
 
@@ -41,3 +48,11 @@ class SaleOrderLine(models.Model):
 
             # Convierte el precio_unit a USD
             line.price_usd_bcv = line.price_unit / bcv_value
+    
+    @api.depends('price_usd_bcv', 'product_uom_qty')
+    def _compute_price_subtotal_usd_bcv(self):
+        """
+        Calcula el subtotal en USD (precio USD * cantidad)
+        """
+        for line in self:
+            line.price_subtotal_usd_bcv = line.price_usd_bcv * line.product_uom_qty

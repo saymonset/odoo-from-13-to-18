@@ -23,13 +23,14 @@
         'python': ['requests', 'beautifulsoup4'],
     },
     
-    # SOLO ARCHIVOS DE DATOS (XML, CSV) - NO ARCHIVOS .PY
+    # SOLO archivos XML y CSV
     'data': [
         'security/ir.model.access.csv',
         'data/cron_data.xml',
         'views/res_currency_views.xml',
+        'views/sale_order_tree_debug.xml',
         'views/sale_order_views.xml',
-        'views/invoice_report_templates.xml',
+        # 'views/invoice_report_templates.xml',  # Mantenlo comentado por ahora
     ],
     
     'assets': {
