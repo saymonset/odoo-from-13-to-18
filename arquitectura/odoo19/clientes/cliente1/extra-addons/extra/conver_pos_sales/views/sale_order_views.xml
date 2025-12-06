@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_sale_order_form_bcv" model="ir.ui.view">
-        <field name="name">sale.order.form.bcv</field>
+    <record id="sale_order_form_view_usd" model="ir.ui.view">
+        <field name="name">sale.order.form.usd.total</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
 
-            <!-- Inserta antes del subtotal -->
-            <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal']" position="before">
-                <field name="price_subtotal_usd_bcv" string="Subtotal USD" readonly="1"/>
+           <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal']" position="before">
+                <field name="price_subtotal_usd_bcv" string="Subtotal USD" readonly="1" />
             </xpath>
 
+          <xpath expr="//group[@name='sale_total']" position="inside">
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <label for="amount_total_usd" string="Total USD (BCV)" style="font-weight:bold; color:green;"/>
+                    <field name="amount_total_usd" readonly="1" style="font-weight:bold; color:green;"/>
+                </div>
+            </xpath>
         </field>
     </record>
 
