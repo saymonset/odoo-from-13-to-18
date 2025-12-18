@@ -1,0 +1,1 @@
+### Debes cambiar la carpeta odoo18 por  19 o la que vallas a depurar

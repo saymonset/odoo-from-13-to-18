@@ -70,7 +70,7 @@ uv pip install -r odoo/requirements.txt
 # En postgres creamos el usuario odoo19
 
 ```bash
- docker exec -it odoo-db18 bash
+ docker exec -it odoo-db18-n8n bash
    psql -U odoo -d postgres
 ```
 
@@ -88,13 +88,13 @@ CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 ## Para docker
 ```bash
 \q
-docker exec -it odoo-db18 bash
+docker exec -it odoo-db18-n8n bash
    psql -U odoo18 -d postgres
    CREATE USER odoo19 WITH PASSWORD 'odoo';
    ALTER USER odoo19 WITH SUPERUSER;
 
    \q
-   docker exec -it odoo-db18 bash
+   docker exec -it odoo-db18-n8n bash
    psql -U odoo19 -d postgres
    CREATE DATABASE dbcliente1_19;
    GRANT ALL PRIVILEGES ON DATABASE dbcliente1_19 TO odoo19;
