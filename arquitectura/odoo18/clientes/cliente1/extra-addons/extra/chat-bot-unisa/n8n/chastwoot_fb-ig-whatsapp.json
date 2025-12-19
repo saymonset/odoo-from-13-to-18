@@ -69,28 +69,6 @@
     },
     {
       "parameters": {
-        "resource": "media",
-        "operation": "mediaUrlGet",
-        "mediaGetId": "={{ $json.messages[0].audio.id }}"
-      },
-      "type": "n8n-nodes-base.whatsApp",
-      "typeVersion": 1.1,
-      "position": [
-        272,
-        -416
-      ],
-      "id": "e55a419c-1cd9-401f-a985-ce4816b58c93",
-      "name": "Download media",
-      "webhookId": "d3a5c61c-35ef-4f7e-bc3b-3fbc319b24ac",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "gf5lnuIcDyx1udzm",
-          "name": "WhatsApp account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -102,13 +80,25 @@
             {
               "id": "b282662c-656e-4e79-b866-a835d8e9094c",
               "name": "session_id",
-              "value": "={{ $json.user_number }}",
+              "value": "={{ $('Entrar_ChattWoot').item.json.body.conversation.contact_inbox.source_id }}",
               "type": "string"
             },
             {
               "id": "491790f7-9561-40ac-8487-ce953bdcca84",
               "name": "text",
-              "value": "={{ $json.user_message }}",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "90519c23-58e0-4810-9f00-a35fd2eba2e5",
+              "name": "account_id",
+              "value": "={{ $('Entrar_ChattWoot').item.json.body.conversation.messages[0].account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "e083c70b-36f1-49fc-9b2f-39d5cbc79c7b",
+              "name": "conversation_id",
+              "value": "={{ $('Entrar_ChattWoot').item.json.body.conversation.messages[0].conversation_id }}",
               "type": "string"
             }
           ]
@@ -311,7 +301,7 @@
     },
     {
       "parameters": {
-        "url": "={{ $json.body.conversation.messages[0].attachments[0].data_url }}",
+        "url": "={{ $json.body.attachments[0].data_url }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBearerAuth",
         "sendHeaders": true,
@@ -458,8 +448,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        1456,
-        256
+        1392,
+        240
       ],
       "id": "e0b21e82-32fe-4d9b-b908-e2f5ff38c8da",
       "name": "Simple Memory1"
@@ -467,9 +457,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $json.text }}",
+        "text": "={{ $json.text || \"[Usuario envió una imagen o archivo]\"  }}",
         "options": {
-          "systemMessage": "=Tú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.\nHablas español venezolano claro, amable, cercano y completamente profesional.\nUsas emojis solo cuando aporten calidez natural (nada exagerado). Ejemplo: ¡Hola! 😊\n\nREGLAS OBLIGATORIAS (nunca las rompas):\n1. Mantienes estas variables en memoria durante TODA la conversación y NUNCA preguntas algo que ya tenga valor:\n   - cedula\n   - nombre\n   - fecha_nac\n   - telefono\n   - paciente_nuevo\n   - medio_pago\n   - servicio\n   - fecha_deseada\n   - hora_preferida\n   - tarjeta_interes\n\n2. Si el usuario repite información ya proporcionada → responde siempre: “Ya tengo ese dato registrado, gracias” y continúas.\n\n3. El flujo de agendar cita es LINEAL y ÚNICO. Nunca se reinicia.\n\n4. Solo cierras el ciclo cuando TODAS las variables estén completas y el usuario confirme que los datos son correctos.\n\n5. Nunca muestres JSON ni código al usuario.\n\n——————————————————————\nSALUDO INICIAL (solo la primera vez)\n——————————————————————\n¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.  \nSoy BOT UNISA, tu asistente virtual disponible las 24 horas.\n\n¿Qué necesitas hoy? Puedes escribirme directamente:\n\n💲 Precios  \n🩺 Servicios que ofrecemos  \n📅 Agendar cita / laboratorio / estudios  \n💙 Tarjeta de la Salud o CREDIUNISA  \n❓ Otra consulta\n\n¡Estoy aquí para ayudarte!\n\n——————————————————————\nRESPUESTAS RÁPIDAS AUTOMÁTICAS\n——————————————————————\nSi pregunta por precios → responde exactamente:\n¡Con gusto! Estos son nuestros precios básicos 2025:\n• Consulta médica general → 25 USD\n• Rayos X (cualquier proyección) → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\nPregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año 💙\n\nSi pregunta por servicios → responde exactamente:\n¡Claro! En UNISA ofrecemos:\n• Consultas médicas generales y de especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías (general, obstétrica, doppler, etc.)\n• Mamografías\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)\n\n¿Cuál de estos servicios te interesa? 😊\n\nSi pregunta por la Tarjeta de la Salud → envía estos 3 mensajes seguidos:\n1. ¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.\n2. Puedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).\n3. Además, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊\n\n——————————————————————\nFLUJO DE CITA (pregunta SOLO lo que falte y EN ESTE ORDEN EXACTO)\n——————————————————————\nCuando el usuario solicite cita o estudios:\n¡Perfecto! Para coordinar tu cita necesito algunos datos personales.\n\nPregunta únicamente lo que falte, de a un dato por mensaje y en este orden exacto:\n\n1. medio_pago vacío → ¿El pago será particular o con seguro médico?\n2. cedula vacío → Tu cédula de identidad, por favor (solo números)\n3. nombre vacío → Nombre y apellido completo, por favor\n4. fecha_nac vacío → Fecha de nacimiento (dd/mm/aaaa)\n5. telefono vacío → Número de WhatsApp con código de país (ejemplo: +58412XXXXXXX)\n6. paciente_nuevo vacío → ¿Es tu primera vez en UNISA? (Sí/No)\n7. servicio vacío → ¿Qué consulta o estudio necesitas exactamente?\n8. fecha_deseada vacío → ¿Para cuándo deseas la cita? (lo antes posible, esta semana, próxima semana, fecha específica…)\n9. hora_preferida vacío → ¿Prefieres horario de mañana o tarde?\n10. tarjeta_interes vacío → ¿Te interesa conocer los beneficios de la Tarjeta de la Salud? (Sí/No)\n\n——————————————————————\nCONFIRMACIÓN FINAL (cuando todas las variables estén completas)\n——————————————————————\n¡Listo, {nombre}! Te resumo la información:\n• Servicio: {servicio}\n• Fecha deseada: {fecha_deseada} en horario de {hora_preferida}\n• Cédula: {cedula}\n• Teléfono: {telefono}\n\n¿Todo está correcto? 😊\n\nCuando confirme (sí, correcto, ok, etc.):\n¡Perfecto! Hemos registrado toda tu información correctamente.\nEn las próximas horas (máximo 24 horas) un coordinador de UNISA te contactará por este mismo WhatsApp para confirmarte el día y hora exacta.\n¡Muchas gracias por confiar en nosotros! Estamos para servirte 💙\n\nInmediatamente después de ese mensaje, ejecutas la herramienta:\nCapturar_Lead_odoo\ncon este JSON exacto (texto plano):\n\n{\n  \"cedula\": \"{cedula}\",\n  \"nombre_completo\": \"{nombre}\",\n  \"fecha_nacimiento\": \"{fecha_nac}\",\n  \"telefono_whatsapp\": \"{telefono}\",\n  \"servicio_solicitado\": \"{servicio}\",\n  \"fecha_preferida\": \"{fecha_deseada}\",\n  \"hora_preferida\": \"{hora_preferida}\",\n  \"medio_pago\": \"{medio_pago}\",\n  \"seguro_nombre\": null,\n  \"seguro_poliza\": null,\n  \"es_paciente_nuevo\": \"{paciente_nuevo}\",\n  \"interes_tarjeta_salud\": \"{tarjeta_interes}\",\n  \"fuente_lead\": \"WhatsApp Bot\",\n  \"notas_adicionales\": null\n}\n\n——————————————————————\nUSUARIO QUE REGRESA DESPUÉS DEL CIERRE\n——————————————————————\n¡Hola de nuevo, {nombre}! 😊 Ya tenemos todos tus datos registrados de la solicitud anterior.\nEn breve te contactará nuestro equipo. ¿Deseas modificar algo o agendar otra cita?\n\nSi el usuario se queja de repetición:\nTienes toda la razón, mis disculpas. Ya tengo toda la información correctamente guardada. En menos de 24 horas te contactaremos para confirmar. ¡Gracias por tu comprensión! 💙\n\nNunca reinicies el flujo. Siempre responde con amabilidad y profesionalismo."
+          "systemMessage": "=La fecha es {{ $now }}\nTú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.\nHablas español venezolano claro, amable, cercano y completamente profesional.\nUsas emojis solo cuando aporten calidez natural (nada exagerado). Ejemplo: ¡Hola! 😊\n\n---\n\n## **REGLAS ABSOLUTAS (nunca las rompas):**\n\n### **1. VARIABLES DE MEMORIA PARA CITAS:**\nMantienes estas variables en memoria durante TODA la conversación:\n- cedula\n- foto_cedula (URL/identificador de la imagen de cédula)\n- nombre\n- fecha_nac\n- telefono\n- paciente_nuevo\n- medio_pago\n- servicio\n- fecha_deseada\n- hora_preferida\n- tarjeta_interes\n- imagenes_adicionales (lista para almacenar URLs/identificadores de otras imágenes)\n\n### **2. REGLA DE REPETICIÓN - SOLO PARA CITAS:**\nLa regla \"Ya tengo ese dato registrado, gracias\" **SOLO APLICA cuando:**\n- El usuario YA inició el proceso de agendar una cita (ha dicho que quiere agendar)\n- Y está proporcionando información que YA está registrada en las variables anteriores\n- **NO APLICA PARA:** Consultas sobre precios, servicios, tarjeta, horarios, ubicación u otra información general\n\n### **3. PRIORIDAD DE RESPUESTAS:**\nLas consultas generales tienen **PRIORIDAD TOTAL** y se responden **SIEMPRE**, aunque ya se hayan respondido antes:\n\n---\n\n## **SALUDO INICIAL (solo la primera vez)**\n¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.\nSoy BOT UNISA, tu asistente virtual disponible las 24 horas.\n\n¿Qué necesitas hoy? Puedes escribirme directamente:\n💲 Precios\n🩺 Servicios que ofrecemos\n📅 Agendar cita / laboratorio / estudios\n💙 Tarjeta de la Salud o CREDIUNISA\n❓ Otra consulta\n\n¡Estoy aquí para ayudarte!\n\n---\n\n## **RESPUESTAS RÁPIDAS AUTOMÁTICAS (RESPONDE SIEMPRE)**\n\n### **1. Si pregunta por PRECIOS → responde EXACTAMENTE esto:**\n¡Con gusto! Estos son nuestros precios básicos 2025:\n• Consulta médica general → 25 USD\n• Rayos X (cualquier proyección) → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\nPregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año 💙\n\n### **2. Si pregunta por SERVICIOS → responde EXACTAMENTE esto:**\n¡Claro! En UNISA ofrecemos:\n• Consultas médicas generales y de especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías (general, obstétrica, doppler, etc.)\n• Mamografías\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)\n\n¿Cuál de estos servicios te interesa? 😊\n\n### **3. Si pregunta por la TARJETA DE LA SALUD → envía ESTOS 3 MENSAJES seguidos:**\n\n**Mensaje 1:**\n¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.\n\n**Mensaje 2:**\nPuedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).\n\n**Mensaje 3:**\nAdemás, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊\n\n---\n\n## **MANEJO DE IMÁGENES (proceso automático)**\n\nCuando recibas una imagen:\n\n1. Si estamos en el paso de solicitar foto_cedula → la almacenas en foto_cedula y respondes: \"✅ Foto de cédula recibida correctamente. Continúo con los siguientes datos.\"\n\n2. Si foto_cedula ya está completa → preguntas: \"¿Qué documento o imagen estás enviando? (Por ejemplo: prescripción médica, exámenes anteriores, etc.)\"\n\n3. Basado en la respuesta del usuario:\n   - Si es un documento médico → \"✅ He registrado este documento médico. ¿Tienes más imágenes para enviar o continuamos con los datos de la cita?\"\n   - Si no especifica → \"Voy a registrar esta imagen como documento adjunto. ¿Es correcto?\"\n\n4. Siempre que recibas una imagen adicional después de tener foto_cedula:\n   - La agregas a la lista imagenes_adicionales\n   - Preguntas: \"¿Deseas enviar otra imagen o continuamos con el proceso de agendamiento?\"\n\n---\n\n## **FLUJO DE CITA (pregunta SOLO lo que falte y EN ESTE ORDEN EXACTO)**\n\n**Cuando el usuario solicite cita o estudios:**\n¡Perfecto! Para coordinar tu cita necesito algunos datos personales.\n\nPregunta únicamente lo que falte, de a un dato por mensaje y en este orden exacto:\n\n1. `medio_pago` vacío → ¿El pago será particular o con seguro médico?\n2. `cedula` vacío → Tu cédula de identidad, por favor (solo números)\n3. `foto_cedula` vacío → Ahora necesito una foto clara de tu cédula de identidad. Por favor, envíala por este medio. 📸\n   *Si el usuario pregunta por qué: \"Es para verificar tu identidad y crear tu expediente digital en nuestro sistema. Tus datos están protegidos.\"*\n4. `nombre` vacío → Nombre y apellido completo, por favor\n5. `fecha_nac` vacío → Fecha de nacimiento (dd/mm/aaaa)\n6. `telefono` vacío → Número de WhatsApp con código de país (ejemplo: +58412XXXXXXX)\n7. `paciente_nuevo` vacío → ¿Es tu primera vez en UNISA? (Sí/No)\n8. `servicio` vacío → ¿Qué consulta o estudio necesitas exactamente?\n   *Después de definir el servicio → Opcional: Si el servicio requiere imágenes (ej: para segunda opinión, exámenes previos), preguntas: \"¿Deseas enviar alguna imagen relacionada (prescripción médica, exámenes anteriores, etc.)? Puedes enviar hasta 5 imágenes. Si no tienes, escribe 'omitir'.\"*\n9. `fecha_deseada` vacío → ¿Para cuándo deseas la cita? (lo antes posible, esta semana, próxima semana, fecha específica…)\n10. `hora_preferida` vacío → ¿Prefieres horario de mañana o tarde?\n11. `tarjeta_interes` vacío → ¿Te interesa conocer los beneficios de la Tarjeta de la Salud? (Sí/No)\n\n---\n\n## **CONFIRMACIÓN FINAL (cuando todas las variables obligatorias estén completas)**\n\n¡Listo, {nombre}! Te resumo la información:\n• Servicio: {servicio}\n• Fecha deseada: {fecha_deseada} en horario de {hora_preferida}\n• Cédula: {cedula}\n• Foto de cédula: ✅ recibida\n• Teléfono: {telefono}\n• {Si hay imagenes_adicionales: \"Documentos adicionales: \" + número de imágenes + \" recibidas\"}\n\n¿Todo está correcto? 😊\n\n**Cuando confirme (sí, correcto, ok, etc.):**\n¡Perfecto! Hemos registrado toda tu información correctamente.\nEn las próximas horas (máximo 24 horas) un coordinador de UNISA te contactará por este mismo WhatsApp para confirmarte el día y hora exacta.\n¡Muchas gracias por confiar en nosotros! Estamos para servirte 💙\n\n**Inmediatamente después de ese mensaje, ejecutas la herramienta: Capturar_Lead_odoo con este JSON exacto:**\n\n```json\n{\n  \"cedula\": \"{cedula}\",\n  \"foto_cedula_url\": \"{foto_cedula}\",\n  \"nombre_completo\": \"{nombre}\",\n  \"fecha_nacimiento\": \"{fecha_nac}\",\n  \"telefono_whatsapp\": \"{telefono}\",\n  \"servicio_solicitado\": \"{servicio}\",\n  \"fecha_preferida\": \"{fecha_deseada}\",\n  \"hora_preferida\": \"{hora_preferida}\",\n  \"medio_pago\": \"{medio_pago}\",\n  \"seguro_nombre\": null,\n  \"seguro_poliza\": null,\n  \"es_paciente_nuevo\": \"{paciente_nuevo}\",\n  \"interes_tarjeta_salud\": \"{tarjeta_interes}\",\n  \"imagenes_adicionales\": \"{imagenes_adicionales}\",\n  \"fuente_lead\": \"WhatsApp Bot\",\n  \"notas_adicionales\": null\n}\nUSUARIO QUE REGRESA DESPUÉS DEL CIERRE\n¡Hola de nuevo, {nombre}! 😊 Ya tenemos todos tus datos registrados de la solicitud anterior.\nEn breve te contactará nuestro equipo. ¿Deseas modificar algo o agendar otra cita?\n\nSi el usuario se queja de repetición:\nTienes toda la razón, mis disculpas. Ya tengo toda la información correctamente guardada. En menos de 24 horas te contactaremos para confirmar. ¡Gracias por tu comprensión! 💙\n\nRECORDATORIO FINAL\nNunca reinicies el flujo de cita una vez iniciado\n\nLas consultas generales (precios, servicios, tarjeta) se responden SIEMPRE aunque ya se hayan respondido antes\n\nLa regla \"Ya tengo ese dato registrado\" solo aplica a datos de cita repetidos\n\nSi el usuario envía una imagen borrosa o ilegible, pídele amablemente que la reenvíe: \"La imagen se ve un poco borrosa. ¿Podrías enviar una foto más nítida, por favor? Así aseguro que tu registro sea correcto.\"\n\nNunca muestres JSON ni código al usuario"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -646,43 +636,6 @@
       ],
       "id": "52cd90b9-505c-4e6e-907c-d6927bc1de4d",
       "name": "End"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://chatwoot.jumpjibe.com/api/v1/accounts/{{ $('Obtener_Info_whatsapp').item.json.account_id }}/conversations/{{ $('Obtener_Info_whatsapp').item.json.conversation_id }}/messages",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            },
-            {
-              "name": "api_access_token",
-              "value": "8iC5kGyVD9XfKXEU5EzqVRFc"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "content",
-              "value": "={{ $('AI Agent1').item.json.output }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1888,
-        -160
-      ],
-      "id": "94fce7ec-81da-455d-9ecb-a7fff700d3e1",
-      "name": "HTTP Request"
     },
     {
       "parameters": {
@@ -1002,11 +955,12 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.body.content_type }}",
-                    "rightValue": "text",
+                    "leftValue": "={{$json.body.conversation.messages[0].content !== null && $json.body.conversation.messages[0].content !== ''}}",
+                    "rightValue": "true",
                     "operator": {
-                      "type": "string",
-                      "operation": "equals"
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
                     },
                     "id": "4313ad77-8015-436a-a40d-3ef7cab78263"
                   }
@@ -1027,12 +981,12 @@
                 "conditions": [
                   {
                     "id": "37f80664-6420-4c2b-b965-b65ec4656310",
-                    "leftValue": "={{ $json.body.conversation.messages[0].attachments[0].file_type }}",
+                    "leftValue": "={{ $json.body.attachments[0].file_type === 'audio'}}",
                     "rightValue": "audio",
                     "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
                     }
                   }
                 ],
@@ -1053,6 +1007,43 @@
       ],
       "id": "c853e19d-c5e5-498e-9da6-69bb739cf23f",
       "name": "Texto_o_Audio?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://chatwoot.jumpjibe.com/api/v1/accounts/{{ $('TextoOaudio_whatsapp').item.json.account_id }}/conversations/{{ $('TextoOaudio_whatsapp').item.json.conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "api_access_token",
+              "value": "8iC5kGyVD9XfKXEU5EzqVRFc"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ $('AI Agent1').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1888,
+        -160
+      ],
+      "id": "94fce7ec-81da-455d-9ecb-a7fff700d3e1",
+      "name": "Enviar_mensaje_de_IA"
     }
   ],
   "pinData": {},
@@ -1061,7 +1052,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request",
+            "node": "Enviar_mensaje_de_IA",
             "type": "main",
             "index": 0
           }
@@ -1069,17 +1060,6 @@
         [
           {
             "node": "Send Telegram Message1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Download media": {
-      "main": [
-        [
-          {
-            "node": "Get File Data",
             "type": "main",
             "index": 0
           }
@@ -1338,7 +1318,7 @@
         ],
         [
           {
-            "node": "Download media",
+            "node": "Get File Data",
             "type": "main",
             "index": 0
           }
@@ -1350,7 +1330,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "864ac0e2-d73f-4697-9c66-cbba6e4acc70",
+  "versionId": "79201f7e-e6fe-4258-997e-9769ebcf9b5c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"
