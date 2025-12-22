@@ -10,6 +10,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/ChatBotWrapper.xml",  # AÑADIDO: El XML debe ir aquí
+        "views/partner_view.xml",  # AÑADIDO: El XML debe ir aquí
     ],
     'assets': {
         "web.assets_frontend": [

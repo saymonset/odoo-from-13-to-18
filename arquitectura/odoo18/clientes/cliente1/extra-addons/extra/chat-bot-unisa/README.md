@@ -1,3 +1,20 @@
+## Debes actualizar la bd
+```bash
+          # 1. Conéctate a PostgreSQL
+          sudo -u postgres psql
+
+          # 2. Selecciona tu base de datos
+          \c dbcliente1_18
+
+          # 3. Agrega la columna birthdate (ESTO ES CRÍTICO)
+          ALTER TABLE res_partner ADD COLUMN birthdate DATE;
+
+          # 4. Verifica que se creó
+          \d res_partner | grep birthdate
+
+          # 5. Salir
+          \q
+```
 ## Arquitectura y Componentes
  
 chat-bot-unisa (Módulo de IA): Interfaz web para visualizar y gestionar mensajes, incorpora IA para transcripción y análisis de textos.

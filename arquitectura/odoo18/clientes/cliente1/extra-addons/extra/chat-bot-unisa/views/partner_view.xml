@@ -1,0 +1,19 @@
+<!-- views/partner_view.xml -->
+<odoo>
+    <record id="view_partner_form_inherit_birthdate" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.birthdate</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Inserta el campo en la pestaña 'Información' -->
+            <xpath expr="//page[@name='internal_notes']" position="before">
+                <page string="Información Personal">
+                    <group>
+                        <field name="birthdate"/>
+                        <field name="age" widget="integer" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

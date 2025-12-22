@@ -145,6 +145,11 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' odo
 ```bash
 ./odoo/odoo-bin -d dbcliente1_18 -i base --without-demo=all -c clientes/cliente1/conf/odoo.cfg
 ./odoo/odoo-bin -d dbcliente1_18 -i base -c clientes/cliente1/conf/odoo.cfg
+# o actualizarlo de esta manera
+# Entorno vitual en /home/odoo/odoo-from-13-to-18/arquitectura/odoo18
+ source .env/bin/source
+ # Ejecutar el comando
+ ./odoo/odoo-bin -d dbcliente1_18 -c clientes/cliente1/conf/odoo.cfg -u chat-bot-unisa
 ```
 
 # Arrancamos odoo de manera regular
