@@ -15,7 +15,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $('Merge').item.json.platform }}",
+                    "leftValue": "={{ $('Obtener_Info_basica').item.json.platform }}",
                     "rightValue": "whatsapp",
                     "operator": {
                       "type": "string",
@@ -40,7 +40,7 @@
                 "conditions": [
                   {
                     "id": "20031916-d51a-4dec-87e5-7cfb1f1676b1",
-                    "leftValue": "={{ $('Merge').item.json.platform }}",
+                    "leftValue": "={{ $('Obtener_Info_basica').item.json.platform }}",
                     "rightValue": "telegram",
                     "operator": {
                       "type": "string",
@@ -61,340 +61,11 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        1712,
-        32
+        -3840,
+        256
       ],
-      "id": "bb47cc11-cf3f-4c61-8942-243f49a34aa5",
+      "id": "ce2fb1d8-55d1-48e7-8362-1686d9db7886",
       "name": "Switch"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "47c4b0ba-004a-411b-942c-a8ca5ab99f9e",
-              "name": "platform",
-              "value": "whatsapp",
-              "type": "string"
-            },
-            {
-              "id": "b282662c-656e-4e79-b866-a835d8e9094c",
-              "name": "session_id",
-              "value": "={{ $('Entrar_ChattWoot').item.json.body.conversation.contact_inbox.source_id }}",
-              "type": "string"
-            },
-            {
-              "id": "491790f7-9561-40ac-8487-ce953bdcca84",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            },
-            {
-              "id": "90519c23-58e0-4810-9f00-a35fd2eba2e5",
-              "name": "account_id",
-              "value": "={{ $('Entrar_ChattWoot').item.json.body.conversation.messages[0].account_id }}",
-              "type": "string"
-            },
-            {
-              "id": "e083c70b-36f1-49fc-9b2f-39d5cbc79c7b",
-              "name": "conversation_id",
-              "value": "={{ $('Entrar_ChattWoot').item.json.body.conversation.messages[0].conversation_id }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        864,
-        -560
-      ],
-      "id": "d313ee19-fc10-49f1-8138-161045020229",
-      "name": "TextoOaudio_whatsapp"
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.8,
-      "position": [
-        608,
-        -416
-      ],
-      "id": "486b2fd3-9fe7-4535-955a-edffe1e9cd88",
-      "name": "Audio_a_Texto_whatsapp",
-      "credentials": {
-        "openAiApi": {
-          "id": "SynY9HmZH2SsZkWD",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        1248,
-        -368
-      ],
-      "id": "a0eb986c-39fd-4c4d-9ae5-493fb1e53bc3",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.message.text }}",
-                    "rightValue": "text",
-                    "operator": {
-                      "type": "string",
-                      "operation": "exists",
-                      "singleValue": true
-                    },
-                    "id": "4313ad77-8015-436a-a40d-3ef7cab78263"
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "text"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "37f80664-6420-4c2b-b965-b65ec4656310",
-                    "leftValue": "={{ $json.message.voice.file_id }}",
-                    "rightValue": "audio",
-                    "operator": {
-                      "type": "string",
-                      "operation": "exists",
-                      "singleValue": true
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "audio"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "cd226af3-e973-4fa2-adee-7b4988db3d90",
-                    "leftValue": "error",
-                    "rightValue": "",
-                    "operator": {
-                      "type": "string",
-                      "operation": "exists",
-                      "singleValue": true
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "error"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.3,
-      "position": [
-        192,
-        -16
-      ],
-      "id": "b871ec4b-85f9-4424-9b11-9cce50d86c49",
-      "name": "Switch3",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "8d6a2d65-8ab9-4d6f-b643-9af65d6e80a7",
-              "name": "text",
-              "value": "={{ $json.message.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        352,
-        -160
-      ],
-      "id": "d7dedebf-58b9-4a76-9268-dc2397b4d48c",
-      "name": "Texto_Telegram",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "e6ac3d0c-7270-46bf-92ad-9658ed008092",
-              "name": "platform",
-              "value": "telegram",
-              "type": "string"
-            },
-            {
-              "id": "316faf3b-19a2-4a4b-9287-c78225b421c9",
-              "name": "session_id",
-              "value": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
-              "type": "string"
-            },
-            {
-              "id": "087f07c2-4849-4a56-bf9d-0f8ed48b2fbc",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        976,
-        -160
-      ],
-      "id": "873ce336-2de0-4cb4-a6b9-5d1479ca3481",
-      "name": "Texto_Audio_Telegram",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "url": "={{ $json.body.attachments[0].data_url }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpBearerAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {}
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        448,
-        -416
-      ],
-      "id": "8b731072-9ef6-4296-83fd-bc1dab9223fd",
-      "name": "Get File Data",
-      "credentials": {
-        "httpBearerAuth": {
-          "id": "SxSs5ggMU2LgbDMZ",
-          "name": "Bearer Auth account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "file",
-        "fileId": "={{ $json.message.voice.file_id }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        528,
-        16
-      ],
-      "id": "b71e283a-3b2b-4799-83f2-69b112b85c3a",
-      "name": "Get a file Data",
-      "webhookId": "c24f87ee-a44d-4a22-85e9-9b12f08ecedb",
-      "credentials": {
-        "telegramApi": {
-          "id": "IltIcHnqCAfUJMoN",
-          "name": "Telegram account"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.8,
-      "position": [
-        736,
-        16
-      ],
-      "id": "0413f1de-dd1a-4170-8149-a1a6340c9e28",
-      "name": "Audio_a_Texto_telegram",
-      "credentials": {
-        "openAiApi": {
-          "id": "SynY9HmZH2SsZkWD",
-          "name": "OpenAi account"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "updates": [
-          "message"
-        ],
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        0,
-        16
-      ],
-      "id": "fc79c98d-ff51-411c-b4cb-87a12227800b",
-      "name": "Telegram Trigger1",
-      "webhookId": "d5eed65e-af1c-4f9d-aa3b-384899a122cb",
-      "credentials": {
-        "telegramApi": {
-          "id": "IltIcHnqCAfUJMoN",
-          "name": "Telegram account"
-        }
-      },
-      "disabled": true
     },
     {
       "parameters": {
@@ -409,10 +80,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1216,
-        256
+        -4480,
+        448
       ],
-      "id": "1a0e6a89-90d4-4f8b-9f27-f90601e161c5",
+      "id": "51af378c-c677-4eda-8ab5-3e6206dd2bfd",
       "name": "OpenAI Chat Model1",
       "credentials": {
         "openAiApi": {
@@ -423,52 +94,19 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://jumpjibe.com/chat-bot-unisa/capturar_lead",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', ``, 'json') }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.2,
-      "position": [
-        1600,
-        256
-      ],
-      "id": "41b70024-1b70-462d-88a0-55f9842b0032",
-      "name": "Capturar_Lead_odoo1"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "{{ $json.session_id }}",
-        "contextWindowLength": 10
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        1392,
-        240
-      ],
-      "id": "e0b21e82-32fe-4d9b-b908-e2f5ff38c8da",
-      "name": "Simple Memory1"
-    },
-    {
-      "parameters": {
         "promptType": "define",
-        "text": "={{ $json.text || \"[Usuario envió una imagen o archivo]\"  }}",
+        "text": "={{ $json.text }}",
         "options": {
-          "systemMessage": "=La fecha es {{ $now }}\nTú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.\nHablas español venezolano claro, amable, cercano y completamente profesional.\nUsas emojis solo cuando aporten calidez natural (nada exagerado). Ejemplo: ¡Hola! 😊\n\n---\n\n## **REGLAS ABSOLUTAS (nunca las rompas):**\n\n### **1. VARIABLES DE MEMORIA PARA CITAS:**\nMantienes estas variables en memoria durante TODA la conversación:\n- cedula\n- foto_cedula (URL/identificador de la imagen de cédula)\n- nombre\n- fecha_nac\n- telefono\n- paciente_nuevo\n- medio_pago\n- servicio\n- fecha_deseada\n- hora_preferida\n- tarjeta_interes\n- imagenes_adicionales (lista para almacenar URLs/identificadores de otras imágenes)\n\n### **2. REGLA DE REPETICIÓN - SOLO PARA CITAS:**\nLa regla \"Ya tengo ese dato registrado, gracias\" **SOLO APLICA cuando:**\n- El usuario YA inició el proceso de agendar una cita (ha dicho que quiere agendar)\n- Y está proporcionando información que YA está registrada en las variables anteriores\n- **NO APLICA PARA:** Consultas sobre precios, servicios, tarjeta, horarios, ubicación u otra información general\n\n### **3. PRIORIDAD DE RESPUESTAS:**\nLas consultas generales tienen **PRIORIDAD TOTAL** y se responden **SIEMPRE**, aunque ya se hayan respondido antes:\n\n---\n\n## **SALUDO INICIAL (solo la primera vez)**\n¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.\nSoy BOT UNISA, tu asistente virtual disponible las 24 horas.\n\n¿Qué necesitas hoy? Puedes escribirme directamente:\n💲 Precios\n🩺 Servicios que ofrecemos\n📅 Agendar cita / laboratorio / estudios\n💙 Tarjeta de la Salud o CREDIUNISA\n❓ Otra consulta\n\n¡Estoy aquí para ayudarte!\n\n---\n\n## **RESPUESTAS RÁPIDAS AUTOMÁTICAS (RESPONDE SIEMPRE)**\n\n### **1. Si pregunta por PRECIOS → responde EXACTAMENTE esto:**\n¡Con gusto! Estos son nuestros precios básicos 2025:\n• Consulta médica general → 25 USD\n• Rayos X (cualquier proyección) → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\nPregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año 💙\n\n### **2. Si pregunta por SERVICIOS → responde EXACTAMENTE esto:**\n¡Claro! En UNISA ofrecemos:\n• Consultas médicas generales y de especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías (general, obstétrica, doppler, etc.)\n• Mamografías\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)\n\n¿Cuál de estos servicios te interesa? 😊\n\n### **3. Si pregunta por la TARJETA DE LA SALUD → envía ESTOS 3 MENSAJES seguidos:**\n\n**Mensaje 1:**\n¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.\n\n**Mensaje 2:**\nPuedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).\n\n**Mensaje 3:**\nAdemás, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊\n\n---\n\n## **MANEJO DE IMÁGENES (proceso automático)**\n\nCuando recibas una imagen:\n\n1. Si estamos en el paso de solicitar foto_cedula → la almacenas en foto_cedula y respondes: \"✅ Foto de cédula recibida correctamente. Continúo con los siguientes datos.\"\n\n2. Si foto_cedula ya está completa → preguntas: \"¿Qué documento o imagen estás enviando? (Por ejemplo: prescripción médica, exámenes anteriores, etc.)\"\n\n3. Basado en la respuesta del usuario:\n   - Si es un documento médico → \"✅ He registrado este documento médico. ¿Tienes más imágenes para enviar o continuamos con los datos de la cita?\"\n   - Si no especifica → \"Voy a registrar esta imagen como documento adjunto. ¿Es correcto?\"\n\n4. Siempre que recibas una imagen adicional después de tener foto_cedula:\n   - La agregas a la lista imagenes_adicionales\n   - Preguntas: \"¿Deseas enviar otra imagen o continuamos con el proceso de agendamiento?\"\n\n---\n\n## **FLUJO DE CITA (pregunta SOLO lo que falte y EN ESTE ORDEN EXACTO)**\n\n**Cuando el usuario solicite cita o estudios:**\n¡Perfecto! Para coordinar tu cita necesito algunos datos personales.\n\nPregunta únicamente lo que falte, de a un dato por mensaje y en este orden exacto:\n\n1. `medio_pago` vacío → ¿El pago será particular o con seguro médico?\n2. `cedula` vacío → Tu cédula de identidad, por favor (solo números)\n3. `foto_cedula` vacío → Ahora necesito una foto clara de tu cédula de identidad. Por favor, envíala por este medio. 📸\n   *Si el usuario pregunta por qué: \"Es para verificar tu identidad y crear tu expediente digital en nuestro sistema. Tus datos están protegidos.\"*\n4. `nombre` vacío → Nombre y apellido completo, por favor\n5. `fecha_nac` vacío → Fecha de nacimiento (dd/mm/aaaa)\n6. `telefono` vacío → Número de WhatsApp con código de país (ejemplo: +58412XXXXXXX)\n7. `paciente_nuevo` vacío → ¿Es tu primera vez en UNISA? (Sí/No)\n8. `servicio` vacío → ¿Qué consulta o estudio necesitas exactamente?\n   *Después de definir el servicio → Opcional: Si el servicio requiere imágenes (ej: para segunda opinión, exámenes previos), preguntas: \"¿Deseas enviar alguna imagen relacionada (prescripción médica, exámenes anteriores, etc.)? Puedes enviar hasta 5 imágenes. Si no tienes, escribe 'omitir'.\"*\n9. `fecha_deseada` vacío → ¿Para cuándo deseas la cita? (lo antes posible, esta semana, próxima semana, fecha específica…)\n10. `hora_preferida` vacío → ¿Prefieres horario de mañana o tarde?\n11. `tarjeta_interes` vacío → ¿Te interesa conocer los beneficios de la Tarjeta de la Salud? (Sí/No)\n\n---\n\n## **CONFIRMACIÓN FINAL (cuando todas las variables obligatorias estén completas)**\n\n¡Listo, {nombre}! Te resumo la información:\n• Servicio: {servicio}\n• Fecha deseada: {fecha_deseada} en horario de {hora_preferida}\n• Cédula: {cedula}\n• Foto de cédula: ✅ recibida\n• Teléfono: {telefono}\n• {Si hay imagenes_adicionales: \"Documentos adicionales: \" + número de imágenes + \" recibidas\"}\n\n¿Todo está correcto? 😊\n\n**Cuando confirme (sí, correcto, ok, etc.):**\n¡Perfecto! Hemos registrado toda tu información correctamente.\nEn las próximas horas (máximo 24 horas) un coordinador de UNISA te contactará por este mismo WhatsApp para confirmarte el día y hora exacta.\n¡Muchas gracias por confiar en nosotros! Estamos para servirte 💙\n\n**Inmediatamente después de ese mensaje, ejecutas la herramienta: Capturar_Lead_odoo con este JSON exacto:**\n\n```json\n{\n  \"cedula\": \"{cedula}\",\n  \"foto_cedula_url\": \"{foto_cedula}\",\n  \"nombre_completo\": \"{nombre}\",\n  \"fecha_nacimiento\": \"{fecha_nac}\",\n  \"telefono_whatsapp\": \"{telefono}\",\n  \"servicio_solicitado\": \"{servicio}\",\n  \"fecha_preferida\": \"{fecha_deseada}\",\n  \"hora_preferida\": \"{hora_preferida}\",\n  \"medio_pago\": \"{medio_pago}\",\n  \"seguro_nombre\": null,\n  \"seguro_poliza\": null,\n  \"es_paciente_nuevo\": \"{paciente_nuevo}\",\n  \"interes_tarjeta_salud\": \"{tarjeta_interes}\",\n  \"imagenes_adicionales\": \"{imagenes_adicionales}\",\n  \"fuente_lead\": \"WhatsApp Bot\",\n  \"notas_adicionales\": null\n}\nUSUARIO QUE REGRESA DESPUÉS DEL CIERRE\n¡Hola de nuevo, {nombre}! 😊 Ya tenemos todos tus datos registrados de la solicitud anterior.\nEn breve te contactará nuestro equipo. ¿Deseas modificar algo o agendar otra cita?\n\nSi el usuario se queja de repetición:\nTienes toda la razón, mis disculpas. Ya tengo toda la información correctamente guardada. En menos de 24 horas te contactaremos para confirmar. ¡Gracias por tu comprensión! 💙\n\nRECORDATORIO FINAL\nNunca reinicies el flujo de cita una vez iniciado\n\nLas consultas generales (precios, servicios, tarjeta) se responden SIEMPRE aunque ya se hayan respondido antes\n\nLa regla \"Ya tengo ese dato registrado\" solo aplica a datos de cita repetidos\n\nSi el usuario envía una imagen borrosa o ilegible, pídele amablemente que la reenvíe: \"La imagen se ve un poco borrosa. ¿Podrías enviar una foto más nítida, por favor? Así aseguro que tu registro sea correcto.\"\n\nNunca muestres JSON ni código al usuario"
+          "systemMessage": "=Tú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.\n\n**REGLAS IMPORTANTES:**\n1. Si el usuario envía un mensaje inicial o saluda, usa el SALUDO INICIAL.\n2. Si pregunta por \"precios\", \"valor\", \"cuesta\", responde con la sección de PRECIOS.\n3. Si pregunta por \"servicios\", \"qué ofrecen\", responde con la sección de SERVICIOS.\n4. Si menciona \"tarjeta\", \"salud\", \"credünisa\", responde con la TARJETA.\n5. Para consultas sobre CITAS, usa la herramienta tool_citas.\n\n**DETECCIÓN DE INTENCIONES:**\n\nSI el usuario menciona:\n- \"cita\", \"agendar\", \"reservar\", \"consulta médica\"\n- \"modificar cita\", \"cancelar cita\", \"quiero una cita\", \"necesito cita\"\n- \"estudios médicos\", \"laboratorio\", \"rayos x\", \"ecografía\", \"mamografía\"\n- \"quiero pedir hora\", \"quiero verme con un médico\"\n\nENTONCES usa la herramienta: tool_citas\n\nEnvía este JSON a la herramienta:\n{\n  \"text\": \"{{$json.text}}\",\n  \"session_id\": \"{{$json.session_id}}\",\n  \"platform\": \"{{$json.platform}}\"\n}\n\n---\n\n**SALUDO INICIAL (solo cuando sea el primer mensaje o saludo):**\n¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.  \nSoy BOT UNISA, tu asistente virtual disponible las 24 horas.\n\n¿Qué necesitas hoy? Puedes escribirme directamente:  \n💲 Precios  \n🩺 Servicios que ofrecemos  \n📅 Agendar cita / laboratorio / estudios  \n💙 Tarjeta de la Salud o CREDIUNISA  \n❓ Otra consulta  \n\n¡Estoy aquí para ayudarte!\n\n---\n\n**RESPUESTAS ESPECÍFICAS:**\n\nPRECIOS (responde EXACTAMENTE así cuando pregunten por precios):\n¡Con gusto! Estos son nuestros precios básicos 2025:\n• Consulta médica general → 25 USD\n• Rayos X (cualquier proyección) → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\nPregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año 💙\n\nSERVICIOS (responde EXACTAMENTE así cuando pregunten por servicios):\n¡Claro! En UNISA ofrecemos:\n• Consultas médicas generales y de especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías (general, obstétrica, doppler, etc.)\n• Mamografía\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)\n\n¿Cuál de estos servicios te interesa? 😊\n\nTARJETA DE LA SALUD (responde con estos 3 puntos cuando pregunten por la tarjeta):\n1. ¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.\n2. Puedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).\n3. Además, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        1360,
-        32
+        -4400,
+        256
       ],
-      "id": "075194a0-00e4-4002-9991-3c4bf52f527a",
+      "id": "cbecee7e-3b5a-432d-bf5a-a01786204846",
       "name": "AI Agent1"
     },
     {
@@ -482,10 +120,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2048,
-        96
+        -3552,
+        336
       ],
-      "id": "98804c25-b513-47f4-9e9f-ee75373a0c80",
+      "id": "fe1f6eb6-9ebf-4200-afb1-71de111894e3",
       "name": "Send Telegram Message1",
       "webhookId": "2d0ee3d5-7ec7-4971-9ef8-4428c6f22f90",
       "credentials": {
@@ -509,7 +147,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.body.conversation.channel }}",
+                    "leftValue": "={{ $json.channel }}",
                     "rightValue": "Channel::Whatsapp",
                     "operator": {
                       "type": "string",
@@ -534,7 +172,7 @@
                 "conditions": [
                   {
                     "id": "37f80664-6420-4c2b-b965-b65ec4656310",
-                    "leftValue": "={{ $json.body.conversation.channel }}",
+                    "leftValue": "={{ $json.channel }}",
                     "rightValue": "Instagram",
                     "operator": {
                       "type": "string",
@@ -559,7 +197,7 @@
                 "conditions": [
                   {
                     "id": "cd226af3-e973-4fa2-adee-7b4988db3d90",
-                    "leftValue": "={{ $json.body.conversation.channel }}",
+                    "leftValue": "={{ $('Pregunta_el_Cliente?').item.json.channel }}",
                     "rightValue": "facebook",
                     "operator": {
                       "type": "string",
@@ -604,208 +242,21 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -512,
-        -240
+        -5424,
+        336
       ],
-      "id": "561ff088-8038-4127-8c57-2fddfdbaddb7",
+      "id": "3c8f8da0-d501-4e8d-88cd-1d213789ab17",
       "name": "Indentifica_canal"
     },
     {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "chatwoot",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1568,
-        -208
-      ],
-      "id": "f3567a6d-7271-482f-8760-d088dc8594d5",
-      "name": "Entrar_ChattWoot",
-      "webhookId": "947db62d-f02e-4e7e-bb94-7b3073131e00"
-    },
-    {
       "parameters": {},
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -816,
-        -640
+        -5952,
+        624
       ],
-      "id": "52cd90b9-505c-4e6e-907c-d6927bc1de4d",
-      "name": "End"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "5b9b41b4-ef98-4699-80eb-24e70dbee117",
-              "name": "=text",
-              "value": "={{ $json.body.conversation.messages[0].content }}",
-              "type": "string"
-            },
-            {
-              "id": "0f98afd1-e2e6-4c4d-9e9f-6e38c87694c6",
-              "name": "sessionId",
-              "value": "={{ $json.body.sender.phone_number }}",
-              "type": "string"
-            },
-            {
-              "id": "9cbd2d29-4e32-46fd-bbea-88317ec7681d",
-              "name": "account_id",
-              "value": "={{ $json.body.conversation.messages[0].account_id }}",
-              "type": "string"
-            },
-            {
-              "id": "ddcd14fb-bfd1-4f23-a0e0-7d0fa54e8719",
-              "name": "conversation_id",
-              "value": "={{ $json.body.conversation.messages[0].conversation_id }}",
-              "type": "string"
-            },
-            {
-              "id": "9052a8a2-5a39-4b6f-a44f-728e2e7c2c41",
-              "name": "message_type",
-              "value": "={{ $json.body.message_type }}",
-              "type": "string"
-            },
-            {
-              "id": "c76e6bbf-22cf-4dd8-ae67-49c5801c5be1",
-              "name": "user_name",
-              "value": "={{ $json.body.sender.account.name }}",
-              "type": "string"
-            },
-            {
-              "id": "b16fbd53-b6a3-4e0b-ac12-01912379a2fc",
-              "name": "user_number",
-              "value": "={{ $json.body.sender.phone_number }}",
-              "type": "string"
-            },
-            {
-              "id": "5e7f1bef-2e33-448d-b2dd-8aa060685c18",
-              "name": "user_message",
-              "value": "={{ $json.body.conversation.messages[0].content }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        288,
-        -592
-      ],
-      "id": "734e4075-3ace-4f7c-8f4f-a80ea3acec51",
-      "name": "Obtener_Info_whatsapp"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "f85334e7-e910-4938-8c4b-4555f55c7ba0",
-              "name": "text",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            },
-            {
-              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-              "name": "session_id",
-              "value": "=  {{ $json.session_id }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1456,
-        -368
-      ],
-      "id": "e587113c-ee7a-4eba-be7c-4df7f3c39a5a",
-      "name": "Preparar_Input_AI"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "5b9b41b4-ef98-4699-80eb-24e70dbee117",
-              "name": "=text",
-              "value": "={{ $json.body.conversation.messages[0].content }}",
-              "type": "string"
-            },
-            {
-              "id": "0f98afd1-e2e6-4c4d-9e9f-6e38c87694c6",
-              "name": "sessionId",
-              "value": "={{ $json.body.sender.phone_number }}",
-              "type": "string"
-            },
-            {
-              "id": "9cbd2d29-4e32-46fd-bbea-88317ec7681d",
-              "name": "account_id",
-              "value": "={{ $json.body.conversation.messages[0].account_id }}",
-              "type": "string"
-            },
-            {
-              "id": "ddcd14fb-bfd1-4f23-a0e0-7d0fa54e8719",
-              "name": "conversation_id",
-              "value": "={{ $json.body.conversation.messages[0].conversation_id }}",
-              "type": "string"
-            },
-            {
-              "id": "9052a8a2-5a39-4b6f-a44f-728e2e7c2c41",
-              "name": "message_type",
-              "value": "={{ $json.body.message_type }}",
-              "type": "string"
-            },
-            {
-              "id": "c76e6bbf-22cf-4dd8-ae67-49c5801c5be1",
-              "name": "user_name",
-              "value": "={{ $json.body.sender.account.name }}",
-              "type": "string"
-            },
-            {
-              "id": "b16fbd53-b6a3-4e0b-ac12-01912379a2fc",
-              "name": "user_number",
-              "value": "={{ $json.body.sender.phone_number }}",
-              "type": "string"
-            },
-            {
-              "id": "5e7f1bef-2e33-448d-b2dd-8aa060685c18",
-              "name": "user_message",
-              "value": "={{ $json.body.conversation.messages[0].content }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        688,
-        -160
-      ],
-      "id": "b0c34ca8-9909-4e74-9ca8-6500042e26a4",
-      "name": "Obtener_Info_whatsapp2",
-      "disabled": true
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        -1040,
-        48
-      ],
-      "id": "a2aadd9e-24fb-4549-a364-00dcebc97611",
+      "id": "ad919ef4-72b9-4955-87da-66c10e668fae",
       "name": "Dueno_o_Bot_responde"
     },
     {
@@ -869,10 +320,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -928,
-        -224
+        -5840,
+        352
       ],
-      "id": "743c8a42-2747-4240-b6bd-e864378c2907",
+      "id": "e9b18a49-27ff-438a-80bb-47ca86e281d0",
       "name": "Configurar_IA_Responda?"
     },
     {
@@ -890,7 +341,7 @@
                 "conditions": [
                   {
                     "id": "3c30564f-7df5-4564-b859-e13889009357",
-                    "leftValue": "={{ $json.body.message_type }}",
+                    "leftValue": "={{ $json.message_type }}",
                     "rightValue": "=incoming",
                     "operator": {
                       "type": "string",
@@ -915,7 +366,7 @@
                 "conditions": [
                   {
                     "id": "8b266895-9c0c-4a53-804d-2213bca3a1a0",
-                    "leftValue": "={{ $json.body.message_type }}",
+                    "leftValue": "={{ $json.message_type }}",
                     "rightValue": "outgoing",
                     "operator": {
                       "type": "string",
@@ -935,83 +386,16 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -1248,
-        -208
+        -6160,
+        368
       ],
-      "id": "ebf8b9f0-f667-4ba9-bc16-7d39164463ba",
+      "id": "ecd70578-56fd-4ce7-adc4-505684feb456",
       "name": "Pregunta_el_Cliente?"
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{$json.body.conversation.messages[0].content !== null && $json.body.conversation.messages[0].content !== ''}}",
-                    "rightValue": "true",
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "true",
-                      "singleValue": true
-                    },
-                    "id": "4313ad77-8015-436a-a40d-3ef7cab78263"
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "texto"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "id": "37f80664-6420-4c2b-b965-b65ec4656310",
-                    "leftValue": "={{ $json.body.attachments[0].file_type === 'audio'}}",
-                    "rightValue": "audio",
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "true",
-                      "singleValue": true
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "audio"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.3,
-      "position": [
-        -112,
-        -448
-      ],
-      "id": "c853e19d-c5e5-498e-9da6-69bb739cf23f",
-      "name": "Texto_o_Audio?"
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "=https://chatwoot.jumpjibe.com/api/v1/accounts/{{ $('TextoOaudio_whatsapp').item.json.account_id }}/conversations/{{ $('TextoOaudio_whatsapp').item.json.conversation_id }}/messages",
+        "url": "=https://chatwoot.jumpjibe.com/api/v1/accounts/{{ $('Obtener_Info_basica').item.json.account_id }}/conversations/{{ $('Obtener_Info_basica').item.json.conversation_id }}/messages",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1039,11 +423,252 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1888,
-        -160
+        -3504,
+        -16
       ],
-      "id": "94fce7ec-81da-455d-9ecb-a7fff700d3e1",
+      "id": "e2f85646-e43c-498a-8955-57d72cc4a40e",
       "name": "Enviar_mensaje_de_IA"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -5728,
+        -64
+      ],
+      "id": "791087ef-30cb-4be5-abb4-c969a05a9d76",
+      "name": "End1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "44Hf0tLv7msSiroV",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/44Hf0tLv7msSiroV"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -4960,
+        304
+      ],
+      "id": "c5b337bb-8a80-4884-b6d5-101bdcc57584",
+      "name": "Call 'answer-chastwoot-whatsapp'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5b9b41b4-ef98-4699-80eb-24e70dbee117",
+              "name": "=text",
+              "value": "={{ $json.body.conversation.messages[0].content }}",
+              "type": "string"
+            },
+            {
+              "id": "0f98afd1-e2e6-4c4d-9e9f-6e38c87694c6",
+              "name": "session_id",
+              "value": "={{ $json.body.sender.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "9cbd2d29-4e32-46fd-bbea-88317ec7681d",
+              "name": "account_id",
+              "value": "={{ $json.body.conversation.messages[0].account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ddcd14fb-bfd1-4f23-a0e0-7d0fa54e8719",
+              "name": "conversation_id",
+              "value": "={{ $json.body.conversation.messages[0].conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "9052a8a2-5a39-4b6f-a44f-728e2e7c2c41",
+              "name": "message_type",
+              "value": "={{ $json.body.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "c76e6bbf-22cf-4dd8-ae67-49c5801c5be1",
+              "name": "user_name",
+              "value": "={{ $json.body.sender.account.name }}",
+              "type": "string"
+            },
+            {
+              "id": "b16fbd53-b6a3-4e0b-ac12-01912379a2fc",
+              "name": "user_number",
+              "value": "={{ $json.body.sender.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "327aa426-279e-4d47-b4a9-2910e9b62282",
+              "name": "platform",
+              "value": "whatsapp",
+              "type": "string"
+            },
+            {
+              "id": "f921da3f-2311-4646-a2c9-152401811c3f",
+              "name": "message_type",
+              "value": "={{ $json.body.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "12bb3da8-0d23-45ec-8ed8-a962d512d0fb",
+              "name": "channel",
+              "value": "={{ $json.body.conversation.channel }}",
+              "type": "string"
+            },
+            {
+              "id": "e70d5c0a-a243-4625-af3e-c40ca295cdef",
+              "name": "content",
+              "value": "={{ $json.body.conversation.messages[0].content }}",
+              "type": "string"
+            },
+            {
+              "id": "8a12bb4d-d77a-466b-ac20-851d770c34c0",
+              "name": "file_type",
+              "value": "={{ $json.body.conversation.messages[0].attachments[0].file_type }}",
+              "type": "string"
+            },
+            {
+              "id": "664d94bf-9a93-472e-8d11-887f1f82af70",
+              "name": "phone_number",
+              "value": "={{ $json.body.sender.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "31829d53-6dc4-4a0a-829f-6a203803d8ee",
+              "name": "user_name",
+              "value": "={{ $json.body.sender.account.name }}",
+              "type": "string"
+            },
+            {
+              "id": "1ca7bf91-1d72-4995-a578-12c0aa68da8e",
+              "name": "data_url",
+              "value": "={{ $json.body.attachments[0].data_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6448,
+        368
+      ],
+      "id": "3a4f00d4-7ccb-45c1-8bd8-2dbac3352f51",
+      "name": "Obtener_Info_basica"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -4304,
+        496
+      ],
+      "id": "876ee794-1958-4294-98d1-36143e030d4b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatwoot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -6736,
+        368
+      ],
+      "id": "3aa02266-fc6d-4d21-977e-4e7479b3ef09",
+      "name": "Entrar_ChattWoot",
+      "webhookId": "947db62d-f02e-4e7e-bb94-7b3073131e00"
+    },
+    {
+      "parameters": {
+        "description": "Herramienta para gestión de citas médicas: agendar, modificar, cancelar o consultar citas.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9LoXPZcTB6zen4Zd",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9LoXPZcTB6zen4Zd",
+          "cachedResultName": "tool_citas"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('text', ``, 'string') }}",
+            "session_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('session_id', ``, 'string') }}",
+            "platform": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('platform', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -4160,
+        480
+      ],
+      "id": "1297b820-ff9e-408e-bc01-9d1aaff3e96c",
+      "name": "Call 'tool_citas'"
     }
   ],
   "pinData": {},
@@ -1066,151 +691,12 @@
         ]
       ]
     },
-    "Audio_a_Texto_whatsapp": {
-      "main": [
-        [
-          {
-            "node": "TextoOaudio_whatsapp",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "TextoOaudio_whatsapp": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "Preparar_Input_AI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Switch3": {
-      "main": [
-        [
-          {
-            "node": "Texto_Telegram",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Get a file Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Texto_Telegram": {
-      "main": [
-        [
-          {
-            "node": "Texto_Audio_Telegram",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get File Data": {
-      "main": [
-        [
-          {
-            "node": "Audio_a_Texto_whatsapp",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get a file Data": {
-      "main": [
-        [
-          {
-            "node": "Audio_a_Texto_telegram",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Audio_a_Texto_telegram": {
-      "main": [
-        [
-          {
-            "node": "Texto_Audio_Telegram",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Texto_Audio_Telegram": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Telegram Trigger1": {
-      "main": [
-        [
-          {
-            "node": "Switch3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "OpenAI Chat Model1": {
       "ai_languageModel": [
         [
           {
             "node": "AI Agent1",
             "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Capturar_Lead_odoo1": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Memory1": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "ai_memory",
             "index": 0
           }
         ]
@@ -1227,44 +713,11 @@
         ]
       ]
     },
-    "Entrar_ChattWoot": {
-      "main": [
-        [
-          {
-            "node": "Pregunta_el_Cliente?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Indentifica_canal": {
       "main": [
         [
           {
-            "node": "Texto_o_Audio?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Obtener_Info_whatsapp": {
-      "main": [
-        [
-          {
-            "node": "TextoOaudio_whatsapp",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Preparar_Input_AI": {
-      "main": [
-        [
-          {
-            "node": "AI Agent1",
+            "node": "Call 'answer-chastwoot-whatsapp'",
             "type": "main",
             "index": 0
           }
@@ -1275,7 +728,7 @@
       "main": [
         [
           {
-            "node": "End",
+            "node": "End1",
             "type": "main",
             "index": 0
           }
@@ -1307,30 +760,67 @@
         ]
       ]
     },
-    "Texto_o_Audio?": {
+    "Call 'answer-chastwoot-whatsapp'": {
       "main": [
         [
           {
-            "node": "Obtener_Info_whatsapp",
+            "node": "AI Agent1",
             "type": "main",
             "index": 0
           }
-        ],
+        ]
+      ]
+    },
+    "Obtener_Info_basica": {
+      "main": [
         [
           {
-            "node": "Get File Data",
+            "node": "Pregunta_el_Cliente?",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entrar_ChattWoot": {
+      "main": [
+        [
+          {
+            "node": "Obtener_Info_basica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'tool_citas'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "79201f7e-e6fe-4258-997e-9769ebcf9b5c",
+  "versionId": "3e1d2242-4419-48ec-a9fe-7e769c6bc50f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"
