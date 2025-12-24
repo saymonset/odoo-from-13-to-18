@@ -6,7 +6,7 @@
     'author': 'Simon Alberto Rodriguez Pacheco',
     'website': '',
     'category': '',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'crm', 'web'],
     "data": [
         "security/ir.model.access.csv",
         "views/ChatBotWrapper.xml",  # AÑADIDO: El XML debe ir aquí

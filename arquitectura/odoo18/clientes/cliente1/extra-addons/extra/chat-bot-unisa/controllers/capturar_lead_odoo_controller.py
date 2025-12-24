@@ -565,9 +565,10 @@ class UnisaChatBotController(http.Controller):
         config = platform_config.get(platform, default_config)
         
         # Buscar etiqueta existente (por nombre exacto)
-        tag = env['crm.tag'].search([
+        tag = env['crm.tag'].sudo().search([
             ('name', '=ilike', config['name'])
         ], limit=1)
+        # Por esto:
         
         if not tag:
             # Crear nueva etiqueta
@@ -582,7 +583,7 @@ class UnisaChatBotController(http.Controller):
             except:
                 pass  # Ignorar si el campo no existe
             
-            tag = env['crm.tag'].create(tag_vals)
+            tag = env['crm.tag'].sudo().create(tag_vals)
             _logger.info(f"✅ Etiqueta creada para {platform}: {tag.name} (color: {tag.color})")
         else:
             _logger.info(f"✅ Etiqueta encontrada para {platform}: {tag.name}")
