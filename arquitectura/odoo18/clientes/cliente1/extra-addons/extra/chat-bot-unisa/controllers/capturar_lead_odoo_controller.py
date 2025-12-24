@@ -179,11 +179,20 @@ class UnisaChatBotController(http.Controller):
             ], limit=1)
             
             if partner:
+               # Formatear fecha de nacimiento para el bot (dd/mm/yyyy)
+                fecha_nac_formateada = ''
+                if partner.birthdate:
+                    fecha_nac_formateada = partner.birthdate.strftime('%d/%m/%Y')
                 return {
                     'existe': True,
-                    'nombre': partner.name,
                     'iniciales': ''.join([n[0] for n in partner.name.split()[:2]]).upper(),
-                    'ultima_cita': self._get_ultima_cita(env, partner.id)
+                    'ultima_cita': self._get_ultima_cita(env, partner.id),
+                     'cedula': partner.vat or '',
+                    'nombre_completo': partner.name or '',
+                    'fecha_nacimiento': fecha_nac_formateada,
+                    'telefono': partner.mobile or '',
+                    'email': partner.email or '',
+                    'es_paciente_nuevo': 'no'
                 }
             
             return {'existe': False}
