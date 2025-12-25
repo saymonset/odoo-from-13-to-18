@@ -4,6 +4,8 @@ import json
 import logging
 import re
 
+from .chatbot_utils import ChatBotUtils  # Importar la clase de utilidades
+
 _logger = logging.getLogger(__name__)
 
 
@@ -18,27 +20,20 @@ class ChatBotController(http.Controller):
     def buscar_por_telefono_http(self, **kw):
         """
         Búsqueda rápida solo por teléfono para iniciar conversación
-        Versión HTTP estándar (no JSON-RPC 2) - Compatible con cualquier país
+        Versión optimizada usando ChatBotUtils
         """
         try:
-            # Log de inicio
-            _logger.info("=== INICIO BUSQUEDA POR TELEFONO HTTP (INTERNACIONAL) ===")
+            _logger.info("=== INICIO BUSQUEDA POR TELEFONO HTTP (OPTIMIZADO) ===")
             
-            # 1. Obtener el contenido de la petición HTTP
+            # 1. Obtener datos de la petición
             http_request = request.httprequest
-            
-            # 2. Verificar el Content-Type
             content_type = http_request.headers.get('Content-Type', '').lower()
-            
-            # 3. Obtener datos según el Content-Type
             data = {}
             
             if 'application/json' in content_type:
-                # Si es JSON, leer y parsear el body
                 try:
                     if http_request.data:
                         raw_data = http_request.get_data(as_text=True)
-                        _logger.debug("Datos JSON raw: %s", raw_data)
                         if raw_data.strip():
                             data = json.loads(raw_data)
                 except json.JSONDecodeError as e:
@@ -54,16 +49,13 @@ class ChatBotController(http.Controller):
                         headers=[('Access-Control-Allow-Origin', '*')]
                     )
             else:
-                # Si no es JSON, intentar con form data o query params
                 data = dict(http_request.form)
                 if not data:
                     data = dict(http_request.args)
             
-            # 4. Log de datos recibidos
-            _logger.info("Datos recibidos: %s", json.dumps(data, indent=2, default=str))
-            
-            # 5. Extraer teléfono
-            telefono = data.get('telefono') or data.get('phone') or data.get('telefono_cliente') or data.get('numero') or ''
+            # 2. Extraer teléfono de múltiples campos posibles
+            telefono = (data.get('telefono') or data.get('phone') or 
+                       data.get('telefono_cliente') or data.get('numero') or '')
             
             if not telefono:
                 _logger.warning("No se proporcionó teléfono en la petición")
@@ -77,100 +69,39 @@ class ChatBotController(http.Controller):
                     headers=[('Access-Control-Allow-Origin', '*')]
                 )
             
-            # 6. Obtener usuario administrador
+            _logger.info("Buscando cliente con teléfono: %s", telefono)
+            
+            # 3. Obtener entorno con permisos de administrador
             try:
-                admin_uid = request.env.ref('base.user_admin').id
-                if not admin_uid:
-                    admin_uid = 2
+                admin_uid = request.env.ref('base.user_admin').id or 2
             except Exception:
                 admin_uid = 2
-            
-            _logger.debug("Usando usuario admin con ID: %s", admin_uid)
-            
-            # 7. Crear entorno con permisos de administrador
+                
             env = request.env(user=admin_uid)
             
-            # 8. Limpiar y formatear teléfono - VERSIÓN GENÉRICA PARA CUALQUIER PAÍS
-            # Extraer solo dígitos
-            phone_digits = re.sub(r'\D', '', str(telefono))
+            # 4. Buscar cliente usando método optimizado de ChatBotUtils
+            # Preparamos datos para la búsqueda
+            search_data = {
+                'telefono': telefono,
+                # Podemos incluir otros datos si están disponibles
+                'cedula': data.get('cedula', ''),
+                'nombre_completo': data.get('nombre_completo', '')
+            }
             
-            # Estrategia de búsqueda flexible para cualquier país:
-            # 1. Intentar con el número completo
-            # 2. Si no se encuentra, intentar variaciones comunes
+            # Usar búsqueda inteligente que maneja múltiples formatos de teléfono
+            partner = ChatBotUtils.update_create_contact(env, search_data)
             
-            _logger.info("Teléfono original: %s, Dígitos extraídos: %s", telefono, phone_digits)
-            
-            if not phone_digits:
-                _logger.warning("No se encontraron dígitos en el teléfono")
-                return Response(
-                    json.dumps({'existe': False}),
-                    content_type='application/json; charset=utf-8',
-                    headers=[('Access-Control-Allow-Origin', '*')]
-                )
-            
-            # 9. Búsqueda flexible en múltiples formatos
-            partner = None
-            
-            # Lista de posibles formatos para buscar (de más específico a más general)
-            search_patterns = []
-            
-            # Patrón 1: Número completo con todos los dígitos
-            search_patterns.append(phone_digits)
-            
-            # Patrón 2: Si el número es muy largo (>10), intentar con últimos 10 dígitos
-            # (muchos países tienen números de 10 dígitos para móviles)
-            if len(phone_digits) > 10:
-                search_patterns.append(phone_digits[-10:])
-            
-            # Patrón 3: Intentar sin código de país si parece tenerlo
-            # Detectar código de país común (1 a 3 dígitos al inicio)
-            if len(phone_digits) > 10:
-                # Intentar quitar 1, 2 o 3 dígitos del inicio (posible código de país)
-                for country_code_length in [3, 2, 1]:
-                    if len(phone_digits) > country_code_length:
-                        possible_local_number = phone_digits[country_code_length:]
-                        # Solo agregar si el número resultante tiene al menos 8 dígitos
-                        if len(possible_local_number) >= 8:
-                            search_patterns.append(possible_local_number)
-            
-            # Patrón 4: Si tiene 11 dígitos y comienza con 0 (común en algunos países)
-            if len(phone_digits) == 11 and phone_digits.startswith('0'):
-                search_patterns.append(phone_digits[1:])
-            
-            # Patrón 5: Intentar con últimos 9 dígitos (para países como España)
-            if len(phone_digits) >= 9:
-                search_patterns.append(phone_digits[-9:])
-            
-            # Eliminar duplicados manteniendo el orden
-            unique_patterns = []
-            seen = set()
-            for pattern in search_patterns:
-                if pattern not in seen:
-                    seen.add(pattern)
-                    unique_patterns.append(pattern)
-            
-            _logger.info("Patrones de búsqueda a intentar: %s", unique_patterns)
-            
-            # 10. Buscar cliente con cada patrón hasta encontrar
-            for search_pattern in unique_patterns:
-                _logger.debug("Buscando con patrón: %s", search_pattern)
-                
-                partner = env['res.partner'].search([
-                    '|',
-                    ('mobile', 'ilike', f'%{search_pattern}%'),
-                    ('phone', 'ilike', f'%{search_pattern}%'),
-                    ('active', '=', True)
-                ], limit=1)
-                
-                if partner:
-                    _logger.info("Cliente encontrado con patrón: %s", search_pattern)
-                    break
-            
-            # 11. Si encontramos el cliente
+            # 5. Si encontramos el cliente
             if partner:
                 _logger.info("Cliente encontrado: %s (ID: %s)", partner.name, partner.id)
                 
-                # Formatear fecha de nacimiento para el bot (dd/mm/yyyy)
+                # Obtener información de última cita
+                ultima_cita_info = ChatBotUtils.get_ultima_cita(env, partner.id)
+                ultima_cita_str = ""
+                if ultima_cita_info:
+                    ultima_cita_str = f"{ultima_cita_info.get('fecha', '')} - {ultima_cita_info.get('servicio', '')}"
+                
+                # Formatear fecha de nacimiento si existe
                 fecha_nac_formateada = ''
                 if partner.birthdate:
                     try:
@@ -178,26 +109,21 @@ class ChatBotController(http.Controller):
                     except Exception:
                         fecha_nac_formateada = str(partner.birthdate)
                 
-                # Obtener última cita
-                ultima_cita = self._get_ultima_cita(env, partner.id)
-                
-                # Determinar teléfono principal a mostrar
-                telefono_mostrar = partner.mobile or partner.phone or ''
-                
                 # Construir respuesta
                 response_data = {
                     'existe': True,
                     'iniciales': self._get_iniciales(partner.name),
-                    'ultima_cita': ultima_cita,
+                    'ultima_cita': ultima_cita_str,
                     'cedula': partner.vat or '',
                     'nombre_completo': partner.name or '',
                     'fecha_nacimiento': fecha_nac_formateada,
-                    'telefono': telefono_mostrar,
+                    'telefono': partner.mobile or partner.phone or '',
                     'email': partner.email or '',
                     'es_paciente_nuevo': 'no',
                     'id_cliente': partner.id,
                     'pais': partner.country_id.name if partner.country_id else '',
-                    'ciudad': partner.city or ''
+                    'ciudad': partner.city or '',
+                    'detalle_ultima_cita': ultima_cita_info or {}
                 }
                 
                 _logger.info("Respuesta para cliente encontrado: %s", json.dumps(response_data, default=str))
@@ -208,23 +134,22 @@ class ChatBotController(http.Controller):
                     headers=[('Access-Control-Allow-Origin', '*')]
                 )
             
-            # 12. Si NO encontramos el cliente
-            _logger.info("Cliente NO encontrado para teléfono: %s (patrones intentados: %s)", 
-                        phone_digits, len(unique_patterns))
+            # 6. Si NO encontramos el cliente
+            _logger.info("Cliente NO encontrado para teléfono: %s", telefono)
             
             return Response(
                 json.dumps({
                     'existe': False,
                     'mensaje': 'Cliente no encontrado',
                     'telefono_buscado': telefono,
-                    'digitos_extraidos': phone_digits
+                    'sugerencia': 'Puede ser un nuevo cliente o el teléfono no está registrado'
                 }),
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
             
         except Exception as e:
-            _logger.error("ERROR CRÍTICO BUSCANDO POR TELÉFONO", exc_info=True)
+            _logger.error("ERROR CRÍTICO BUSCANDO POR TELÉFONO: %s", str(e), exc_info=True)
             
             return Response(
                 json.dumps({
@@ -240,7 +165,7 @@ class ChatBotController(http.Controller):
             )
     
     def _get_iniciales(self, nombre_completo):
-        """Obtiene las iniciales del nombre"""
+        """Obtiene las iniciales del nombre (mantenido para compatibilidad)"""
         if not nombre_completo:
             return ''
         
@@ -251,50 +176,125 @@ class ChatBotController(http.Controller):
         except Exception:
             return nombre_completo[:2].upper() if len(nombre_completo) >= 2 else nombre_completo[0].upper()
     
-    def _get_ultima_cita(self, env, partner_id):
+    @http.route('/chat-bot-unisa/capturar_lead_http',
+                auth='public',
+                type='http',
+                methods=['POST'],
+                csrf=False,
+                cors='*')
+    def capturar_lead_http(self, **kw):
         """
-        Método auxiliar para obtener la última cita del paciente
+        Crear cita completa usando ChatBotUtils
+        Versión optimizada
         """
         try:
-            # Buscar el modelo de citas (ajusta según tu módulo)
-            # Asumiendo que usas calendar.event o un módulo personalizado
-            modelos_cita = ['calendar.event', 'medical.appointment', 'cita', 'appointment']
+            _logger.info("=== INICIO CREACION DE CITA HTTP (OPTIMIZADO) ===")
             
-            for modelo in modelos_cita:
-                if modelo in env:
-                    try:
-                        ultima_cita = env[modelo].search([
-                            ('partner_ids', 'in', [partner_id]),
-                            ('start', '!=', False),
-                            ('active', '=', True)
-                        ], order='start desc', limit=1)
-                        
-                        if ultima_cita:
-                            # Formatear fecha de la última cita
-                            fecha_cita = ultima_cita.start
-                            if fecha_cita:
-                                return fecha_cita.strftime('%d/%m/%Y %H:%M')
-                    except Exception as e:
-                        _logger.debug("Modelo %s no disponible o error: %s", modelo, str(e))
-                        continue
+            # 1. Obtener datos
+            http_request = request.httprequest
+            content_type = http_request.headers.get('Content-Type', '').lower()
+            data = {}
             
-            # Si no se encuentra en los modelos comunes, buscar en campos personalizados
-            partner = env['res.partner'].browse(partner_id)
+            if 'application/json' in content_type:
+                try:
+                    if http_request.data:
+                        raw_data = http_request.get_data(as_text=True)
+                        if raw_data.strip():
+                            data = json.loads(raw_data)
+                except json.JSONDecodeError as e:
+                    return Response(
+                        json.dumps({'error': True, 'mensaje': 'JSON inválido'}),
+                        status=400,
+                        content_type='application/json; charset=utf-8'
+                    )
+            else:
+                data = dict(http_request.form)
+                if not data:
+                    data = dict(http_request.args)
             
-            # Intentar con campos comunes de fecha de última cita
-            campos_fecha = ['ultima_cita', 'last_appointment', 'fecha_ultima_visita', 'last_visit_date']
+            _logger.info("Datos recibidos para crear cita: %s", json.dumps(data, default=str))
             
-            for campo in campos_fecha:
-                if hasattr(partner, campo):
-                    fecha = getattr(partner, campo)
-                    if fecha:
-                        try:
-                            return fecha.strftime('%d/%m/%Y %H:%M')
-                        except Exception:
-                            return str(fecha)
+            # 2. Validar datos requeridos
+            campos_requeridos = ['cedula', 'telefono', 'nombre_completo', 'fecha_nacimiento']
+            for campo in campos_requeridos:
+                if campo not in data or not data[campo]:
+                    return Response(
+                        json.dumps({
+                            'error': True,
+                            'mensaje': f'Campo requerido faltante: {campo}'
+                        }),
+                        content_type='application/json; charset=utf-8'
+                    )
             
-            return ''
+            # 3. Obtener entorno con permisos de administrador
+            try:
+                admin_uid = request.env.ref('base.user_admin').id or 2
+            except Exception:
+                admin_uid = 2
+                
+            env = request.env(user=admin_uid)
+            
+            # 4. Buscar o crear contacto usando ChatBotUtils
+            partner = ChatBotUtils.update_create_contact(env, {
+                'cedula': data.get('cedula', ''),
+                'telefono': data.get('telefono', ''),
+                'nombre_completo': data.get('nombre_completo', ''),
+                'fecha_nacimiento': data.get('fecha_nacimiento', '')
+            })
+            
+            # 5. Configurar UTM y etiquetas
+            plataforma = data.get('plataforma', 'whatsapp')
+            medium, source, campaign = ChatBotUtils.setup_utm(env, plataforma)
+            tag = ChatBotUtils.get_or_create_bot_tag(env, plataforma)
+            team = ChatBotUtils.get_team_unisa(env)
+            
+            # 6. Crear lead (cita)
+            lead = ChatBotUtils.create_lead(env, data, partner, team, medium, source, campaign, tag)
+            
+            # 7. Asignar lead automáticamente (round robin)
+            if team and team.member_ids:
+                ChatBotUtils.assign_lead_round_robin(env, lead, team)
+            
+            # 8. Manejar imágenes adjuntas si existen
+            if data.get('foto_cedula_url') or data.get('imagenes_adicionales'):
+                ChatBotUtils.handle_images(env, data, lead, partner)
+            
+            # 9. Generar respuesta para el bot
+            respuesta_bot = ChatBotUtils.generate_response(data)
+            
+            # 10. Retornar respuesta exitosa
+            response_data = {
+                'exito': True,
+                'lead_id': lead.id,
+                'cliente_id': partner.id,
+                'cliente_nombre': partner.name,
+                'telefono': data.get('telefono'),
+                'cedula': data.get('cedula'),
+                'fecha_preferida': data.get('fecha_preferida', ''),
+                'hora_preferida': data.get('hora_preferida', ''),
+                'respuesta_para_bot': respuesta_bot,
+                'mensaje': 'Cita registrada exitosamente. Un ejecutivo se contactará pronto.'
+            }
+            
+            _logger.info("Cita creada exitosamente: Lead ID %s para cliente %s", lead.id, partner.name)
+            
+            return Response(
+                json.dumps(response_data, default=str),
+                content_type='application/json; charset=utf-8',
+                headers=[('Access-Control-Allow-Origin', '*')]
+            )
             
         except Exception as e:
-            _logger.error("Error obteniendo última cita: %s", str(e))
-            return ''
+            _logger.error("ERROR CREANDO CITA: %s", str(e), exc_info=True)
+            
+            return Response(
+                json.dumps({
+                    'exito': False,
+                    'error': True,
+                    'mensaje': 'Error al crear la cita',
+                    'detalle': str(e)
+                }),
+                status=500,
+                content_type='application/json; charset=utf-8',
+                headers=[('Access-Control-Allow-Origin', '*')]
+            )
