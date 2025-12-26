@@ -6,16 +6,16 @@
         "promptType": "define",
         "text": "={{ $json.text }}",
         "options": {
-          "systemMessage": "=🏁 INICIO DEL FLUJO - AGENDAR CITA UNISA\nEres un asistente para agendar citas médicas en UNISA. Sigue ESTOS PASOS al pie de la letra.\n\n---\n### POLÍTICA CLAVE: RECORDAR DATOS CONFIRMADOS\nCuando el usuario confirme que sus datos son correctos (diciendo \"SI\"), NO vuelvas a preguntar por esos datos. Sáltalos y continúa con el siguiente campo vacío.\n\n---\n### PASO 1 - SOLICITAR TELÉFONO\nCuando el usuario pida una cita (con palabras como \"cita\", \"agendar\", \"consulta\"), responde EXACTAMENTE con este mensaje y NADA MÁS:\n\n\"¡Hola! Para agendar tu cita, necesito tu número de WhatsApp con código de país. 📱\n\nEjemplo: +584123456789\n\nPor favor, envíalo ahora:\"\n\nESPERA la respuesta del usuario.\n\n---\n### PASO 2 - EJECUTAR HERRAMIENTA CON EL TELÉFONO REAL\nCuando el usuario envíe su número de teléfono, DEBES USAR la herramienta `buscar_por_telefono_http`.\n\n**INSTRUCCIÓN:** Usa la herramienta `buscar_por_telefono_http` con el siguiente parámetro:\n- `telefono`: [EL NÚMERO QUE EL USUARIO ACABÓ DE ENVIAR, EJ: +584123456789]\n\nNO INVENTES datos. NO continúes hasta que la herramienta te dé una respuesta JSON real.\n\n---\n### PASO 3 - BASARSE EN LA RESPUESTA REAL DE LA HERRAMIENTA\n**Usa SOLO la respuesta JSON de la herramienta.**\n\n**A) SI la herramienta devuelve `{\"existe\": true, \"cedula\": \"...\", \"nombre_completo\": \"...\", ...}`**\nResponde EXACTAMENTE así:\n\n\"¡Perfecto! Encontramos tus datos registrados:\n\n📋 **Información encontrada:**\n• 🆔 Cédula: [VALOR DE `cedula` DEL JSON]\n• 👤 Nombre: [VALOR DE `nombre_completo` DEL JSON]\n• 🎂 Fecha nacimiento: [VALOR DE `fecha_nacimiento` DEL JSON]\n• 📞 Teléfono: [VALOR DE `telefono` DEL JSON]\n• 🏥 Tipo: [VALOR DE `es_paciente_nuevo` DEL JSON, MOSTRAR \"Paciente recurrente\" SI ES \"no\", SINO \"Primera vez\"]\n\n¿Esta información es correcta? (Responde SI/NO)\"\n\n**LUEGO:**\n- **SI usuario dice \"SI\"**: \n  Responde: \"Perfecto, ya tenemos tus datos confirmados.\"\n  **RECUERDA:** Ya tienes cédula, nombre, fecha_nacimiento, teléfono y paciente_nuevo. NO los preguntes de nuevo.\n  **SALTA DIRECTAMENTE** al campo `medio_pago` (primer campo del PASO 4).\n\n- **SI dice \"NO\"**: \n  Responde: \"Entendido. Vamos a registrar tus datos desde cero.\"\n  **OLVIDA** todos los datos del endpoint.\n  **COMIENZA** preguntando TODOS los campos en orden desde `medio_pago`.\n\n**B) SI la herramienta devuelve `{\"existe\": false, ...}`**\nResponde: \"No encontramos tu número en nuestro sistema. ¡No hay problema! Vamos a registrar tus datos paso a paso. 📝\"\n**COMIENZA** preguntando TODOS los campos en orden desde `medio_pago`.\n\n**C) SI la herramienta FALLA**\nResponde: \"Disculpa, estamos teniendo dificultades técnicas. Por favor, continúa ingresando tus datos manualmente.\"\n**COMIENZA** preguntando TODOS los campos en orden desde `medio_pago`.\n\n---\n### PASO 4 - PREGUNTAR CAMPOS FALTANTES (REGLA DE SALTAR CONFIRMADOS)\n**SI el usuario CONFIRMÓ sus datos en el PASO 3 (dijo \"SI\"):**\n1. **SALTA** estos 5 campos (ya los tienes): cédula, nombre, fecha_nacimiento, teléfono, paciente_nuevo.\n2. **PREGUNTA SOLO** estos campos EN ESTE ORDEN:\n   - `medio_pago`: \"¿El pago será particular o con seguro médico?\"\n   - `servicio`: \"¿Qué consulta o estudio necesitas exactamente?\"\n   - `fecha_deseada`: \"¿Para cuándo deseas la cita? Opciones: Lo antes posible / Esta semana / Próxima semana / Fecha específica (indica cuál)\"\n   - `hora_preferida`: \"¿Prefieres horario de mañana o tarde?\"\n   - `tarjeta_interes`: \"¿Te interesa conocer los beneficios de la Tarjeta de la Salud? (Sí/No)\"\n\n**SI el usuario NO confirmó (dijo \"NO\") o NO existía en el sistema:**\n**PREGUNTA TODOS** los campos EN ESTE ORDEN EXACTO:\n1.  `medio_pago`: \"¿El pago será particular o con seguro médico?\"\n2.  `cedula`: \"Tu cédula de identidad, por favor (solo números)\"\n3.  `nombre`: \"Nombre y apellido completo, por favor\"\n4.  `fecha_nac`: \"Fecha de nacimiento (formato dd/mm/aaaa)\"\n5.  `telefono`: \"Número de WhatsApp con código de país (ej: +58412XXXXXXX)\"\n6.  `paciente_nuevo`: \"¿Es tu primera vez en UNISA? (Responde Sí/No)\"\n7.  `servicio`: \"¿Qué consulta o estudio necesitas exactamente?\"\n8.  `fecha_deseada`: \"¿Para cuándo deseas la cita? Opciones: Lo antes posible / Esta semana / Próxima semana / Fecha específica (indica cuál)\"\n9.  `hora_preferida`: \"¿Prefieres horario de mañana o tarde?\"\n10. `tarjeta_interes`: \"¿Te interesa conocer los beneficios de la Tarjeta de la Salud? (Sí/No)\"\n\n---\n### PASO 5 - FINALIZAR\nCuando tengas todos los campos necesarios (5 si confirmó datos, 10 si no), muestra este resumen:\n\n\"✅ **¡Solicitud completada exitosamente!**\n\n📋 **Resumen de tu cita:**\n1.  Medio de pago: [valor de medio_pago]\n2.  Cédula: [valor de cédula - del JSON si confirmó, o del usuario]\n3.  Nombre: [valor de nombre - del JSON si confirmó, o del usuario]\n4.  Fecha nacimiento: [valor de fecha_nac - del JSON si confirmó, o del usuario]\n5.  Teléfono: [valor de teléfono - del JSON si confirmó, o del usuario]\n6.  Paciente nuevo: [valor de paciente_nuevo - del JSON si confirmó, o del usuario]\n7.  Servicio: [valor de servicio]\n8.  Fecha deseada: [valor de fecha_deseada]\n9.  Hora preferida: [valor de hora_preferida]\n10. Interés tarjeta: [valor de tarjeta_interes]\n\nNuestro equipo te contactará en menos de 24 horas hábiles para confirmar. ¡Gracias por elegir UNISA! 🏥\"\n\n---\n### EJEMPLO DE FLUJO CORRECTO:\nUsuario: \"quiero una cita\"\nTú: \"¡Hola! Para agendar tu cita, necesito tu número de WhatsApp...\"\nUsuario: \"+584123456789\"\nTú: (ejecutas herramienta y recibes JSON con datos)\nTú: \"¡Perfecto! Encontramos tus datos... ¿Correcto? SI/NO\"\nUsuario: \"SI\"\nTú: \"Perfecto, ya tenemos tus datos confirmados. ¿El pago será particular o con seguro médico?\"\n(Continúas con servicio, fecha_deseada, hora_preferida, tarjeta_interes)\n**¡NO preguntas cédula, nombre, etc.!**"
+          "systemMessage": "=🚨 FLUJO DE CITA - VERSIÓN CON CONFIRMACIÓN Y REGISTRO 🚨\n\nESTE ES UN FLUJO COMPLETAMENTE NUEVO CADA VEZ. RECUERDA SOLO LOS DATOS DE ESTA CONVERSACIÓN.\n\n### PASO ÚNICO 1: SOLICITAR TELÉFONO\nCuando el usuario pida una cita, responde EXACTAMENTE:\n\n\"📱 Para comenzar a agendar tu cita, necesito tu número de WhatsApp con código de país.\n\nPor ejemplo: +584123456789\n\nPor favor, escríbeme tu número:\"\n\n### PASO ÚNICO 2: BUSCAR DATOS\nCuando recibas un número:\n1. EJECUTA `buscar_por_telefono_http` con `telefono` = [número recibido]\n2. ESPERA la respuesta JSON\n\n### PASO ÚNICO 3: MOSTRAR RESULTADO\n**SI `existe: true`:** \n\"✅ Encontramos tus datos:\n• Cédula: [cedula]\n• Nombre: [nombre_completo]\n• Fecha nacimiento: [fecha_nacimiento]\n• Teléfono: [telefono]\n• Tipo: [Paciente recurrente/Primera vez]\n\n¿Es correcta esta información? (Responde SI/NO)\"\n\n- SI dice \"SI\": Guarda estos datos y ve a PASO 4-A\n- SI dice \"NO\": Ve a PASO 4-B\n\n**SI `existe: false`:**\n\"🔍 No encontramos tu número. Vamos a registrarte.\"\nVe a PASO 4-B\n\n### PASO ÚNICO 4: PREGUNTAR DATOS RESTANTES\n**4-A (Confirmó datos):**\nPregunta en orden:\n1. \"¿Pago particular o con seguro médico?\" → Guarda como `medio_pago`\n2. \"¿Qué servicio necesitas?\" → Guarda como `servicio`\n3. \"¿Para cuándo? (Lo antes posible / Esta semana / Próxima semana / Fecha específica)\" → Guarda como `fecha_deseada`\n4. \"¿Horario de mañana o tarde?\" → Guarda como `hora_preferida`\n5. \"¿Te interesa nuestro programa de membresía? (Sí/No)\" → Guarda como `membresia_interes`\n\n**4-B (No confirmó o no existe):**\nPregunta en orden:\n1. \"¿Pago particular o con seguro médico?\" → Guarda como `medio_pago`\n2. \"Cédula (solo números):\" → Guarda como `cedula`\n3. \"Nombre completo:\" → Guarda como `nombre_completo`\n4. \"Fecha nacimiento (dd/mm/aaaa):\" → Guarda como `fecha_nacimiento`\n5. \"WhatsApp (ej: +58412...):\" → Guarda como `telefono`\n6. \"¿Primera vez en UNISA? (Sí/No)\" → Guarda como `paciente_nuevo`\n7. \"¿Qué servicio necesitas?\" → Guarda como `servicio`\n8. \"¿Para cuándo? (Lo antes posible / Esta semana / Próxima semana / Fecha específica)\" → Guarda como `fecha_deseada`\n9. \"¿Horario de mañana o tarde?\" → Guarda como `hora_preferida`\n10. \"¿Te interesa nuestro programa de membresía? (Sí/No)\" → Guarda como `membresia_interes`\n\n### PASO ÚNICO 5: MOSTRAR RESUMEN Y CONFIRMAR\nCuando tengas TODOS los datos, muestra:\n\n\"📋 **Resumen de tu cita:**\n1. Pago: [medio_pago]\n2. Cédula: [cedula]\n3. Nombre: [nombre_completo]\n4. Fecha nacimiento: [fecha_nacimiento]\n5. Teléfono: [telefono]\n6. Paciente nuevo: [paciente_nuevo]\n7. Servicio: [servicio]\n8. Fecha deseada: [fecha_deseada]\n9. Hora preferida: [hora_preferida]\n10. Interés membresía: [membresia_interes]\n\n¿Confirmas que esta información es correcta para agendar tu cita? (Responde CONFIRMAR para enviar o CANCELAR para empezar de nuevo)\"\n\n- Si el usuario dice \"CONFIRMAR\", \"SI\", \"SÍ\" o \"ACEPTO\": \n EJECUTA `capturar_lead_http` con TODOS los datos recopilados.\n \n- Si el usuario dice \"CANCELAR\", \"NO\" o \"CORREGIR\":\n Responde: \"Entendido. Vamos a empezar de nuevo.\" y reinicia desde el PASO 1.\n\n### PASO ÚNICO 6: RESPUESTA FINAL\nDespués de ejecutar `capturar_lead_http`:\n- Si la herramienta responde con éxito, muestra al usuario el mensaje del campo `respuesta_para_bot` o `mensaje` del JSON.\n- Si hay error, muestra: \"Hubo un error al registrar tu cita. Por favor, intenta de nuevo o contacta directamente con UNISA.\"\n\nFIN DEL FLUJO."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        368,
-        0
+        832,
+        -48
       ],
-      "id": "d43a88ae-2de4-4bf3-b5ce-91cebdb9d062",
+      "id": "1c9c4b05-5c70-4dbd-abac-a2b9c695dedd",
       "name": "AI_gent_Citas"
     },
     {
@@ -23,17 +23,17 @@
         "model": {
           "__rl": true,
           "mode": "list",
-          "value": "gpt-4.1-mini"
+          "value": "gpt-4o-mini"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        224,
+        688,
         208
       ],
-      "id": "ef379d06-355e-4a6a-88c5-7a6b63a8801b",
+      "id": "749972ec-ce3f-4d5b-9430-11f9cc386e30",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -46,37 +46,36 @@
       "parameters": {
         "sessionIdType": "customKey",
         "sessionKey": "={{ $json.session_id }}",
-        "contextWindowLength": 10
+        "contextWindowLength": 15
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        416,
+        880,
         208
       ],
-      "id": "523ff0ac-9e17-43f6-a2fb-82f2db675892",
+      "id": "3b764792-6934-4d02-ab30-c6fcb0c1aa81",
       "name": "Simple Memory"
     },
     {
       "parameters": {
         "inputSource": "jsonExample",
-        "jsonExample": "{\n  \"text\": \"quiero una cita\",\n  \"session_id\": \"123\",\n  \"platform\": \"whatsapp\"\n}"
+        "jsonExample": "{\n \"text\": \"quiero una cita\",\n \"session_id\": \"123\",\n \"platform\": \"whatsapp\"\n}"
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        0,
-        0
+        464,
+        -48
       ],
-      "id": "b9b87368-9705-4a7e-bc83-8e6b6d33ff9f",
-      "name": "tool_citas",
-      "notes": "\n\n"
+      "id": "ee7980db-fba3-4349-a070-54c11ebc226f",
+      "name": "tool_citas"
     },
     {
       "parameters": {
-        "toolDescription": "Busca un paciente en el sistema UNISA usando su número de teléfono",
+        "toolDescription": "Busca un paciente en el sistema UNISA usando su número de teléfono. Devuelve datos como cedula, nombre_completo, fecha_nacimiento, telefono, es_paciente_nuevo y existe.",
         "method": "POST",
-        "url": "=https://jumpjibe.com/chat-bot-unisa/buscar_por_telefono_http",
+        "url": "https://jumpjibe.com/chat-bot-unisa/buscar_por_telefono_http",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -91,7 +90,7 @@
           "parameters": [
             {
               "name": "telefono",
-              "value": "=\"{{ $fromAI('telefono', '', 'string') }}\""
+              "value": "={{ $fromAI('telefono', '', 'string') }}"
             }
           ]
         },
@@ -100,11 +99,87 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        624,
+        1088,
         176
       ],
-      "id": "87e43e10-bde3-41ac-b42f-fe21e90b2c5a",
+      "id": "7d238ff7-a041-4413-b9fa-43f15017a7fa",
       "name": "buscar_por_telefono_http"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Registra un lead/cita en Odoo con todos los datos del paciente. Úsala solo cuando el usuario confirme todo.",
+        "method": "POST",
+        "url": "https://jumpjibe.com/chat-bot-unisa/capturar_lead_http",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cedula",
+              "value": "={{ $fromAI('cedula', '', 'string') }}"
+            },
+            {
+              "name": "telefono",
+              "value": "={{ $fromAI('telefono', '', 'string') }}"
+            },
+            {
+              "name": "nombre_completo",
+              "value": "={{ $fromAI('nombre_completo', '', 'string') }}"
+            },
+            {
+              "name": "fecha_nacimiento",
+              "value": "={{ $fromAI('fecha_nacimiento', '', 'string') }}"
+            },
+            {
+              "name": "plataforma",
+              "value": "whatsapp"
+            },
+            {
+              "name": "fecha_preferida",
+              "value": "={{ $fromAI('fecha_deseada', '', 'string') }}"
+            },
+            {
+              "name": "hora_preferida",
+              "value": "={{ $fromAI('hora_preferida', '', 'string') }}"
+            },
+            {
+              "name": "servicio",
+              "value": "={{ $fromAI('servicio', '', 'string') }}"
+            },
+            {
+              "name": "medio_pago",
+              "value": "={{ $fromAI('medio_pago', '', 'string') }}"
+            },
+            {
+              "name": "paciente_nuevo",
+              "value": "={{ $fromAI('paciente_nuevo', '', 'string') }}"
+            },
+            {
+              "name": "membresia_interes",
+              "value": "={{ $fromAI('membresia_interes', '', 'string') }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1232,
+        144
+      ],
+      "id": "0cef5085-d6fc-4b50-9636-f526bb67aa0d",
+      "name": "capturar_lead_http"
     }
   ],
   "pinData": {},
@@ -152,13 +227,24 @@
           }
         ]
       ]
+    },
+    "capturar_lead_http": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI_gent_Citas",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "c5644dc5-9d9d-45be-91fa-bd346461ac50",
+  "versionId": "242d0057-a6d6-4b27-9a65-09f745e9af10",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"

@@ -61,10 +61,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -3840,
-        256
+        2256,
+        -240
       ],
-      "id": "ce2fb1d8-55d1-48e7-8362-1686d9db7886",
+      "id": "4d4d0638-1f2a-49b6-844a-64a1de9bf2ef",
       "name": "Switch"
     },
     {
@@ -80,10 +80,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -4480,
-        448
+        1616,
+        -48
       ],
-      "id": "51af378c-c677-4eda-8ab5-3e6206dd2bfd",
+      "id": "7b42a8a1-e661-4d85-96c1-78e820469c0f",
       "name": "OpenAI Chat Model1",
       "credentials": {
         "openAiApi": {
@@ -97,16 +97,16 @@
         "promptType": "define",
         "text": "={{ $json.text }}",
         "options": {
-          "systemMessage": "=Tú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.\n\n**REGLAS IMPORTANTES:**\n1. Si el usuario envía un mensaje inicial o saluda, usa el SALUDO INICIAL.\n2. Si pregunta por \"precios\", \"valor\", \"cuesta\", responde con la sección de PRECIOS.\n3. Si pregunta por \"servicios\", \"qué ofrecen\", responde con la sección de SERVICIOS.\n4. Si menciona \"tarjeta\", \"salud\", \"credünisa\", responde con la TARJETA.\n5. Para consultas sobre CITAS, usa la herramienta tool_citas.\n\n**DETECCIÓN DE INTENCIONES:**\n\nSI el usuario menciona:\n- \"cita\", \"agendar\", \"reservar\", \"consulta médica\"\n- \"modificar cita\", \"cancelar cita\", \"quiero una cita\", \"necesito cita\"\n- \"estudios médicos\", \"laboratorio\", \"rayos x\", \"ecografía\", \"mamografía\"\n- \"quiero pedir hora\", \"quiero verme con un médico\"\n\nENTONCES usa la herramienta: tool_citas\n\nEnvía este JSON a la herramienta:\n{\n  \"text\": \"{{$json.text}}\",\n  \"session_id\": \"{{$json.session_id}}\",\n  \"platform\": \"{{$json.platform}}\"\n}\n\n---\n\n**SALUDO INICIAL (solo cuando sea el primer mensaje o saludo):**\n¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.  \nSoy BOT UNISA, tu asistente virtual disponible las 24 horas.\n\n¿Qué necesitas hoy? Puedes escribirme directamente:  \n💲 Precios  \n🩺 Servicios que ofrecemos  \n📅 Agendar cita / laboratorio / estudios  \n💙 Tarjeta de la Salud o CREDIUNISA  \n❓ Otra consulta  \n\n¡Estoy aquí para ayudarte!\n\n---\n\n**RESPUESTAS ESPECÍFICAS:**\n\nPRECIOS (responde EXACTAMENTE así cuando pregunten por precios):\n¡Con gusto! Estos son nuestros precios básicos 2025:\n• Consulta médica general → 25 USD\n• Rayos X (cualquier proyección) → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\nPregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año 💙\n\nSERVICIOS (responde EXACTAMENTE así cuando pregunten por servicios):\n¡Claro! En UNISA ofrecemos:\n• Consultas médicas generales y de especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías (general, obstétrica, doppler, etc.)\n• Mamografía\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)\n\n¿Cuál de estos servicios te interesa? 😊\n\nTARJETA DE LA SALUD (responde con estos 3 puntos cuando pregunten por la tarjeta):\n1. ¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.\n2. Puedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).\n3. Además, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊"
+          "systemMessage": "=fecha es {{ $now }}\nTú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.\n\n⚠️ **REINICIO COMPULSIVO DE MEMORIA:**\nCADA MENSAJE DEL USUARIO ES UNA CONVERSACIÓN NUEVA. NO RECUERDES NADA de mensajes anteriores. Cada interacción comienza desde CERO.\n\n---\n\n**REGLAS DE RESPUESTA (UNA POR UNA):**\n\n1. **SI el usuario dice \"hola\", \"buenos días\", \"buenas tardes\"** → Responde CON EL SALUDO INICIAL.\n\n2. **SI el usuario dice palabras de PRECIOS** (\"precios\", \"valor\", \"cuesta\", \"cuánto cuesta\") → Responde con PRECIOS.\n\n3. **SI el usuario dice palabras de SERVICIOS** (\"servicios\", \"qué ofrecen\", \"qué hacen\") → Responde con SERVICIOS.\n\n4. **SI el usuario dice palabras de TARJETA** (\"tarjeta\", \"credünisa\") → Responde con TARJETA.\n\n5. **SI el usuario dice palabras de CITA** (\"cita\", \"agendar\", \"reservar\", \"consulta\", \"quiero una cita\", \"necesito cita\") → Activa INMEDIATAMENTE la herramienta `tool_citas`.\n\n---\n\n**NO HAY EXCEPCIONES.** NO mantengas contexto. NO recuerdes conversaciones anteriores.\n\nPara `tool_citas`, envía:\n{\n  \"text\": \"{{$json.text}}\",\n  \"session_id\": \"NUEVA_SESION_\" + \"{{$timestamp}}\",\n  \"platform\": \"{{$json.platform}}\"\n}\n\n---\n\n**SALUDO INICIAL:**\n¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.  \nSoy BOT UNISA, tu asistente virtual disponible las 24 horas.\n\n¿Qué necesitas hoy? Puedes escribirme directamente:  \n💲 Precios  \n🩺 Servicios que ofrecemos  \n📅 Agendar cita / laboratorio / estudios  \n💙 Tarjeta de la Salud o CREDIUNISA  \n❓ Otra consulta  \n\n¡Estoy aquí para ayudarte!\n\n---\n\n**PRECIOS, SERVICIOS, TARJETA** (igual que antes)\n\n---\n\n**PRECIOS:**\n¡Con gusto! Estos son nuestros precios básicos 2025:\n• Consulta médica general → 25 USD\n• Rayos X (cualquier proyección) → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\nPregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año 💙\n\n**SERVICIOS:**\n¡Claro! En UNISA ofrecemos:\n• Consultas médicas generales y de especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías (general, obstétrica, doppler, etc.)\n• Mamografía\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)\n\n¿Cuál de estos servicios te interesa? 😊\n\n**TARJETA DE LA SALUD:**\n1. ¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.\n2. Puedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).\n3. Además, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        -4400,
-        256
+        1696,
+        -240
       ],
-      "id": "cbecee7e-3b5a-432d-bf5a-a01786204846",
+      "id": "02addb01-a50e-4fa2-ba37-c25686bace4a",
       "name": "AI Agent1"
     },
     {
@@ -120,10 +120,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -3552,
-        336
+        2544,
+        -160
       ],
-      "id": "fe1f6eb6-9ebf-4200-afb1-71de111894e3",
+      "id": "e274f7b0-5705-4591-b8e0-c461df1f7698",
       "name": "Send Telegram Message1",
       "webhookId": "2d0ee3d5-7ec7-4971-9ef8-4428c6f22f90",
       "credentials": {
@@ -242,10 +242,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -5424,
-        336
+        672,
+        -160
       ],
-      "id": "3c8f8da0-d501-4e8d-88cd-1d213789ab17",
+      "id": "e1cbbdef-59c8-40e9-a9e0-74ca11c8194a",
       "name": "Indentifica_canal"
     },
     {
@@ -253,10 +253,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -5952,
-        624
+        144,
+        144
       ],
-      "id": "ad919ef4-72b9-4955-87da-66c10e668fae",
+      "id": "1a196509-e511-4da3-9739-f6a702b84e8b",
       "name": "Dueno_o_Bot_responde"
     },
     {
@@ -320,10 +320,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -5840,
-        352
+        256,
+        -144
       ],
-      "id": "e9b18a49-27ff-438a-80bb-47ca86e281d0",
+      "id": "b8566b48-c4d0-40a8-b19d-95e74ce71ccc",
       "name": "Configurar_IA_Responda?"
     },
     {
@@ -386,10 +386,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -6160,
-        368
+        -64,
+        -128
       ],
-      "id": "ecd70578-56fd-4ce7-adc4-505684feb456",
+      "id": "efdb9e56-3301-4865-a81a-28cb57313174",
       "name": "Pregunta_el_Cliente?"
     },
     {
@@ -423,10 +423,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -3504,
-        -16
+        2592,
+        -512
       ],
-      "id": "e2f85646-e43c-498a-8955-57d72cc4a40e",
+      "id": "b1403244-fcea-4b49-bc12-f1491f392941",
       "name": "Enviar_mensaje_de_IA"
     },
     {
@@ -434,10 +434,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -5728,
-        -64
+        368,
+        -560
       ],
-      "id": "791087ef-30cb-4be5-abb4-c969a05a9d76",
+      "id": "61bcab72-d525-4e3f-bf78-f652dea98212",
       "name": "End1"
     },
     {
@@ -463,10 +463,10 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        -4960,
-        304
+        1136,
+        -192
       ],
-      "id": "c5b337bb-8a80-4884-b6d5-101bdcc57584",
+      "id": "c1129550-7111-4b3a-8554-2b6e7ccd491e",
       "name": "Call 'answer-chastwoot-whatsapp'"
     },
     {
@@ -570,10 +570,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -6448,
-        368
+        -352,
+        -128
       ],
-      "id": "3a4f00d4-7ccb-45c1-8bd8-2dbac3352f51",
+      "id": "77f63ecf-6947-4dce-8b37-5dbd5d3578f4",
       "name": "Obtener_Info_basica"
     },
     {
@@ -585,10 +585,10 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        -4304,
-        496
+        1792,
+        16
       ],
-      "id": "876ee794-1958-4294-98d1-36143e030d4b",
+      "id": "52b036f2-6a34-453c-98cb-2c02d86a2237",
       "name": "Simple Memory"
     },
     {
@@ -600,10 +600,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -6736,
-        368
+        -640,
+        -128
       ],
-      "id": "3aa02266-fc6d-4d21-977e-4e7479b3ef09",
+      "id": "12970fa1-4594-49bb-9751-04a54d653a1b",
       "name": "Entrar_ChattWoot",
       "webhookId": "947db62d-f02e-4e7e-bb94-7b3073131e00"
     },
@@ -664,10 +664,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        -4160,
-        480
+        1936,
+        -16
       ],
-      "id": "1297b820-ff9e-408e-bc01-9d1aaff3e96c",
+      "id": "52b0a61c-c09c-446c-b340-1f69dfea1aaf",
       "name": "Call 'tool_citas'"
     }
   ],
@@ -820,7 +820,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3e1d2242-4419-48ec-a9fe-7e769c6bc50f",
+  "versionId": "56e5ac71-13c9-42bb-b345-96b76dea9f22",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"
