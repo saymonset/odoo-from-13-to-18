@@ -115,7 +115,6 @@ class ChatBotUtils:
             # Actualizar solo campos vacíos
             update_data = {}
             for field, value in partner_data.items():
-                if value and (not getattr(partner, field) or field == 'mobile'):
                     update_data[field] = value
             
             if update_data:
