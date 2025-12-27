@@ -92,7 +92,7 @@ class ChatBotController(http.Controller):
             partner = ChatBotUtils.update_create_contact(env, search_data)
             
             # 5. Si encontramos el cliente
-            if partner:
+            if partner and partner.id and partner.name and partner.name != 'Sin nombre':
                 _logger.info("Cliente encontrado: %s (ID: %s)", partner.name, partner.id)
                 
                 # Obtener información de última cita
@@ -264,7 +264,7 @@ class ChatBotController(http.Controller):
             
             # 10. Retornar respuesta exitosa
             response_data = {
-                'exito': True,
+                'existe': True,
                 'lead_id': lead.id,
                 'cliente_id': partner.id,
                 'cliente_nombre': partner.name,
@@ -289,7 +289,7 @@ class ChatBotController(http.Controller):
             
             return Response(
                 json.dumps({
-                    'exito': False,
+                    'existe': False,
                     'error': True,
                     'mensaje': 'Error al crear la cita',
                     'detalle': str(e)

@@ -331,12 +331,12 @@ class ChatBotUtils:
             f"• Cédula: {data.get('cedula', 'N/A')}\n"
             f"• Fecha de nacimiento: {data.get('fecha_nacimiento', 'N/A')}\n"
             f"• Teléfono: {data.get('telefono', 'N/A')}\n"
-            f"• Servicio: {data.get('servicio_solicitado', 'N/A')}\n"
-            f"• Fecha preferida: {data.get('fecha_preferida', 'lo antes posible')}\n"
+            f"• Servicio: {data.get('servicio', 'N/A')}\n"
+            f"• Fecha preferida: {data.get('fecha_deseada', 'lo antes posible')}\n"
             f"• Horario: {data.get('hora_preferida', 'cualquier hora')}\n"
             f"• Medio de pago: {data.get('medio_pago', 'N/A')}\n"
             f"• Paciente nuevo: {'Sí' if str(data.get('es_paciente_nuevo','')).lower() in ['sí','si','yes','s'] else 'No'}\n"
-            f"• Interés Tarjeta Salud: {'Sí' if str(data.get('interes_tarjeta_salud','')).lower() in ['sí','si','yes','s'] else 'No'}"
+            f"• Interés Tarjeta Salud: {'Sí' if str(data.get('membresia_interes','')).lower() in ['sí','si','yes','s'] else 'No'}"
         )
 
     @staticmethod

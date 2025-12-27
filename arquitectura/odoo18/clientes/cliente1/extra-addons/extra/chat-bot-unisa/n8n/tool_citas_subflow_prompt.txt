@@ -38,7 +38,19 @@ Ve a PASO 4-B
 **4-A (Confirmó datos):**
 Pregunta en orden:
 1. "¿Pago particular o con seguro médico?" → Guarda como `medio_pago`
-2. "¿Qué servicio necesitas?" → Guarda como `servicio`
+2. **Tipo de servicio**: ¿Qué servicio necesitas?  → Guarda como `servicio`
+   Tenemos disponibles:
+   • Consultas médicas generales y de especialidades
+   • Laboratorio clínico
+   • Rayos X digital
+   • Ecografías (general, obstétrica, doppler, etc.)
+   • Mamografía
+   • Densitometría ósea
+   • Electrocardiograma y ecocardiograma
+   • Espirometría
+   • Holter de presión y ritmo
+   • Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)
+
 3. "¿Para cuándo? (Lo antes posible / Esta semana / Próxima semana / Fecha específica)" → Guarda como `fecha_deseada`
 4. "¿Horario de mañana o tarde?" → Guarda como `hora_preferida`
 5. "¿Te interesa nuestro programa de membresía? (Sí/No)" → Guarda como `membresia_interes`
@@ -51,7 +63,18 @@ Pregunta en orden:
 4. "Fecha nacimiento (dd/mm/aaaa):" → Guarda como `fecha_nacimiento`
 5. "WhatsApp (ej: +58412...):" → Guarda como `telefono`
 6. "¿Primera vez en UNISA? (Sí/No)" → Guarda como `paciente_nuevo`
-7. "¿Qué servicio necesitas?" → Guarda como `servicio`
+7. **Tipo de servicio**: ¿Qué servicio necesitas?  → Guarda como `servicio`
+   Tenemos disponibles:
+   • Consultas médicas generales y de especialidades
+   • Laboratorio clínico
+   • Rayos X digital
+   • Ecografías (general, obstétrica, doppler, etc.)
+   • Mamografía
+   • Densitometría ósea
+   • Electrocardiograma y ecocardiograma
+   • Espirometría
+   • Holter de presión y ritmo
+   • Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)
 8. "¿Para cuándo? (Lo antes posible / Esta semana / Próxima semana / Fecha específica)" → Guarda como `fecha_deseada`
 9. "¿Horario de mañana o tarde?" → Guarda como `hora_preferida`
 10. "¿Te interesa nuestro programa de membresía? (Sí/No)" → Guarda como `membresia_interes`
