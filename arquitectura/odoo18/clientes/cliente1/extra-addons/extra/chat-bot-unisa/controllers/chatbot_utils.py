@@ -5,7 +5,7 @@ import json
 import logging
 import requests
 from odoo import fields
-
+import re
 _logger = logging.getLogger(__name__)
 
 class ChatBotUtils:
@@ -88,14 +88,14 @@ class ChatBotUtils:
             phone_clean = ''.join(filter(str.isdigit, telefono))[-10:] if len(telefono) > 10 else telefono
             
             partner = env['res.partner'].search([
-                ('name', 'ilike', f'%{nombre.split()[0]}%'),
+                ('name', 'ilike', f'%{nombre_completo.split()[0]}%'),
                 ('mobile', 'ilike', f'%{phone_clean}%'),
                 ('active', '=', True)
             ], limit=1)
         
         # Preparar datos para crear/actualizar
         partner_data = {
-            'name': nombre_completo or 'Sin nombre',
+            'name': nombre_completo,
             'vat': cedula,
             'mobile': telefono,
             'type': 'contact',
@@ -122,6 +122,80 @@ class ChatBotUtils:
                 _logger.info(f"Contacto actualizado: {partner.id} - {partner.name}")
         else:
             partner = env['res.partner'].create(partner_data)
+            _logger.info(f"Contacto creado: {partner.id} - {partner.name}")
+        
+        return partner
+    @staticmethod
+    def search_contact(env, data):
+        """
+        Búsqueda optimizada de contacto por múltiples criterios
+        Reemplaza al método _get_or_create_partner original
+        """
+        cedula = data.get('cedula', '').strip()
+        telefono = data.get('telefono', '').strip()
+        nombre_completo = data.get('nombre_completo', '').strip()
+        fecha_nacimiento = data.get('fecha_nacimiento', '').strip()
+        
+        partner = None
+        
+        # 1. Buscar por cédula exacta
+        if cedula:
+            partner = env['res.partner'].search([
+                ('vat', '=', cedula),
+                ('active', '=', True)
+            ], limit=1)
+        
+        # 2. Si no hay cédula o no se encontró, buscar por teléfono
+        if not partner and telefono:
+            phone_clean = ''.join(filter(str.isdigit, telefono))
+            if len(phone_clean) > 10:
+                phone_clean = phone_clean[-10:]
+            
+            partner = env['res.partner'].search([
+                ('mobile', 'ilike', f'%{phone_clean}%'),
+                ('active', '=', True)
+            ], limit=1)
+        
+        # 3. Si hay nombre y teléfono, buscar combinación
+        if not partner and nombre_completo and telefono:
+            phone_clean = ''.join(filter(str.isdigit, telefono))[-10:] if len(telefono) > 10 else telefono
+            
+            partner = env['res.partner'].search([
+                ('name', 'ilike', f'%{nombre_completo.split()[0]}%'),
+                ('mobile', 'ilike', f'%{phone_clean}%'),
+                ('active', '=', True)
+            ], limit=1)
+        
+        # Preparar datos para crear/actualizar
+        partner_data = {
+            'name': nombre_completo,
+            'vat': cedula,
+            'mobile': telefono,
+            'type': 'contact',
+            'company_type': 'person',
+        }
+        
+        # Solo agregar birthdate si la fecha es válida
+        fecha_convertida = ChatBotUtils.convert_fecha_nacimiento(fecha_nacimiento)
+        if fecha_convertida:
+            # Verificar si el campo existe en el modelo
+            if 'birthdate' in env['res.partner']._fields:
+                partner_data['birthdate'] = fecha_convertida
+            else:
+                _logger.warning("Campo 'birthdate' no disponible en res.partner")
+            
+        if partner:
+            # Actualizar solo campos vacíos
+            update_data = {}
+            for field, value in partner_data.items():
+                   # update_data[field] = value
+                    _logger.info(f"Contacto actualizado: {partner.id} - {partner.name}")
+            
+            if update_data:
+             #   partner.write(update_data)
+                _logger.info(f"Contacto actualizado: {partner.id} - {partner.name}")
+        else:
+            #partner = env['res.partner'].create(partner_data)
             _logger.info(f"Contacto creado: {partner.id} - {partner.name}")
         
         return partner
@@ -300,8 +374,12 @@ class ChatBotUtils:
         """Crear lead en CRM"""
         description = ChatBotUtils.generate_description(data)
         
+        # Nombre provisional
+        lead_name = f"Cita WhatsApp - {data.get('servicio_solicitado', 'Consulta')} - {data.get('nombre_completo', 'Sin nombre')}"
+
+        
         lead_data = {
-            'name': f"Cita WhatsApp - {data.get('servicio_solicitado', 'Consulta')} - {data.get('nombre_completo', 'Sin nombre')}",
+            'name': lead_name,
             'partner_id': partner.id,
             'contact_name': data.get('nombre_completo', 'Sin nombre'),
             'phone': data.get('telefono'),
@@ -316,7 +394,11 @@ class ChatBotUtils:
             'stage_id': ChatBotUtils.get_default_stage(env),
         }
         
+         # Crear el lead
         lead = env['crm.lead'].create(lead_data)
+         # Actualizar el nombre con el ID del lead
+        updated_name = f"{lead.name} - ID {lead.id}"
+        lead.write({'name': updated_name})
         _logger.info(f"Lead creado: ID {lead.id} - {lead.name}")
         
         return lead
@@ -408,6 +490,36 @@ class ChatBotUtils:
                     )
         except Exception as e:
             _logger.error(f"Error procesando imágenes adicionales: {str(e)}")
+    
+    
+    @staticmethod
+    def validate_image_urls(data):
+        """Validar que las URLs de imágenes sean accesibles"""
+        validated_data = {
+            'foto_cedula_url': data.get('foto_cedula_url', ''),
+            'imagenes_adicionales': []
+        }
+        
+        # Validar foto cédula
+        foto_url = data.get('foto_cedula_url', '')
+        if foto_url and re.match(r'^https?://', foto_url):
+            try:
+                # Verificar que sea una URL válida
+                validated_data['foto_cedula_url'] = foto_url
+            except:
+                validated_data['foto_cedula_url'] = ''
+        
+        # Validar imágenes adicionales
+        imagenes_str = data.get('imagenes_adicionales', '[]')
+        try:
+            imagenes = json.loads(imagenes_str) if isinstance(imagenes_str, str) else imagenes_str
+            for img_url in imagenes:
+                if img_url and re.match(r'^https?://', img_url):
+                    validated_data['imagenes_adicionales'].append(img_url)
+        except:
+            validated_data['imagenes_adicionales'] = []
+        
+        return validated_data        
 
     @staticmethod
     def generate_response(data):

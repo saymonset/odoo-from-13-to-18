@@ -1,0 +1,488 @@
+{
+  "name": "answer-chastwoot-whatsapp",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1808,
+        80
+      ],
+      "id": "e1bffe23-730a-43a1-9cbf-e11e5d29ce8d",
+      "name": "answer-chastwoot-whatsapp"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -992,
+        64
+      ],
+      "id": "4ad70f1a-c0f0-454d-8d59-934571db5afc",
+      "name": "Audio_a_Texto_whatsapp",
+      "credentials": {
+        "openAiApi": {
+          "id": "SynY9HmZH2SsZkWD",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1232,
+        64
+      ],
+      "id": "4154956a-02af-47a9-8e8e-98fc4ca1786c",
+      "name": "Get File Data",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SxSs5ggMU2LgbDMZ",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5b9b41b4-ef98-4699-80eb-24e70dbee117",
+              "name": "text",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "0f98afd1-e2e6-4c4d-9e9f-6e38c87694c6",
+              "name": "session_id",
+              "value": "={{ $json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "9cbd2d29-4e32-46fd-bbea-88317ec7681d",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ddcd14fb-bfd1-4f23-a0e0-7d0fa54e8719",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "9052a8a2-5a39-4b6f-a44f-728e2e7c2c41",
+              "name": "message_type",
+              "value": "={{ $json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "c76e6bbf-22cf-4dd8-ae67-49c5801c5be1",
+              "name": "user_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "b16fbd53-b6a3-4e0b-ac12-01912379a2fc",
+              "name": "user_number",
+              "value": "={{ $json.user_number }}",
+              "type": "string"
+            },
+            {
+              "id": "5e7f1bef-2e33-448d-b2dd-8aa060685c18",
+              "name": "user_message",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "image_url_assignment",
+              "name": "image_url",
+              "value": "={{ $json.image_url || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1216,
+        -64
+      ],
+      "id": "9353e675-639e-4d5f-8fce-7ba381954390",
+      "name": "Obtener_Info_whatsapp"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f85334e7-e910-4938-8c4b-4555f55c7ba0",
+              "name": "text",
+              "value": "={{ $json.text || '0'}}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "name": "session_id",
+              "value": "={{ $json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "image_url_passed",
+              "name": "image_url",
+              "value": "={{ $json.image_url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "1af7f04d-4a46-4b3d-930a-4cf8dcd2314e",
+              "name": "platform",
+              "value": "=whatsapp",
+              "type": "string"
+            },
+            {
+              "id": "d6f22467-af6c-493b-a7b3-54389897f457",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a49a0e8c-4a5c-4e96-a135-dec725ea4440",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        64
+      ],
+      "id": "c7223b33-ec14-4edb-a6a1-b87f95b5617c",
+      "name": "Preparar_Input_AI"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.content !== null && $json.content !== ''}}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "4313ad77-8015-436a-a40d-3ef7cab78263"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "37f80664-6420-4c2b-b965-b65ec4656310",
+                    "leftValue": "={{ $json.file_type === 'audio'}}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bd0fe7e7-3a63-4016-bbde-90cd552598f1",
+                    "leftValue": "={{ $json.file_type === 'image'}}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1616,
+        80
+      ],
+      "id": "f0767731-6dee-4326-8e76-b21b7ad10897",
+      "name": "Texto_o_Audio?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "uuid1",
+              "name": "text",
+              "value": "={{ $json.text || ''}}",
+              "type": "string"
+            },
+            {
+              "id": "uuid2",
+              "name": "session_id",
+              "value": "={{ $json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "uuid3",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "uuid4",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "uuid5",
+              "name": "platform",
+              "value": "whatsapp",
+              "type": "string"
+            },
+            {
+              "id": "image_url_field",
+              "name": "image_url",
+              "value": "={{ $json.image_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1232,
+        192
+      ],
+      "id": "3cd63d38-3416-4586-ac23-9fee33b1da63",
+      "name": "Procesar_Imagen_whatsapp"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-text",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "extract-image-url",
+              "name": "image_url",
+              "value": "={{ $json.image_url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "954d8f18-e7df-4531-90eb-584acf6d054c",
+              "name": "session_id",
+              "value": "={{ $json.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "d905e1d7-dcf3-433f-b6f5-3f542b73c848",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5f67b3ca-a17a-46bc-b22d-9c8ed16328d3",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -816,
+        64
+      ],
+      "id": "42714dd6-f079-429a-9472-93a105426aaa",
+      "name": "Extraer_Texto_Audio"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "answer-chastwoot-whatsapp": {
+      "main": [
+        [
+          {
+            "node": "Texto_o_Audio?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio_a_Texto_whatsapp": {
+      "main": [
+        [
+          {
+            "node": "Extraer_Texto_Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Data": {
+      "main": [
+        [
+          {
+            "node": "Audio_a_Texto_whatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener_Info_whatsapp": {
+      "main": [
+        [
+          {
+            "node": "Preparar_Input_AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Texto_o_Audio?": {
+      "main": [
+        [
+          {
+            "node": "Obtener_Info_whatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get File Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Procesar_Imagen_whatsapp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar_Imagen_whatsapp": {
+      "main": [
+        [
+          {
+            "node": "Preparar_Input_AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer_Texto_Audio": {
+      "main": [
+        [
+          {
+            "node": "Preparar_Input_AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f5a39c68-e42f-4b7f-b1a8-a52d8a2da498",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"
+  },
+  "id": "44Hf0tLv7msSiroV",
+  "tags": []
+}

@@ -89,7 +89,7 @@ class ChatBotController(http.Controller):
             }
             
             # Usar búsqueda inteligente que maneja múltiples formatos de teléfono
-            partner = ChatBotUtils.update_create_contact(env, search_data)
+            partner = ChatBotUtils.search_contact(env, search_data)
             
             # 5. Si encontramos el cliente
             if partner and partner.id and partner.name and partner.name != 'Sin nombre':
@@ -172,16 +172,16 @@ class ChatBotController(http.Controller):
         try:
             partes = nombre_completo.split()
             iniciales = ''.join([parte[0].upper() for parte in partes[:2] if parte])
-            return iniciales
+            return iniciales    
         except Exception:
             return nombre_completo[:2].upper() if len(nombre_completo) >= 2 else nombre_completo[0].upper()
     
     @http.route('/chat-bot-unisa/capturar_lead_http',
-                auth='public',
-                type='http',
-                methods=['POST'],
-                csrf=False,
-                cors='*')
+                    auth='public',
+                    type='http',
+                    methods=['POST'],
+                    csrf=False,
+                    cors='*')
     def capturar_lead_http(self, **kw):
         """
         Crear cita completa usando ChatBotUtils
@@ -213,6 +213,22 @@ class ChatBotController(http.Controller):
                     data = dict(http_request.args)
             
             _logger.info("Datos recibidos para crear cita: %s", json.dumps(data, default=str))
+            
+            # 🔍 LOG DETALLADO DE TODOS LOS DATOS
+            _logger.info("=== DATOS COMPLETOS RECIBIDOS ===")
+            for key, value in data.items():
+                _logger.info("🔑 %s: %s", key, value)
+            
+            # Verificar específicamente imágenes
+            _logger.info("=== VERIFICACIÓN DE IMÁGENES ===")
+            _logger.info("foto_cedula_url existe? %s", 'foto_cedula_url' in data)
+            if 'foto_cedula_url' in data:
+                _logger.info("Valor de foto_cedula_url: %s", data.get('foto_cedula_url'))
+                _logger.info("Es URL válida? %s", bool(re.match(r'^https?://', str(data.get('foto_cedula_url', '')))))
+            
+            _logger.info("imagenes_adicionales existe? %s", 'imagenes_adicionales' in data)
+            if 'imagenes_adicionales' in data:
+                _logger.info("Valor de imagenes_adicionales: %s", data.get('imagenes_adicionales'))
             
             # 2. Validar datos requeridos
             campos_requeridos = ['cedula', 'telefono', 'nombre_completo', 'fecha_nacimiento']
@@ -256,9 +272,14 @@ class ChatBotController(http.Controller):
                 ChatBotUtils.assign_lead_round_robin(env, lead, team)
             
             # 8. Manejar imágenes adjuntas si existen
-            if data.get('foto_cedula_url') or data.get('imagenes_adicionales'):
+            if 'foto_cedula_url' in data or 'imagenes_adicionales' in data:
+                # Validar URLs de imágenes
+                validated_images = ChatBotUtils.validate_image_urls(data)
+                data.update(validated_images)
+                
+                # Crear adjuntos
                 ChatBotUtils.handle_images(env, data, lead, partner)
-            
+                        
             # 9. Generar respuesta para el bot
             respuesta_bot = ChatBotUtils.generate_response(data)
             

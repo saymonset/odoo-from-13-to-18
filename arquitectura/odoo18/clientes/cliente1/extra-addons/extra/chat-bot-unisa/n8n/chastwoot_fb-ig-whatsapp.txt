@@ -1,38 +1,76 @@
-fecha es {{ $now }}
-Tú eres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.
+// =====================================================
+// BOT UNISA - FLUJO PRINCIPAL OPTIMIZADO
+// =====================================================
 
-⚠️ **REINICIO COMPULSIVO DE MEMORIA:**
-CADA MENSAJE DEL USUARIO ES UNA CONVERSACIÓN NUEVA. NO RECUERDES NADA de mensajes anteriores. Cada interacción comienza desde CERO.
+// FECHA ACTUAL: {{ $now }}
+// PLATAFORMA: {{ $json.platform }}
+// SESIÓN: {{ $json.session_id }}
 
----
+// =====================================================
+// INICIALIZACIÓN - SIN MEMORIA ENTRE MENSAJES
+// =====================================================
 
-**REGLAS DE RESPUESTA (UNA POR UNA):**
+// Variables de estado para esta ejecución (no persistir)
+let paso_actual = "INICIO";
+let contexto = "TITULAR";
 
-1. **SI el usuario dice "hola", "buenos días", "buenas tardes"** → Responde CON EL SALUDO INICIAL.
+let paciente = {
+    telefono: "",
+    cedula: "",
+    nombre_completo: "",
+    fecha_nacimiento: "",
+    paciente_nuevo: ""
+};
 
-2. **SI el usuario dice palabras de PRECIOS** ("precios", "valor", "cuesta", "cuánto cuesta") → Responde con PRECIOS.
+let medio_pago = "";
+let servicio = "";
+let fecha_cita = "";
+let hora_cita = "";
+let membresia_interes = "";
+let fotos_cedula = [];
+let imagenes_adicionales = [];
 
-3. **SI el usuario dice palabras de SERVICIOS** ("servicios", "qué ofrecen", "qué hacen") → Responde con SERVICIOS.
+let captura_realizada = false;
+let esperando_confirmacion = false;
 
-4. **SI el usuario dice palabras de TARJETA** ("tarjeta", "credünisa") → Responde con TARJETA.
+// =====================================================
+// FUNCIONES DE APOYO
+// =====================================================
 
-5. **SI el usuario dice palabras de CITA** ("cita", "agendar", "reservar", "consulta", "quiero una cita", "necesito cita") → Activa INMEDIATAMENTE la herramienta `tool_citas`.
-
----
-
-**NO HAY EXCEPCIONES.** NO mantengas contexto. NO recuerdes conversaciones anteriores.
-
-Para `tool_citas`, envía:
-{
-  "text": "{{$json.text}}",
-  "session_id": "NUEVA_SESION_" + "{{$timestamp}}",
-  "platform": "{{$json.platform}}"
+function normalizarTelefono(t) {
+    if (!t) return null;
+    t = t.trim().replace(/\s+/g, '');
+    if (/^0\d{10}$/.test(t)) return "+58" + t.substring(1);
+    if (/^\+58\d{10}$/.test(t)) return t;
+    if (/^58\d{10}$/.test(t)) return "+" + t;
+    if (/^\d{10}$/.test(t)) return "+58" + t;
+    return null;
 }
 
----
+function esUrlValida(url) {
+    return url && url.startsWith('http');
+}
 
-**SALUDO INICIAL:**
-¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.  
+// =====================================================
+// MANEJO DE ENTRADA DEL USUARIO
+// =====================================================
+
+const text = {{ $json.text }};
+const platform = {{ $json.platform }};
+const session_id = {{ $json.session_id }};
+const current_image_url = {{ $json.current_image_url || '' }};
+const image_url = {{ $json.image_url || '' }};
+
+// =====================================================
+// DETECCIÓN DE INTENCIÓN INICIAL
+// =====================================================
+
+// Si el usuario envía saludo inicial
+if (text.toLowerCase().includes('hola') || 
+    text.toLowerCase().includes('buenas') || 
+    text.toLowerCase().includes('buenos')) {
+    
+    return `¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.  
 Soy BOT UNISA, tu asistente virtual disponible las 24 horas.
 
 ¿Qué necesitas hoy? Puedes escribirme directamente:  
@@ -42,39 +80,344 @@ Soy BOT UNISA, tu asistente virtual disponible las 24 horas.
 💙 Tarjeta de la Salud o CREDIUNISA  
 ❓ Otra consulta  
 
-¡Estoy aquí para ayudarte!
+¡Estoy aquí para ayudarte!`;
+}
 
----
+// Si el usuario quiere agendar cita (cualquier variación)
+if (text.toLowerCase().includes('agendar') || 
+    text.toLowerCase().includes('cita') ||
+    text.toLowerCase().includes('reservar') ||
+    text.toLowerCase().includes('consulta') ||
+    text.toLowerCase().includes('quiero una cita') ||
+    text.toLowerCase().includes('necesito cita')) {
+    
+    paso_actual = "SOLICITAR_TELEFONO";
+    return '📱 Para agendar una cita, necesito tu número de WhatsApp con código de país.\n\nEjemplo: +584123456789\n\nPor favor, escríbelo a continuación:';
+}
 
-**PRECIOS, SERVICIOS, TARJETA** (igual que antes)
+// Si el usuario pide precios
+if (text.toLowerCase().includes('precio') || 
+    text.toLowerCase().includes('valor') || 
+    text.toLowerCase().includes('cuesta') ||
+    text.toLowerCase().includes('cuánto')) {
+    
+    return '💲 **PRECIOS UNISA 2025**\n\n• Consulta médica general → 25 USD\n• Rayos X (cualquier proyección) → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\n💙 Pregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año';
+}
 
----
+// Si el usuario pide servicios
+if (text.toLowerCase().includes('servicio') || 
+    text.toLowerCase().includes('ofrecen') ||
+    text.toLowerCase().includes('qué hacen')) {
+    
+    return '🩺 **SERVICIOS UNISA**\n\n• Consultas médicas generales y especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías (general, obstétrica, doppler)\n• Mamografía\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Área de Atención Primaria 24/7\n\n¿Cuál servicio te interesa?';
+}
 
-**PRECIOS:**
-¡Con gusto! Estos son nuestros precios básicos 2025:
-• Consulta médica general → 25 USD
-• Rayos X (cualquier proyección) → 10 USD
-• Mamografía sin implantes → 20 USD
-• Mamografía con implantes → 30 USD
+// Si el usuario menciona tarjeta o crédito
+if (text.toLowerCase().includes('tarjeta') || 
+    text.toLowerCase().includes('credünisa') ||
+    text.toLowerCase().includes('crédito')) {
+    
+    return '💙 **TARJETA DE LA SALUD + CREDIUNISA**\n\n1. Hasta 30% de descuento en todos los servicios\n2. 1 consulta gratuita al año\n3. Vigencia 12 meses\n4. Costo: 80 USD (20 USD al afiliarte + 6 cuotas de 10 USD)\n5. Incluye hasta 5 personas\n6. CREDIUNISA: 100 USD de crédito inmediato en 6 cuotas\n\n¿Deseas afiliarte ahora?';
+}
 
-Pregúntame por la Tarjeta de la Salud y obtienes hasta 30% de descuento + 1 consulta gratuita al año 💙
+// =====================================================
+// FLUJO DE AGENDAMIENTO (PASO A PASO)
+// =====================================================
 
-**SERVICIOS:**
-¡Claro! En UNISA ofrecemos:
-• Consultas médicas generales y de especialidades
-• Laboratorio clínico
-• Rayos X digital
-• Ecografías (general, obstétrica, doppler, etc.)
-• Mamografía
-• Densitometría ósea
-• Electrocardiograma y ecocardiograma
-• Espirometría
-• Holter de presión y ritmo
-• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)
+// PASO 1: SOLICITAR TELÉFONO
+if (paso_actual === "SOLICITAR_TELEFONO") {
+    const telefono = normalizarTelefono(text);
+    
+    if (!telefono) {
+        return '❌ Formato incorrecto. Debe ser: +58 seguido de 10 dígitos.\n\nEjemplo: +584123456789\n\nPor favor, intenta nuevamente:';
+    }
+    
+    paciente.telefono = telefono;
+    paso_actual = "BUSCANDO_TELEFONO";
+    
+    return {
+        tool: "buscar_por_telefono_http",
+        parameters: { telefono: telefono },
+        message: `🔍 Buscando información para el número ${telefono}...`
+    };
+}
 
-¿Cuál de estos servicios te interesa? 😊
+// PASO 2: PROCESAR RESULTADO DE BÚSQUEDA
+if (paso_actual === "BUSCANDO_TELEFONO") {
+    // Verificar si existe y tiene datos completos
+    if ({{ $json.existe === true && $json.cedula && $json.nombre_completo && $json.fecha_nacimiento }}) {
+        paciente.cedula = {{ $json.cedula }};
+        paciente.nombre_completo = {{ $json.nombre_completo }};
+        paciente.fecha_nacimiento = {{ $json.fecha_nacimiento }};
+        paso_actual = "CONFIRMAR_DATOS";
+        
+        return `✅ **ENCONTRAMOS TUS DATOS**\n\n• 👤 Nombre: {{ $json.nombre_completo }}\n• 🆔 Cédula: {{ $json.cedula }}\n• 🎂 Fecha nacimiento: {{ $json.fecha_nacimiento }}\n\n¿Son correctos? (Responde SI o NO)`;
+    } else {
+        // No encontrado o datos incompletos
+        paso_actual = "SOLICITAR_CEDULA";
+        return '📋 No encontramos un registro completo. Para crear uno nuevo, necesito:\n\n**1. Tu número de cédula (solo números):**';
+    }
+}
 
-**TARJETA DE LA SALUD:**
-1. ¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.
-2. Puedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).
-3. Además, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊
+// PASO 3: CONFIRMAR DATOS ENCONTRADOS
+if (paso_actual === "CONFIRMAR_DATOS") {
+    if (text.toUpperCase() === 'SI' || text.toUpperCase() === 'SÍ') {
+        paso_actual = "SOLICITAR_MEDIO_PAGO";
+        return '💳 **MEDIO DE PAGO**\n\n¿Cómo deseas pagar?\n\n• PARTICULAR - Pago directo\n• SEGURO - Con seguro médico';
+    } else if (text.toUpperCase() === 'NO') {
+        paso_actual = "SOLICITAR_CEDULA";
+        return '📋 **ACTUALIZAR DATOS**\n\nPor favor, ingresa tu número de cédula (solo números):';
+    } else {
+        return '❓ Por favor, responde SI o NO:\n\n¿Los datos son correctos?';
+    }
+}
+
+// PASO 4: SOLICITAR CÉDULA (NUEVO REGISTRO)
+if (paso_actual === "SOLICITAR_CEDULA") {
+    if (!text.trim() || !/^\d+$/.test(text.trim())) {
+        return '❌ Por favor, ingresa solo números.\n\n**Tu cédula (solo números):**';
+    }
+    
+    paciente.cedula = text.trim();
+    paso_actual = "SOLICITAR_NOMBRE";
+    return '👤 **NOMBRE COMPLETO**\n\nAhora ingresa tu nombre completo:';
+}
+
+// PASO 5: SOLICITAR NOMBRE
+if (paso_actual === "SOLICITAR_NOMBRE") {
+    if (!text.trim() || text.trim().length < 3) {
+        return '❌ Nombre muy corto. Ingresa tu nombre completo real:';
+    }
+    
+    paciente.nombre_completo = text.trim();
+    paso_actual = "SOLICITAR_FECHA_NACIMIENTO";
+    return '🎂 **FECHA DE NACIMIENTO**\n\nIngresa tu fecha de nacimiento (dd/mm/aaaa):\nEjemplo: 15/05/1990';
+}
+
+// PASO 6: SOLICITAR FECHA DE NACIMIENTO
+if (paso_actual === "SOLICITAR_FECHA_NACIMIENTO") {
+    if (!text.trim() || !/\d{1,2}\/\d{1,2}\/\d{4}/.test(text.trim())) {
+        return '❌ Formato incorrecto. Usa dd/mm/aaaa\n\nEjemplo: 15/05/1990\n\nTu fecha de nacimiento:';
+    }
+    
+    paciente.fecha_nacimiento = text.trim();
+    paso_actual = "SOLICITAR_PACIENTE_NUEVO";
+    return '🏥 **PRIMERA VEZ EN UNISA**\n\n¿Es tu primera vez en UNISA? (Responde SI o NO)';
+}
+
+// PASO 7: PREGUNTAR SI ES PACIENTE NUEVO
+if (paso_actual === "SOLICITAR_PACIENTE_NUEVO") {
+    const respuesta = text.toUpperCase();
+    if (respuesta === 'SI' || respuesta === 'SÍ') {
+        paciente.paciente_nuevo = 'SI';
+    } else if (respuesta === 'NO') {
+        paciente.paciente_nuevo = 'NO';
+    } else {
+        return '❓ Por favor, responde SI o NO:\n\n¿Es tu primera vez en UNISA?';
+    }
+    
+    paso_actual = "SOLICITAR_MEDIO_PAGO";
+    return '💳 **MEDIO DE PAGO**\n\n¿Cómo deseas pagar?\n\n• PARTICULAR - Pago directo\n• SEGURO - Con seguro médico';
+}
+
+// PASO 8: SOLICITAR MEDIO DE PAGO
+if (paso_actual === "SOLICITAR_MEDIO_PAGO") {
+    const respuesta = text.toUpperCase();
+    
+    if (respuesta.includes('PARTICULAR') || respuesta.includes('DIRECTO')) {
+        medio_pago = 'Particular';
+    } else if (respuesta.includes('SEGURO')) {
+        medio_pago = 'Seguro médico';
+    } else {
+        return '❌ Opción no reconocida.\n\nEscribe:\n• PARTICULAR - para pago directo\n• SEGURO - si tienes seguro médico';
+    }
+    
+    paso_actual = "SOLICITAR_SERVICIO";
+    return '🩺 **SERVICIO REQUERIDO**\n\n¿Qué servicio necesitas?\n\nEjemplos: Medicina General, Odontología, Laboratorio, Rayos X, etc.';
+}
+
+// PASO 9: SOLICITAR SERVICIO
+if (paso_actual === "SOLICITAR_SERVICIO") {
+    if (!text.trim()) {
+        return '❌ Por favor, describe el servicio que necesitas:';
+    }
+    
+    servicio = text.trim();
+    paso_actual = "SOLICITAR_FECHA_CITA";
+    return '📅 **FECHA DESEADA**\n\n¿Para qué fecha quieres la cita? (dd/mm/aaaa)\n\nTambién puedes escribir:\n• LO ANTES POSIBLE\n• ESTA SEMANA\n• PRÓXIMA SEMANA';
+}
+
+// PASO 10: SOLICITAR FECHA DE CITA
+if (paso_actual === "SOLICITAR_FECHA_CITA") {
+    if (!text.trim()) {
+        return '❌ Por favor, indica la fecha:';
+    }
+    
+    fecha_cita = text.trim();
+    paso_actual = "SOLICITAR_HORA_CITA";
+    return '⏰ **HORARIO PREFERIDO**\n\n¿Prefieres horario de mañana o tarde?\n\nEscribe:\n• MAÑANA\n• TARDE\n• CUALQUIERA';
+}
+
+// PASO 11: SOLICITAR HORA DE CITA
+if (paso_actual === "SOLICITAR_HORA_CITA") {
+    const respuesta = text.toUpperCase();
+    
+    if (respuesta.includes('MAÑANA') || respuesta.includes('MANANA')) {
+        hora_cita = 'Mañana';
+    } else if (respuesta.includes('TARDE')) {
+        hora_cita = 'Tarde';
+    } else if (respuesta.includes('CUALQUIERA')) {
+        hora_cita = 'Cualquiera';
+    } else {
+        return '❌ Opción no válida.\n\nEscribe:\n• MAÑANA\n• TARDE\n• CUALQUIERA';
+    }
+    
+    paso_actual = "SOLICITAR_MEMBRESIA";
+    return '⭐ **MEMBRESÍA UNISA**\n\n¿Te interesa conocer los beneficios de nuestra membresía?\n\nResponde SI o NO:';
+}
+
+// PASO 12: PREGUNTAR SOBRE MEMBRESÍA
+if (paso_actual === "SOLICITAR_MEMBRESIA") {
+    const respuesta = text.toUpperCase();
+    if (respuesta === 'SI' || respuesta === 'SÍ') {
+        membresia_interes = 'SI';
+    } else if (respuesta === 'NO') {
+        membresia_interes = 'NO';
+    } else {
+        return '❓ Por favor, responde SI o NO:\n\n¿Te interesa la membresía?';
+    }
+    
+    paso_actual = "SOLICITAR_FOTO_CEDULA";
+    return '📸 **FOTO DE CÉDULA**\n\n¿Deseas enviar una foto de tu cédula ahora?\n\nResponde SI o NO:\n(Si respondes SI, podrás enviar la imagen en el siguiente mensaje)';
+}
+
+// PASO 13: MANEJAR FOTO DE CÉDULA
+if (paso_actual === "SOLICITAR_FOTO_CEDULA") {
+    if (text.toUpperCase() === 'SI' || text.toUpperCase() === 'SÍ') {
+        paso_actual = "ESPERANDO_FOTO_CEDULA";
+        return '📷 Por favor, envía la foto de tu cédula ahora.\n\nAsegúrate de que sea clara y legible.';
+    } else if (text.toUpperCase() === 'NO') {
+        fotos_cedula = [];
+        paso_actual = "SOLICITAR_IMAGENES_ADICIONALES";
+        return '✅ Continuaremos sin foto de cédula.\n\n¿Tienes órdenes médicas, exámenes previos u otros documentos para compartir?\n\nResponde SI o NO:';
+    } else {
+        return '❓ Por favor, responde SI o NO.\n\n¿Deseas enviar una foto de tu cédula?';
+    }
+}
+
+// PASO 14: MANEJAR RECEPCIÓN DE FOTO DE CÉDULA
+if (paso_actual === "ESPERANDO_FOTO_CEDULA") {
+    // Verificar si es una imagen
+    if (current_image_url && current_image_url.startsWith('http')) {
+        fotos_cedula = [current_image_url];
+        paso_actual = "SOLICITAR_IMAGENES_ADICIONALES";
+        return '✅ Foto de cédula recibida correctamente.\n\n¿Tienes órdenes médicas, exámenes previos u otros documentos para compartir?\n\nResponde SI o NO:';
+    } else {
+        // Si no es una imagen, preguntar de nuevo
+        return '📷 Esperando la foto de tu cédula. Por favor, envíala ahora o escribe *CANCELAR* para continuar sin ella.';
+    }
+}
+
+// PASO 15: MANEJAR IMÁGENES ADICIONALES
+if (paso_actual === "SOLICITAR_IMAGENES_ADICIONALES") {
+    if (text.toUpperCase() === 'SI' || text.toUpperCase() === 'SÍ') {
+        paso_actual = "ESPERANDO_IMAGENES_ADICIONALES";
+        return '📎 Puedes enviar imágenes adicionales ahora.\n\nEnvía una por una. Cuando termines, escribe *LISTO*.';
+    } else if (text.toUpperCase() === 'NO') {
+        imagenes_adicionales = [];
+        paso_actual = "MOSTRAR_RESUMEN";
+    } else {
+        return '❓ Por favor, responde SI o NO.\n\n¿Tienes documentos adicionales para compartir?';
+    }
+}
+
+// PASO 16: MANEJAR RECEPCIÓN DE IMÁGENES ADICIONALES
+if (paso_actual === "ESPERANDO_IMAGENES_ADICIONALES") {
+    if (text.toUpperCase() === 'LISTO') {
+        paso_actual = "MOSTRAR_RESUMEN";
+    } else if (current_image_url && current_image_url.startsWith('http')) {
+        imagenes_adicionales.push(current_image_url);
+        return `✅ Imagen adicional recibida (${imagenes_adicionales.length} en total).\n\n¿Más imágenes o escribe *LISTO* para continuar?`;
+    } else {
+        return '📎 Envía otra imagen o escribe *LISTO* para continuar.';
+    }
+}
+
+// PASO 17: MOSTRAR RESUMEN Y CONFIRMAR
+if (paso_actual === "MOSTRAR_RESUMEN") {
+    paso_actual = "CONFIRMACION_FINAL";
+    
+    const resumen = `✅ **RESUMEN DE TU SOLICITUD DE CITA**\n\n` +
+        `👤 **DATOS PERSONALES**\n` +
+        `• Nombre: ${paciente.nombre_completo}\n` +
+        `• Cédula: ${paciente.cedula}\n` +
+        `• Teléfono: ${paciente.telefono}\n` +
+        `• Fecha nacimiento: ${paciente.fecha_nacimiento}\n` +
+        `• Paciente nuevo: ${paciente.paciente_nuevo}\n\n` +
+        `📅 **DATOS DE LA CITA**\n` +
+        `• Servicio: ${servicio}\n` +
+        `• Fecha deseada: ${fecha_cita}\n` +
+        `• Horario preferido: ${hora_cita}\n` +
+        `• Medio de pago: ${medio_pago}\n` +
+        `• Interés en membresía: ${membresia_interes}\n\n` +
+        `📎 **DOCUMENTACIÓN**\n` +
+        `• Foto de cédula: ${fotos_cedula.length > 0 ? '✅ Enviada' : '❌ No enviada'}\n` +
+        `• Documentos adicionales: ${imagenes_adicionales.length > 0 ? `✅ ${imagenes_adicionales.length} enviada(s)` : '❌ No enviados'}\n\n` +
+        `🔹 **Para confirmar y agendar escribe:** *CONFIRMAR*\n` +
+        `🔹 **Para cancelar escribe:** *CANCELAR*`;
+    
+    return resumen;
+}
+
+// PASO 18: CONFIRMACIÓN FINAL
+if (paso_actual === "CONFIRMACION_FINAL") {
+    if (text.toUpperCase() === 'CONFIRMAR') {
+        paso_actual = "CITA_CONFIRMADA";
+        
+        // Preparar datos para enviar
+        const datosParaEnviar = {
+            ...paciente,
+            medio_pago: medio_pago,
+            servicio: servicio,
+            fecha_preferida: fecha_cita,
+            hora_preferida: hora_cita,
+            membresia_interes: membresia_interes,
+            foto_cedula_url: fotos_cedula.length > 0 ? fotos_cedula[0] : '',
+            imagenes_adicionales: imagenes_adicionales.join(','),
+            plataforma: platform
+        };
+        
+        return {
+            tool: "capturar_lead_http",
+            parameters: datosParaEnviar,
+            message: "🔄 **PROCESANDO TU CITA**\n\nEstamos registrando tu información en el sistema..."
+        };
+    } else if (text.toUpperCase() === 'CANCELAR') {
+        paso_actual = "INICIO";
+        return '❌ **SOLICITUD CANCELADA**\n\nSi deseas agendar una cita en otro momento, escribe *agendar cita*.\n\n¡Gracias por contactar a UNISA!';
+    } else {
+        return '❓ Por favor, escribe *CONFIRMAR* para agendar o *CANCELAR* para cancelar.';
+    }
+}
+
+// PASO 19: CITA CONFIRMADA
+if (paso_actual === "CITA_CONFIRMADA") {
+    paso_actual = "INICIO";
+    return '🎉 **¡CITA AGENDADA CON ÉXITO!**\n\n✅ Tu solicitud ha sido registrada en nuestro sistema.\n📞 Un ejecutivo de UNISA se contactará contigo pronto para confirmar los detalles finales.\n\n¡Gracias por confiar en UNISA! ❤️';
+}
+
+// =====================================================
+// RESPUESTA POR DEFECTO
+// =====================================================
+
+return `¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.  
+Soy BOT UNISA, tu asistente virtual disponible las 24 horas.
+
+¿Qué necesitas hoy? Puedes escribirme directamente:  
+💲 Precios  
+🩺 Servicios que ofrecemos  
+📅 Agendar cita / laboratorio / estudios  
+💙 Tarjeta de la Salud o CREDIUNISA  
+❓ Otra consulta  
+
+¡Estoy aquí para ayudarte!`;
