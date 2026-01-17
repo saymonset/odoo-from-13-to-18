@@ -8,8 +8,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -1808,
-        80
+        -3104,
+        -80
       ],
       "id": "e1bffe23-730a-43a1-9cbf-e11e5d29ce8d",
       "name": "answer-chastwoot-whatsapp"
@@ -23,8 +23,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -992,
-        64
+        -2480,
+        -32
       ],
       "id": "4ad70f1a-c0f0-454d-8d59-934571db5afc",
       "name": "Audio_a_Texto_whatsapp",
@@ -37,7 +37,7 @@
     },
     {
       "parameters": {
-        "url": "={{ $json.data_url }}",
+        "url": "={{ $json.image_url }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBearerAuth",
         "sendHeaders": true,
@@ -51,8 +51,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1232,
-        64
+        -2656,
+        -32
       ],
       "id": "4154956a-02af-47a9-8e8e-98fc4ca1786c",
       "name": "Get File Data",
@@ -76,7 +76,7 @@
             {
               "id": "0f98afd1-e2e6-4c4d-9e9f-6e38c87694c6",
               "name": "session_id",
-              "value": "={{ $json.phone_number }}",
+              "value": "={{ $json.user_number }}",
               "type": "string"
             },
             {
@@ -100,7 +100,7 @@
             {
               "id": "c76e6bbf-22cf-4dd8-ae67-49c5801c5be1",
               "name": "user_name",
-              "value": "={{ $json.name }}",
+              "value": "={{ $json.user_name }}",
               "type": "string"
             },
             {
@@ -128,8 +128,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1216,
-        -64
+        -2272,
+        -272
       ],
       "id": "9353e675-639e-4d5f-8fce-7ba381954390",
       "name": "Obtener_Info_whatsapp"
@@ -181,8 +181,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        64
+        -848,
+        -48
       ],
       "id": "c7223b33-ec14-4edb-a6a1-b87f95b5617c",
       "name": "Preparar_Input_AI"
@@ -273,8 +273,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -1616,
-        80
+        -2896,
+        -48
       ],
       "id": "f0767731-6dee-4326-8e76-b21b7ad10897",
       "name": "Texto_o_Audio?"
@@ -326,8 +326,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1232,
-        192
+        -2240,
+        224
       ],
       "id": "3cd63d38-3416-4586-ac23-9fee33b1da63",
       "name": "Procesar_Imagen_whatsapp"
@@ -351,19 +351,19 @@
             {
               "id": "954d8f18-e7df-4531-90eb-584acf6d054c",
               "name": "session_id",
-              "value": "={{ $json.phone_number }}",
+              "value": "={{ $('Texto_o_Audio?').item.json.user_number }}",
               "type": "string"
             },
             {
               "id": "d905e1d7-dcf3-433f-b6f5-3f542b73c848",
               "name": "account_id",
-              "value": "={{ $json.account_id }}",
+              "value": "={{ $('Texto_o_Audio?').item.json.account_id }}",
               "type": "string"
             },
             {
               "id": "5f67b3ca-a17a-46bc-b22d-9c8ed16328d3",
               "name": "conversation_id",
-              "value": "={{ $json.conversation_id }}",
+              "value": "={{ $('Texto_o_Audio?').item.json.conversation_id }}",
               "type": "string"
             }
           ]
@@ -373,11 +373,221 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -816,
-        64
+        -2304,
+        -32
       ],
       "id": "42714dd6-f079-429a-9472-93a105426aaa",
       "name": "Extraer_Texto_Audio"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "text",
+        "key": "={{ $json.session_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1568,
+        -448
+      ],
+      "id": "dd3c945a-e0dd-44f8-adda-04eb4b698ac2",
+      "name": "Get_buffer_data",
+      "credentials": {
+        "redis": {
+          "id": "GsXqpDjFeodKzf4H",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "push",
+        "list": "={{ $json.session_id }}",
+        "messageData": "={{$json.text}}",
+        "tail": true
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        -448
+      ],
+      "id": "25ae956f-523b-4546-a7a7-deec760bba5d",
+      "name": "Buffer",
+      "credentials": {
+        "redis": {
+          "id": "GsXqpDjFeodKzf4H",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1712,
+        -448
+      ],
+      "id": "ce47cb3c-f925-481f-855e-2cdffa0c240f",
+      "name": "Wait",
+      "webhookId": "564db4dd-a6d5-4618-ba9a-d0bb8618e4b3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "06942dbe-1fd7-4bae-b8fb-97cec3b5ed14",
+              "leftValue": "={{ $json.text.last() }}",
+              "rightValue": "={{ $('Wait').item.json.text }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1328,
+        -448
+      ],
+      "id": "c8a86de8-34d1-4171-8236-c578ee526ddf",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        -320
+      ],
+      "id": "d23293eb-bc75-4744-b3fe-3d32d218626e",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2016,
+        -160
+      ],
+      "id": "7425a262-215e-4f84-b45f-a8851fad01b0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $('Buffer').item.json.session_id }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        -496
+      ],
+      "id": "cbc8a3d5-5058-43c5-bdad-41096f0a42b3",
+      "name": "Borrar_mensajes_buffer",
+      "credentials": {
+        "redis": {
+          "id": "GsXqpDjFeodKzf4H",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3024,
+        128
+      ],
+      "id": "19c8457b-22ac-41d5-81c2-ad654b10ca32",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "87d8bec9-6edd-4d7d-9c57-bb9ae6ff754f",
+              "name": "text",
+              "value": "={{ $('Get_buffer_data').item.json.text.map(item => Array.isArray(item) ? item.join('\\n') : item).join(',') }}",
+              "type": "string"
+            },
+            {
+              "id": "0ce2eaa6-9b19-45cf-823e-f2aab0c8af45",
+              "name": "session_id",
+              "value": "={{ $('answer-chastwoot-whatsapp').item.json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "100f120e-da0f-42b0-ad99-0300e8d82216",
+              "name": "account_id",
+              "value": "={{ $('answer-chastwoot-whatsapp').item.json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "bc8acf8d-31f1-461c-bbab-e45e4169c9b4",
+              "name": "conversation_id",
+              "value": "={{ $('answer-chastwoot-whatsapp').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "bd48bd51-341d-4292-adef-fc7c0316b54f",
+              "name": "message_type",
+              "value": "={{ $('answer-chastwoot-whatsapp').item.json.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "eae6bd01-42f3-409b-88c3-f100d02d8884",
+              "name": "user_name",
+              "value": "={{ $('answer-chastwoot-whatsapp').item.json.user_name }}",
+              "type": "string"
+            },
+            {
+              "id": "0ef35dab-5685-426b-ad56-9f523b228322",
+              "name": "user_number",
+              "value": "={{ $('answer-chastwoot-whatsapp').item.json.user_number }}",
+              "type": "string"
+            },
+            {
+              "id": "006894ab-1a68-4638-9704-d1a2f703b6f8",
+              "name": "image_url",
+              "value": "=",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1072,
+        -496
+      ],
+      "id": "7bdc7729-c6a6-4886-b4dd-45d530912be4",
+      "name": "Agrupar_texto_acumulado_resto_variables_enviar"
     }
   ],
   "pinData": {},
@@ -419,7 +629,7 @@
       "main": [
         [
           {
-            "node": "Preparar_Input_AI",
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -466,7 +676,101 @@
       "main": [
         [
           {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Preparar_Input_AI": {
+      "main": [
+        []
+      ]
+    },
+    "Buffer": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get_buffer_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_buffer_data": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Agrupar_texto_acumulado_resto_variables_enviar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Borrar_mensajes_buffer": {
+      "main": [
+        [
+          {
             "node": "Preparar_Input_AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "Agrupar_texto_acumulado_resto_variables_enviar": {
+      "main": [
+        [
+          {
+            "node": "Borrar_mensajes_buffer",
             "type": "main",
             "index": 0
           }
@@ -474,11 +778,11 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f5a39c68-e42f-4b7f-b1a8-a52d8a2da498",
+  "versionId": "6fbd5337-1c1b-4016-8a74-694611bcf28d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"

@@ -219,39 +219,59 @@ class ChatBotUtils:
 
     @staticmethod
     def get_team_unisa(env):
-        """Obtener o crear equipo de UNISA"""
-        # Buscar grupo "Grupo Citas"
-        team = env['crm.team'].search([
-            ('name', '=ilike', 'Grupo Citas')
-        ], limit=1)
+        """Obtener o crear equipos de UNISA (Grupo Citas y Grupo Ventas)"""
+        teams = {}
         
-        if not team:
-            # CREAR EL GRUPO AUTOMÁTICAMENTE
-            try:
-                team = env['crm.team'].create({
-                    'name': 'Grupo Citas',
-                    'active': True,
-                    'member_ids': False,  # Sin miembros por defecto
-                    'alias_name': 'citas-unisa',  # Opcional: alias para correos
-                })
-                _logger.info(f"✅ Equipo UNISA creado: {team.name} (ID: {team.id})")
-            except Exception as e:
-                _logger.error(f"❌ Error creando equipo UNISA: {str(e)}")
-                # Fallback: buscar cualquier equipo activo
-                team = env['crm.team'].search([('active', '=', True)], limit=1)
-                if team:
-                    _logger.warning(f"⚠️ Usando equipo existente como fallback: {team.name}")
-                else:
-                    # Crear equipo genérico si no hay ninguno
-                    team = env['crm.team'].create({
-                        'name': 'Equipo de Ventas',
+        # Nombres de los equipos a crear/buscar
+        team_names = ['Grupo Citas', 'Grupo Ventas']
+        
+        for team_name in team_names:
+            # Buscar el equipo por nombre
+            team = env['crm.team'].search([
+                ('name', '=', team_name)  # Cambié '=ilike' por '=' para búsqueda exacta
+            ], limit=1)
+            
+            if not team:
+                # CREAR EL EQUIPO AUTOMÁTICAMENTE
+                try:
+                    team_data = {
+                        'name': team_name,
                         'active': True,
-                    })
-                    _logger.warning(f"⚠️ Se creó equipo genérico: {team.name}")
-        else:
-            _logger.info(f"✅ Equipo UNISA encontrado: {team.name} (ID: {team.id})")
+                        'member_ids': False,  # Sin miembros por defecto
+                    }
+                    
+                    # Añadir alias específico para cada equipo
+                    if team_name == 'Grupo Citas':
+                        team_data['alias_name'] = 'citas-unisa'
+                    elif team_name == 'Grupo Ventas':
+                        team_data['alias_name'] = 'ventas-unisa'
+                    
+                    team = env['crm.team'].create(team_data)
+                    _logger.info(f"✅ Equipo UNISA creado: {team.name} (ID: {team.id})")
+                    
+                except Exception as e:
+                    _logger.error(f"❌ Error creando equipo {team_name}: {str(e)}")
+                    # Fallback: buscar cualquier equipo activo
+                    team = env['crm.team'].search([('active', '=', True)], limit=1)
+                    if team:
+                        _logger.warning(f"⚠️ Usando equipo existente como fallback: {team.name}")
+                    else:
+                        # Crear equipo genérico si no hay ninguno
+                        team = env['crm.team'].create({
+                            'name': team_name + ' (Fallback)',
+                            'active': True,
+                        })
+                        _logger.warning(f"⚠️ Se creó equipo genérico: {team.name}")
+            else:
+                _logger.info(f"✅ Equipo UNISA encontrado: {team.name} (ID: {team.id})")
+            
+            # Guardar referencia al equipo
+            teams[team_name] = team
         
-        return team
+        # Retornar ambos equipos como diccionario o específicamente el de Citas
+        # Dependiendo del uso original, mantengo el retorno del equipo de Citas
+        #return teams.get('Grupo Citas', env['crm.team'].search([], limit=1))
+        return teams
 
     @staticmethod
     def setup_utm(env, platform='whatsapp'):
@@ -375,7 +395,7 @@ class ChatBotUtils:
         description = ChatBotUtils.generate_description(data)
         
         # Nombre provisional
-        lead_name = f"Cita WhatsApp - {data.get('servicio_solicitado', 'Consulta')} - {data.get('nombre_completo', 'Sin nombre')}"
+        lead_name = f"{data.get('servicio_solicitado', 'Consulta')} - {data.get('nombre_completo', 'Sin nombre')}"
 
         
         lead_data = {

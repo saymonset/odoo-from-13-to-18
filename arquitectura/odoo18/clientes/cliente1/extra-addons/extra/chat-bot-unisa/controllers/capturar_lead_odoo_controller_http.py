@@ -3,6 +3,7 @@ from odoo.http import request, Response
 import json
 import logging
 import re
+from datetime import datetime
 
 from .chatbot_utils import ChatBotUtils  # Importar la clase de utilidades
 
@@ -113,6 +114,11 @@ class ChatBotController(http.Controller):
                 response_data = {
                     'existe': True,
                     'iniciales': self._get_iniciales(partner.name),
+                    'mensaje': f"✅ **INFORMACIÓN ENCONTRADA**\n\n"
+                         f"👤 **Datos del paciente:**\n"
+                         f"• Nombre: {partner.name}\n"
+                         f"• Cédula: {partner.vat or 'No registrada'}\n"
+                         f"• Teléfono: {partner.mobile or partner.phone}\n",
                     'ultima_cita': ultima_cita_str,
                     'cedula': partner.vat or '',
                     'nombre_completo': partner.name or '',
@@ -137,10 +143,15 @@ class ChatBotController(http.Controller):
             # 6. Si NO encontramos el cliente
             _logger.info("Cliente NO encontrado para teléfono: %s", telefono)
             
+            mensaje = "❌ **NO ENCONTRAMOS TU REGISTRO**\n\n"
+            mensaje += "No encontramos información con ese número de teléfono.\n\n"
+            mensaje += "📋 **Por favor, ingresa tu cédula (solo números):**\n\n"
+            mensaje += "Ejemplo: 12345678"
+            
             return Response(
                 json.dumps({
                     'existe': False,
-                    'mensaje': 'Cliente no encontrado',
+                    'mensaje': mensaje,
                     'telefono_buscado': telefono,
                     'sugerencia': 'Puede ser un nuevo cliente o el teléfono no está registrado'
                 }),
@@ -260,9 +271,17 @@ class ChatBotController(http.Controller):
             
             # 5. Configurar UTM y etiquetas
             plataforma = data.get('plataforma', 'whatsapp')
+            # Todo relacionado con la platforma que se creo
             medium, source, campaign = ChatBotUtils.setup_utm(env, plataforma)
+            # Si no existe la etiequeta, se crea.
             tag = ChatBotUtils.get_or_create_bot_tag(env, plataforma)
-            team = ChatBotUtils.get_team_unisa(env)
+            # Crea los grupos si no existen
+            teams = ChatBotUtils.get_team_unisa(env)
+            
+            # 6. OBTENER EQUIPO ASIGNADO (MODIFICACIÓN PRINCIPAL)
+            equipo_asignado = data.get('equipo_asignado', 'Grupo Citas')
+            
+            team = teams.get('Grupo Citas', env['crm.team'].search([], limit=1))
             
             # 6. Crear lead (cita)
             lead = ChatBotUtils.create_lead(env, data, partner, team, medium, source, campaign, tag)
@@ -281,7 +300,10 @@ class ChatBotController(http.Controller):
                 ChatBotUtils.handle_images(env, data, lead, partner)
                         
             # 9. Generar respuesta para el bot
-            respuesta_bot = ChatBotUtils.generate_response(data)
+            # Agrega el ID del lead a la respuesta
+            respuesta_bot = ChatBotUtils.generate_response(data) + f"\n\n📝 **Número de referencia:** {lead.id}"
+
+
             
             # 10. Retornar respuesta exitosa
             response_data = {
@@ -319,3 +341,5 @@ class ChatBotController(http.Controller):
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
+        
+    

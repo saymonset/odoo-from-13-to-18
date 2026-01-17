@@ -400,10 +400,23 @@ if (paso_actual === "CONFIRMACION_FINAL") {
     }
 }
 
+
+
 // PASO 19: CITA CONFIRMADA
 if (paso_actual === "CITA_CONFIRMADA") {
-    paso_actual = "INICIO";
-    return '🎉 **¡CITA AGENDADA CON ÉXITO!**\n\n✅ Tu solicitud ha sido registrada en nuestro sistema.\n📞 Un ejecutivo de UNISA se contactará contigo pronto para confirmar los detalles finales.\n\n¡Gracias por confiar en UNISA! ❤️';
+    // Verificar si tenemos respuesta del controlador
+    if ({{ $json.respuesta_para_bot }}) {
+        // Usar la respuesta del controlador que ahora incluye el ID
+        return {{ $json.respuesta_para_bot }};
+    } else if ({{ $json.lead_id }}) {
+        // Mostrar mensaje con el ID del lead
+        paso_actual = "INICIO";
+        return `🎉 **¡CITA AGENDADA CON ÉXITO!**\n\n✅ Tu solicitud ha sido registrada en nuestro sistema.\n📝 **Número de referencia:** {{ $json.lead_id }}\n📞 Un ejecutivo de UNISA se contactará contigo pronto para confirmar los detalles finales.\n\n¡Gracias por confiar en UNISA! ❤️`;
+    } else {
+        // Respuesta por defecto
+        paso_actual = "INICIO";
+        return '🎉 **¡CITA AGENDADA CON ÉXITO!**\n\n✅ Tu solicitud ha sido registrada en nuestro sistema.\n📞 Un ejecutivo de UNISA se contactará contigo pronto para confirmar los detalles finales.\n\n¡Gracias por confiar en UNISA! ❤️';
+    }
 }
 
 // =====================================================
