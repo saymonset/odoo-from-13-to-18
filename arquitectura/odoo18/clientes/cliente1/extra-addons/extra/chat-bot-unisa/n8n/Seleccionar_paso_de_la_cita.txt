@@ -1,0 +1,683 @@
+// =============================================
+// ROUTER COMPLETO PARA AGENDAMIENTO DE CITAS - UNISA
+// VERSIÓN COMPLETA CON TODOS LOS PASOS Y HERRAMIENTAS
+// =============================================
+
+try {
+   // =============================================
+  // TIMEOUT DE INACTIVIDAD
+  // =============================================
+  const TIEMPO_MAX_INACTIVIDAD_MS = 1 * 60 * 1000; // 5 minutos
+  
+  // =============================================
+  // 1. OBTENER DATOS DE ENTRADA
+  // =============================================
+  let datosEntrada = $json || {};
+  if (Array.isArray(datosEntrada)) {
+    datosEntrada = datosEntrada[0] || {};
+  }
+
+  const text = (datosEntrada.text || "").toString();
+  const textLower = text.toLowerCase().trim();
+  const session_id = datosEntrada.session_id || "";
+  const conversation_id = datosEntrada.conversation_id || "";
+  const account_id = datosEntrada.account_id || "";
+  const platform = datosEntrada.platform || "";
+  const image_url = datosEntrada.image_url || "";
+
+  // =============================================
+  // 2. PARSEAR ESTADO ANTERIOR
+  // =============================================
+  let estado_anterior = {};
+  if (datosEntrada.estado_actual) {
+    try {
+      estado_anterior =
+        typeof datosEntrada.estado_actual === "string"
+          ? JSON.parse(datosEntrada.estado_actual)
+          : datosEntrada.estado_actual;
+    } catch {
+      estado_anterior = {};
+    }
+  }
+
+  // =============================================
+  // FUNCIÓN DE INACTIVIDAD (ANTES DE USARSE)
+  // =============================================
+  function hayInactividad(timestampActividad) {
+    if (!timestampActividad) return false;
+    const ahora = Date.now();
+    const ultimoEvento = new Date(timestampActividad).getTime();
+    return ahora - ultimoEvento > TIEMPO_MAX_INACTIVIDAD_MS;
+  }
+
+  // =============================================
+  // 3. VARIABLES DE CONTROL
+  // =============================================
+  let contexto = "no_entendido";
+  let respuesta = "";
+  let modo = estado_anterior.modo || null;
+  let paso = estado_anterior.paso || "INICIO";
+
+  // Variables para herramientas
+  let usar_herramienta = false;
+  let herramienta_nombre = "";
+  let herramienta_parametros = {};
+
+  // =============================================
+  // 4. MERGE SEGURO DE DATOS_PACIENTE
+  // =============================================
+  let datos_paciente = {};
+
+  if (estado_anterior.datos_paciente) {
+    datos_paciente =
+      typeof estado_anterior.datos_paciente === "string"
+        ? JSON.parse(estado_anterior.datos_paciente)
+        : estado_anterior.datos_paciente;
+  }
+
+  datos_paciente = JSON.parse(JSON.stringify(datos_paciente));
+
+  // 🔴 MODIFICACIÓN CRÍTICA: TIMESTAMP DE ACTIVIDAD
+  let timestamp_actividad = estado_anterior.timestamp_actividad || null;
+
+  // =============================================
+  // 🔴 MODIFICACIÓN #1: FUNCIÓN PARA ACTUALIZAR TIMESTAMP
+  // =============================================
+  function actualizarTimestampActividad() {
+    timestamp_actividad = new Date().toISOString();
+  }
+
+  // =============================================
+  // 🔴 MODIFICACIÓN #2: VERIFICAR INACTIVIDAD PRIMERO
+  // =============================================
+  if (modo === "AGENDANDO_CITA" && hayInactividad(timestamp_actividad)) {
+    const estado_cancelado = {
+      modo: null,
+      paso: "INICIO",
+      datos_paciente: {},
+      timestamp: new Date().toISOString(),
+      timestamp_actividad: new Date().toISOString()
+    };
+
+    return [{
+      contexto: "cancelacion_inactividad",
+      estado_actual: JSON.stringify(estado_cancelado),
+      respuesta_directa:
+        "⏳ **Agendamiento cancelado por inactividad**\n\n" +
+        "No recibimos respuesta durante más de 5 minutos, por lo que tu solicitud de cita fue cancelada automáticamente.\n\n" +
+        "📝 Si deseas agendar una nueva cita, escribe *agendar cita*.\n\n" +
+        "Gracias por contactar a UNISA ❤️",
+      modo_actual: null,
+      paso_actual: "INICIO",
+      datos_paciente: {},
+      usar_herramienta: false
+    }];
+  }
+
+  // =============================================
+  // 🔴 MODIFICACIÓN #3: ACTUALIZAR TIMESTAMP EN TODAS LAS INTERACCIONES
+  // =============================================
+  if (modo === "AGENDANDO_CITA") {
+    actualizarTimestampActividad();
+  }
+
+  // =============================================
+  // 5. FUNCIONES AUXILIARES
+  // =============================================
+  const normalizarTelefono = tel => {
+    if (!tel) return null;
+    const limpio = tel.replace(/\D/g, "");
+    if (limpio.length === 10) return `+58${limpio}`;
+    if (limpio.startsWith("58")) return `+${limpio}`;
+    return null;
+  };
+
+  const validarCedula = c =>
+    /^\d{7,9}$/.test((c || "").replace(/\D/g, ""));
+
+  const validarFecha = f => {
+    const r = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    if (!r.test(f)) return false;
+    const [, d, m, y] = f.match(r);
+    return !isNaN(new Date(`${y}-${m}-${d}`));
+  };
+
+  const validarNombre = n =>
+    /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$/.test((n || "").trim());
+
+  // Función para generar resumen
+  function generarResumen() {
+    return `✅ **RESUMEN DE TU SOLICITUD DE CITA**\n\n` +
+      `👤 **DATOS PERSONALES**\n` +
+      `• Nombre: ${datos_paciente.nombre || "No proporcionado"}\n` +
+      `• Cédula: ${datos_paciente.cedula || "No proporcionada"}\n` +
+      `• Teléfono: ${datos_paciente.telefono || "No proporcionado"}\n` +
+      `• Fecha nacimiento: ${datos_paciente.fecha_nacimiento || "No proporcionada"}\n` +
+      `• Paciente nuevo: ${datos_paciente.paciente_nuevo || "No especificado"}\n\n` +
+      `📅 **DATOS DE LA CITA**\n` +
+      `• Servicio: ${datos_paciente.servicio || "No especificado"}\n` +
+      `• Fecha deseada: ${datos_paciente.fecha_cita || "No especificada"}\n` +
+      `• Horario preferido: ${datos_paciente.hora_cita || "No especificado"}\n` +
+      `• Medio de pago: ${datos_paciente.medio_pago || "No especificado"}\n` +
+      `• Interés en membresía: ${datos_paciente.membresia_interes || "No especificado"}\n\n` +
+      `📎 **DOCUMENTACIÓN**\n` +
+      `• Foto de cédula: ${datos_paciente.foto_cedula ? (datos_paciente.foto_cedula === "NO" ? "❌ No enviada" : (datos_paciente.foto_cedula === "CANCELADA" ? "❌ Cancelada" : "✅ Enviada")) : "❌ No enviada"}\n` +
+      `• Documentos adicionales: ${datos_paciente.imagenes_adicionales && datos_paciente.imagenes_adicionales.length > 0 ? `✅ ${datos_paciente.imagenes_adicionales.length} enviada(s)` : '❌ No enviados'}\n\n` +
+      `🔹 **Para confirmar y agendar escribe:** *CONFIRMAR*\n` +
+      `🔹 **Para modificar algún dato escribe:** *MODIFICAR*\n` +
+      `🔹 **Para cancelar escribe:** *CANCELAR*`;
+  }
+
+  // =============================================
+  // 6. CANCELAR GLOBAL
+  // =============================================
+  if (textLower === "cancelar") {
+    const estado_cancelado = {
+      modo: null,
+      paso: null,
+      datos_paciente: {},
+      timestamp: new Date().toISOString(),
+      timestamp_actividad: new Date().toISOString()
+    };
+
+    return [{
+      contexto: "cancelacion",
+      estado_actual: JSON.stringify(estado_cancelado),
+      respuesta_directa:
+        "❌ Agendamiento cancelado.\n\nEscribe *agendar cita* para comenzar nuevamente.",
+      modo_actual: null,
+      paso_actual: "INICIO",
+      datos_paciente: {},
+      user_message: text,
+      session_id,
+      conversation_id,
+      account_id,
+      platform,
+      usar_herramienta: false,
+      herramienta_nombre: "",
+      herramienta_parametros: "{}"
+    }];
+  }
+
+  // =============================================
+  // 7. INICIAR AGENDAMIENTO
+  // =============================================
+  const palabrasClave = ["agendar", "cita", "reservar", "necesito cita"];
+  const iniciar = palabrasClave.some(p => textLower === p || textLower.startsWith(p));
+
+  if (iniciar && modo !== "AGENDANDO_CITA") {
+    contexto = "iniciar_agendamiento";
+    modo = "AGENDANDO_CITA";
+    paso = "SOLICITAR_TELEFONO";
+    actualizarTimestampActividad(); // 🔴 Actualizar timestamp al iniciar
+    respuesta =
+      "📅 *Agendar Cita*\n\n" +
+      "Para comenzar, indícanos tu número de teléfono.\n\n" +
+      "Ejemplo: +584141234567\n\n" +
+      "🔹 Escribe *CANCELAR* para salir";
+  }
+
+  // =============================================
+  // 8. FLUJO AGENDAMIENTO COMPLETO
+  // =============================================
+  else if (modo === "AGENDANDO_CITA") {
+    contexto = "continuar_agendamiento";
+    const tel = normalizarTelefono(text);
+    const esTelefonoValido = tel && paso !== "SOLICITAR_TELEFONO";
+
+    // PASO: SOLICITAR_TELEFONO
+    if (paso === "SOLICITAR_TELEFONO") {
+      if (tel) {
+        datos_paciente.telefono = tel;
+        paso = "SOLICITAR_NOMBRE";
+        respuesta =
+          `✅ Teléfono registrado: ${tel}\n\n` +
+          "📋 Indícanos tu nombre completo:\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else {
+        respuesta = "📞 Formato inválido. Ejemplo: +584141234567\n\n🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: SOLICITAR_NOMBRE
+    else if (paso === "SOLICITAR_NOMBRE") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta =
+          `✅ Teléfono actualizado: ${tel}\n\n` +
+          "📋 Indícanos tu nombre completo:\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else if (validarNombre(text)) {
+        datos_paciente.nombre = text.trim();
+        paso = "SOLICITAR_CEDULA";
+        respuesta =
+          `✅ Nombre registrado: ${datos_paciente.nombre}\n\n` +
+          "🆔 Indica tu número de cédula:\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else {
+        respuesta = "📋 Escribe tu nombre completo (solo letras).\n\n🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: SOLICITAR_CEDULA
+    else if (paso === "SOLICITAR_CEDULA") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta =
+          `✅ Teléfono actualizado: ${tel}\n\n` +
+          "🆔 Indica tu número de cédula (7-9 dígitos):\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else if (validarCedula(text)) {
+        datos_paciente.cedula = text.replace(/\D/g, "");
+        paso = "SOLICITAR_FECHA_NACIMIENTO";
+        respuesta =
+          `✅ Cédula registrada: ${datos_paciente.cedula}\n\n` +
+          "🎂 Fecha de nacimiento (dd/mm/aaaa):\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else {
+        respuesta = "🆔 Cédula inválida. Solo números (7–9 dígitos).\n\n🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: SOLICITAR_FECHA_NACIMIENTO
+    else if (paso === "SOLICITAR_FECHA_NACIMIENTO") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta =
+          `✅ Teléfono actualizado: ${tel}\n\n` +
+          "🎂 Fecha de nacimiento (dd/mm/aaaa):\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else if (validarFecha(text)) {
+        datos_paciente.fecha_nacimiento = text;
+        paso = "SOLICITAR_PACIENTE_NUEVO";
+        respuesta = "🏥 ¿Es tu primera vez en UNISA? (SI / NO)\n\n🔹 Escribe *CANCELAR* para salir";
+      } else {
+        respuesta = "🎂 Formato inválido. Ejemplo: 15/05/1990\n\n🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: SOLICITAR_PACIENTE_NUEVO
+    else if (paso === "SOLICITAR_PACIENTE_NUEVO") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta =
+          `✅ Teléfono actualizado: ${tel}\n\n` +
+          "🏥 ¿Es tu primera vez en UNISA? (SI / NO)\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else if (["si", "sí", "no"].includes(textLower)) {
+        datos_paciente.paciente_nuevo = textLower.startsWith("s") ? "SI" : "NO";
+        paso = "SOLICITAR_MEDIO_PAGO";
+        respuesta =
+          "💳 Indica tu medio de pago:\n\n" +
+          "• PARTICULAR\n" +
+          "• SEGURO\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else {
+        respuesta = "Responde SI o NO.\n\n🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: SOLICITAR_MEDIO_PAGO
+    else if (paso === "SOLICITAR_MEDIO_PAGO") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta =
+          `✅ Teléfono actualizado: ${tel}\n\n` +
+          "💳 Indica tu medio de pago:\n" +
+          "• PARTICULAR\n" +
+          "• SEGURO\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else if (textLower.includes("particular")) {
+        datos_paciente.medio_pago = "Particular";
+        paso = "SOLICITAR_SERVICIO";
+        respuesta = 
+          "🩺 ¿Qué servicio necesitas?\n" +
+          "Por favor, escribe el nombre del servicio que necesitas.\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else if (textLower.includes("seguro")) {
+        datos_paciente.medio_pago = "Seguro";
+        paso = "SOLICITAR_SERVICIO";
+        respuesta = 
+          "🩺 ¿Qué servicio necesitas?\n" +
+          "Por favor, escribe el nombre del servicio que necesitas.\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else {
+        respuesta = "💳 Escribe PARTICULAR o SEGURO.\n\n🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: SOLICITAR_SERVICIO
+    else if (paso === "SOLICITAR_SERVICIO") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+         respuesta = 
+          "🩺 ¿Qué servicio necesitas?\n" +
+          "Por favor, escribe el nombre del servicio que necesitas.\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else if (text.trim().length > 0) {
+        datos_paciente.servicio = text;
+        paso = "SOLICITAR_FECHA_CITA";
+        // ❌ SE ELIMINÓ: avanzarPaso("SOLICITAR_FECHA_CITA");
+        respuesta =
+          `✅ Servicio registrado: ${datos_paciente.servicio}\n\n` +
+          "📅 ¿Para qué fecha quieres la cita? (dd/mm/aaaa)\n\n" +
+          "También puedes escribir:\n" +
+          "• LO ANTES POSIBLE\n" +
+          "• ESTA SEMANA\n" +
+          "• PRÓXIMA SEMANA\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else {
+       respuesta = 
+          "🩺 ¿Qué servicio necesitas?\n" +
+          "Por favor, escribe el nombre del servicio que necesitas.\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: SOLICITAR_FECHA_CITA
+    else if (paso === "SOLICITAR_FECHA_CITA") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta =
+          `✅ Teléfono actualizado: ${tel}\n\n` +
+          "📅 ¿Para qué fecha quieres la cita? (dd/mm/aaaa)\n\n" +
+          "También puedes escribir:\n" +
+          "• LO ANTES POSIBLE\n" +
+          "• ESTA SEMANA\n" +
+          "• PRÓXIMA SEMANA\n\n" +
+          "🔹 Escribe *CANCELAR* para salir";
+      } else {
+        const fechaEspecial = textLower.includes("lo antes posible") || 
+                             textLower.includes("esta semana") || 
+                             textLower.includes("próxima semana") || 
+                             textLower.includes("proxima semana");
+        
+        if (fechaEspecial || validarFecha(text)) {
+          datos_paciente.fecha_cita = text.trim();
+          paso = "SOLICITAR_HORA_CITA";
+          // ❌ SE ELIMINÓ: avanzarPaso("SOLICITAR_HORA_CITA");
+          respuesta = `✅ Fecha de cita registrada: ${datos_paciente.fecha_cita}\n\n⏰ ¿Prefieres horario de mañana o tarde?\n\nEscribe:\n• MAÑANA\n• TARDE\n• CUALQUIERA\n\n🔹 Escribe *CANCELAR* para salir`;
+        } else {
+          respuesta = "📅 Por favor, indica la fecha en formato dd/mm/aaaa o escribe una opción como:\n• LO ANTES POSIBLE\n• ESTA SEMANA\n• PRÓXIMA SEMANA\n\n🔹 Escribe *CANCELAR* para salir";
+        }
+      }
+    }
+
+    // PASO: SOLICITAR_HORA_CITA
+    else if (paso === "SOLICITAR_HORA_CITA") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = `✅ Teléfono actualizado: ${tel}\n\n⏰ ¿Prefieres horario de mañana o tarde?\n\nEscribe:\n• MAÑANA\n• TARDE\n• CUALQUIERA\n\n🔹 Escribe *CANCELAR* para salir`;
+      } else {
+        const opcionesHora = {
+          "mañana": "Mañana",
+          "manana": "Mañana",
+          "tarde": "Tarde",
+          "cualquiera": "Cualquiera"
+        };
+        
+        const horaSeleccionada = opcionesHora[textLower];
+        
+        if (horaSeleccionada) {
+          datos_paciente.hora_cita = horaSeleccionada;
+          paso = "SOLICITAR_MEMBRESIA";
+          // ❌ SE ELIMINÓ: avanzarPaso("SOLICITAR_MEMBRESIA");
+          respuesta = `✅ Horario registrado: ${datos_paciente.hora_cita}\n\n⭐ ¿Te interesa conocer los beneficios de nuestra membresía UNISA?\n\nResponde SI o NO:\n\n🔹 Escribe *CANCELAR* para salir`;
+        } else {
+          respuesta = "⏰ Opción no válida. Escribe:\n• MAÑANA\n• TARDE\n• CUALQUIERA\n\n🔹 Escribe *CANCELAR* para salir";
+        }
+      }
+    }
+
+    // PASO: SOLICITAR_MEMBRESIA
+    else if (paso === "SOLICITAR_MEMBRESIA") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = `✅ Teléfono actualizado: ${tel}\n\n⭐ ¿Te interesa conocer los beneficios de nuestra membresía UNISA?\n\nResponde SI o NO:\n\n🔹 Escribe *CANCELAR* para salir`;
+      } else {
+        const respuestaSI = textLower === "si" || textLower === "sí";
+        const respuestaNO = textLower === "no";
+        
+        if (respuestaSI) {
+          datos_paciente.membresia_interes = "SI";
+          paso = "SOLICITAR_FOTO_CEDULA";
+          // ❌ SE ELIMINÓ: avanzarPaso("SOLICITAR_FOTO_CEDULA");
+          respuesta = `✅ Nos contactaremos contigo sobre la membresía\n\n📸 ¿Deseas enviar una foto de tu cédula ahora?\n\nResponde SI o NO:\n(Si respondes SI, podrás enviar la imagen en el siguiente mensaje)\n\n🔹 Escribe *CANCELAR* para salir`;
+        } else if (respuestaNO) {
+          datos_paciente.membresia_interes = "NO";
+          paso = "SOLICITAR_FOTO_CEDULA";
+          respuesta = `✅ Continuaremos sin información de membresía\n\n📸 ¿Deseas enviar una foto de tu cédula ahora?\n\nResponde SI o NO:\n(Si respondes SI, podrás enviar la imagen en el siguiente mensaje)\n\n🔹 Escribe *CANCELAR* para salir`;
+        } else {
+          respuesta = "⭐ Por favor, responde SI o NO:\n\n¿Te interesa conocer los beneficios de la membresía?\n\n🔹 Escribe *CANCELAR* para salir";
+        }
+      }
+    }
+
+    // PASO: SOLICITAR_FOTO_CEDULA
+    else if (paso === "SOLICITAR_FOTO_CEDULA") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = `✅ Teléfono actualizado: ${tel}\n\n📸 ¿Deseas enviar una foto de tu cédula ahora?\n\nResponde SI o NO:\n(Si respondes SI, podrás enviar la imagen en el siguiente mensaje)\n\n🔹 Escribe *CANCELAR* para salir`;
+      } else {
+        const respuestaSI = textLower === "si" || textLower === "sí";
+        const respuestaNO = textLower === "no";
+        
+        if (respuestaSI) {
+          paso = "ESPERANDO_FOTO_CEDULA";
+          respuesta = "📷 Por favor, envía la foto de tu cédula ahora.\n\nAsegúrate de que sea clara y legible.\n\n🔹 Escribe *CANCELAR* para continuar sin foto de cédula";
+        } else if (respuestaNO) {
+          datos_paciente.foto_cedula = "NO";
+          paso = "SOLICITAR_IMAGENES_ADICIONALES";
+          // ❌ SE ELIMINÓ: avanzarPaso("SOLICITAR_IMAGENES_ADICIONALES");
+          respuesta = "✅ Continuaremos sin foto de cédula.\n\n¿Tienes órdenes médicas, exámenes previos u otros documentos para compartir?\n\nResponde SI o NO:\n\n🔹 Escribe *CANCELAR* para salir";
+        } else {
+          respuesta = "📸 Por favor, responde SI o NO.\n\n¿Deseas enviar una foto de tu cédula?\n\n🔹 Escribe *CANCELAR* para salir";
+        }
+      }
+    }
+
+    // PASO: ESPERANDO_FOTO_CEDULA
+    else if (paso === "ESPERANDO_FOTO_CEDULA") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = "📷 Por favor, envía la foto de tu cédula ahora.\n\nAsegúrate de que sea clara y legible.\n\n🔹 Escribe *CANCELAR* para continuar sin foto de cédula";
+      } else if (image_url && image_url.startsWith("http")) {
+        datos_paciente.foto_cedula = image_url;
+        paso = "SOLICITAR_IMAGENES_ADICIONALES";
+        // ❌ SE ELIMINÓ: avanzarPaso("SOLICITAR_IMAGENES_ADICIONALES");
+        respuesta = "✅ Foto de cédula recibida correctamente.\n\n¿Tienes órdenes médicas, exámenes previos u otros documentos para compartir?\n\nResponde SI o NO:\n\n🔹 Escribe *CANCELAR* para salir";
+      } else if (textLower === "cancelar") {
+        datos_paciente.foto_cedula = "CANCELADA";
+        paso = "SOLICITAR_IMAGENES_ADICIONALES";
+        // ❌ SE ELIMINÓ: avanzarPaso("SOLICITAR_IMAGENES_ADICIONALES");
+        respuesta = "✅ Continuaremos sin foto de cédula.\n\n¿Tienes órdenes médicas, exámenes previos u otros documentos para compartir?\n\nResponde SI o NO:\n\n🔹 Escribe *CANCELAR* para salir";
+      } else {
+        respuesta = "📷 Esperando la foto de tu cédula. Por favor, envíala ahora o escribe *CANCELAR* para continuar sin ella.";
+      }
+    }
+
+    // PASO: SOLICITAR_IMAGENES_ADICIONALES
+    else if (paso === "SOLICITAR_IMAGENES_ADICIONALES") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = "¿Tienes órdenes médicas, exámenes previos u otros documentos para compartir?\n\nResponde SI o NO:\n\n🔹 Escribe *CANCELAR* para salir";
+      } else {
+        const respuestaSI = textLower === "si" || textLower === "sí";
+        const respuestaNO = textLower === "no";
+        
+        if (respuestaSI) {
+          paso = "ESPERANDO_IMAGENES_ADICIONALES";
+          // ❌ SE ELIMINÓ: avanzarPaso("ESPERANDO_IMAGENES_ADICIONALES");
+          respuesta = "📎 Puedes enviar imágenes adicionales ahora.\n\nEnvía una por una. Cuando termines, escribe *LISTO*.\n\n🔹 Escribe *CANCELAR* para salir";
+        } else if (respuestaNO) {
+          datos_paciente.imagenes_adicionales = [];
+          paso = "CONFIRMACION_FINAL";
+          // ❌ SE ELIMINÓ: avanzarPaso("CONFIRMACION_FINAL");
+          respuesta = generarResumen();
+        } else {
+          respuesta = "📎 Por favor, responde SI o NO.\n\n¿Tienes documentos adicionales para compartir?\n\n🔹 Escribe *CANCELAR* para salir";
+        }
+      }
+    }
+
+    // PASO: ESPERANDO_IMAGENES_ADICIONALES
+    else if (paso === "ESPERANDO_IMAGENES_ADICIONALES") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = "📎 Puedes enviar imágenes adicionales ahora.\n\nEnvía una por una. Cuando termines, escribe *LISTO*.\n\n🔹 Escribe *CANCELAR* para salir";
+      } else if (textLower === "listo") {
+        paso = "CONFIRMACION_FINAL";
+        // ❌ SE ELIMINÓ: avanzarPaso("CONFIRMACION_FINAL");
+        respuesta = generarResumen();
+      } else if (image_url && image_url.startsWith("http")) {
+        if (!Array.isArray(datos_paciente.imagenes_adicionales)) {
+          datos_paciente.imagenes_adicionales = [];
+        }
+        datos_paciente.imagenes_adicionales.push(image_url);
+        const total = datos_paciente.imagenes_adicionales.length;
+        respuesta = `✅ Imagen adicional recibida (${total} en total).\n\n¿Más imágenes o escribe *LISTO* para continuar?\n\n🔹 Escribe *CANCELAR* para salir`;
+      } else {
+        respuesta = "📎 Envía otra imagen o escribe *LISTO* para continuar.\n\n🔹 Escribe *CANCELAR* para salir";
+      }
+    }
+
+    // PASO: CONFIRMACION_FINAL
+    else if (paso === "CONFIRMACION_FINAL") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = generarResumen();
+      } else if (textLower === "confirmar") {
+        contexto = "confirmacion_exitosa";
+        
+        // Preparar datos para enviar (como en el código viejo)
+        const datosParaEnviar = {
+          ...datos_paciente,
+          medio_pago: datos_paciente.medio_pago,
+          servicio: datos_paciente.servicio,
+          fecha_preferida: datos_paciente.fecha_cita,
+          hora_preferida: datos_paciente.hora_cita,
+          membresia_interes: datos_paciente.membresia_interes,
+          foto_cedula_url: datos_paciente.foto_cedula || '',
+          imagenes_adicionales: Array.isArray(datos_paciente.imagenes_adicionales) 
+            ? datos_paciente.imagenes_adicionales.join(',') 
+            : '',
+          plataforma: platform,
+          session_id: session_id
+        };
+        
+        // Configurar para usar herramienta de captura de lead
+        usar_herramienta = true;
+        herramienta_nombre = "capturar_lead_http";
+        herramienta_parametros = datosParaEnviar;
+        respuesta = "🔄 **PROCESANDO TU CITA**\n\nEstamos registrando tu información en el sistema...";
+        
+        // Cambiar paso a CITA_CONFIRMADA para el mensaje final
+        paso = "CITA_CONFIRMADA";
+      } else if (textLower === "modificar") {
+        paso = "MODIFICAR_DATOS";
+        respuesta = "¿Qué dato deseas modificar?\n\nEscribe el número correspondiente:\n1. Nombre\n2. Cédula\n3. Teléfono\n4. Fecha nacimiento\n5. Servicio\n6. Fecha cita\n7. Hora cita\n8. Cancelar modificación\n\n🔹 Escribe *CANCELAR* (sin número) para cancelar el agendamiento de la cita";
+      } else if (textLower === "cancelar") {
+        contexto = "cancelacion";
+        respuesta = "❌ **SOLICITUD CANCELADA**\n\nSi deseas agendar una cita en otro momento, escribe *agendar cita*.\n\n¡Gracias por contactar a UNISA!";
+        modo = null;
+        paso = "INICIO";
+        datos_paciente = {};
+      } else {
+        respuesta = generarResumen();
+      }
+    }
+
+    // PASO: CITA_CONFIRMADA (nuevo paso para mensaje final)
+    else if (paso === "CITA_CONFIRMADA") {
+      contexto = "cita_confirmada_final";
+      respuesta = "🎉 **¡CITA AGENDADA CON ÉXITO!**\n\n✅ Tu solicitud ha sido registrada en nuestro sistema.\n📞 Un ejecutivo de UNISA se contactará contigo pronto para confirmar los detalles finales.\n\n¡Gracias por confiar en UNISA! ❤️";
+      
+      // Resetear para nueva conversación
+      modo = null;
+      paso = "INICIO";
+      datos_paciente = {};
+    }
+
+    // PASO: MODIFICAR_DATOS
+    else if (paso === "MODIFICAR_DATOS") {
+      if (esTelefonoValido) {
+        datos_paciente.telefono = tel;
+        respuesta = "¿Qué dato deseas modificar?\n\nEscribe el número correspondiente:\n1. Nombre\n2. Cédula\n3. Teléfono\n4. Fecha nacimiento\n5. Servicio\n6. Fecha cita\n7. Hora cita\n8. Cancelar modificación\n\n🔹 Escribe *CANCELAR* (sin número) para cancelar el agendamiento de la cita";
+      } else {
+        const opciones = {
+          "1": { campo: "nombre", nuevo_paso: "SOLICITAR_NOMBRE", mensaje: "Escribe tu nuevo nombre completo:\n\n🔹 Escribe *CANCELAR* para salir" },
+          "2": { campo: "cedula", nuevo_paso: "SOLICITAR_CEDULA", mensaje: "Escribe tu nueva cédula (solo números):\n\n🔹 Escribe *CANCELAR* para salir" },
+          "3": { campo: "telefono", nuevo_paso: "SOLICITAR_TELEFONO", mensaje: "Escribe tu nuevo teléfono (ej: +584141234567):\n\n🔹 Escribe *CANCELAR* para salir" },
+          "4": { campo: "fecha_nacimiento", nuevo_paso: "SOLICITAR_FECHA_NACIMIENTO", mensaje: "Escribe tu nueva fecha de nacimiento (dd/mm/aaaa):\n\n🔹 Escribe *CANCELAR* para salir" },
+          "5": { campo: "servicio", nuevo_paso: "SOLICITAR_SERVICIO", mensaje: "Escribe el nuevo servicio que necesitas:\n\n🔹 Escribe *CANCELAR* para salir" },
+          "6": { campo: "fecha_cita", nuevo_paso: "SOLICITAR_FECHA_CITA", mensaje: "Escribe la nueva fecha deseada (dd/mm/aaaa):\n\n🔹 Escribe *CANCELAR* para salir" },
+          "7": { campo: "hora_cita", nuevo_paso: "SOLICITAR_HORA_CITA", mensaje: "Escribe el nuevo horario (MAÑANA/TARDE/CUALQUIERA):\n\n🔹 Escribe *CANCELAR* para salir" },
+          "8": { campo: "cancelar", nuevo_paso: "CONFIRMACION_FINAL", mensaje: "Modificación cancelada." }
+        };
+        
+        const seleccion = text.trim();
+        
+        if (opciones[seleccion]) {
+          if (seleccion === "8") {
+            paso = opciones[seleccion].nuevo_paso;
+            respuesta = generarResumen();
+          } else {
+            delete datos_paciente[opciones[seleccion].campo];
+            paso = opciones[seleccion].nuevo_paso;
+            respuesta = opciones[seleccion].mensaje;
+          }
+        } else {
+          respuesta = "Opción no válida. Por favor, elige un número del 1 al 8.\n\n🔹 Escribe *CANCELAR* (sin número) para cancelar el agendamiento de la cita";
+        }
+      }
+    }
+  }
+
+  // =============================================
+  // 9. SALIDA FINAL
+  // =============================================
+  const estado_nuevo = {
+    modo,
+    paso,
+    datos_paciente,
+    timestamp: new Date().toISOString(),
+    timestamp_actividad // 🔴 Esto ahora se actualiza en TODAS las interacciones
+  };
+
+  return [{
+    contexto,
+    estado_actual: JSON.stringify(estado_nuevo),
+    user_message: text,
+    session_id,
+    conversation_id,
+    account_id,
+    platform,
+    modo_actual: modo,
+    paso_actual: paso,
+    respuesta_directa: respuesta,
+    datos_paciente,
+    has_image: Boolean(image_url && image_url.startsWith("http")),
+    image_url,
+    // Campos para herramientas
+    usar_herramienta,
+    herramienta_nombre,
+    herramienta_parametros: herramienta_parametros
+  }];
+
+} catch (error) {
+  console.error("ERROR en router:", error);
+  return [{
+    contexto: "error",
+    estado_actual: JSON.stringify({
+      modo: null,
+      paso: "INICIO",
+      datos_paciente: {},
+      timestamp: new Date().toISOString(),
+      timestamp_actividad: new Date().toISOString()
+    }),
+    respuesta_directa: "⚠️ Error técnico. Intenta nuevamente.",
+    usar_herramienta: false,
+    herramienta_nombre: "",
+    herramienta_parametros: "{}"
+  }];
+}

@@ -1,0 +1,339 @@
+// =============================================
+// ROUTER SIMPLIFICADO - SOLO MENÚ CON ESTADO
+// UNISA (n8n)
+// =============================================
+
+try {
+  const datosEntrada = $json || {};
+  const text = (datosEntrada.text || "").toString();
+
+  // Normalización más completa
+  const textLower = text
+    .toLowerCase()
+    .trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Elimina acentos
+    .replace(/[^\w\s]/gi, " ") // Reemplaza caracteres especiales por espacio
+    .replace(/\s+/g, " "); // Unifica espacios múltiples
+
+  const session_id = datosEntrada.session_id || "";
+  const image_url = datosEntrada.image_url || "";
+  
+  // OBTENER ESTADO ANTERIOR
+  let estado_anterior = {};
+  if (datosEntrada.estado_actual) {
+    if (typeof datosEntrada.estado_actual === 'string') {
+      try {
+        estado_anterior = JSON.parse(datosEntrada.estado_actual);
+      } catch (e) {
+        console.error("Error parseando estado_actual:", e);
+      }
+    } else {
+      estado_anterior = datosEntrada.estado_actual;
+    }
+  }
+
+  // VARIABLES DE CONTROL
+  let contexto = "no_entendido";
+  let respuesta = "";
+  let modo = estado_anterior.modo || "MENU_PRINCIPAL";
+  let paso = estado_anterior.paso || "INICIO";
+  
+  // Datos del paciente
+  let datos_paciente = estado_anterior.datos_paciente || {};
+  
+  // Inicializar campos de seguimiento
+  if (!datos_paciente.equipo_asignado) {
+    datos_paciente.equipo_asignado = null;
+  }
+  if (!datos_paciente.requiere_seguimiento) {
+    datos_paciente.requiere_seguimiento = false;
+  }
+
+  // ================= FUNCIÓN DE BÚSQUEDA FLEXIBLE =================
+  const contienePalabra = (texto, palabras) => {
+    const palabrasArray = palabras.split(",").map(p => p.trim());
+    return palabrasArray.some(palabra => 
+      texto.includes(palabra) || 
+      new RegExp(`\\b${palabra}\\b`).test(texto)
+    );
+  };
+
+  // ================= DETECCIÓN DE SÍ/NO =================
+  const esAfirmativo = (texto) => {
+    const afirmaciones = ["si", "sí", "s", "yes", "ye", "y", "claro", "por supuesto", "ok", "vale", "de acuerdo", "confirmo"];
+    return afirmaciones.some(af => texto === af || new RegExp(`\\b${af}\\b`).test(texto));
+  };
+
+  const esNegativo = (texto) => {
+    const negaciones = ["no", "n", "negativo", "cancelar", "ahora no", "mas tarde", "despues"];
+    return negaciones.some(neg => texto === neg || new RegExp(`\\b${neg}\\b`).test(texto));
+  };
+
+  // ================= LÓGICA SIMPLIFICADA DE ESTADO =================
+  
+  // 1. SI ESTAMOS EN UN PASO QUE ESPERA RESPUESTA SÍ/NO
+  if ((paso === "MOSTRANDO_PRECIOS" || paso === "MOSTRANDO_SERVICIOS" || paso === "MOSTRANDO_TARJETAS" || paso === "MOSTRANDO_OTRA_CONSULTA") && 
+      (esAfirmativo(textLower) || esNegativo(textLower))) {
+    
+    // Si dice SÍ en precios
+    if (esAfirmativo(textLower) && paso === "MOSTRANDO_PRECIOS") {
+      contexto = "derivar_agendamiento";
+      datos_paciente.equipo_asignado = "Agendamiento_Precios";
+      datos_paciente.requiere_seguimiento = true;
+      modo = "AGENDANDO_CITA";
+      paso = "SOLICITAR_TELEFONO";
+      respuesta = "📅 **Perfecto, vamos a agendar tu cita médica.**\n\n" +
+                  "Te acompañaré paso a paso para registrar tu solicitud. " +
+                  "He asignado tu caso al equipo de **Agendamiento**." +
+                  "\n\nPor favor, proporciona tu número de teléfono en formato internacional (ejemplo: +584141234567).";
+    }
+    // Si dice SÍ en servicios
+    else if (esAfirmativo(textLower) && paso === "MOSTRANDO_SERVICIOS") {
+      contexto = "derivar_agendamiento";
+      datos_paciente.equipo_asignado = "Agendamiento_Servicios";
+      datos_paciente.requiere_seguimiento = true;
+      modo = "AGENDANDO_CITA";
+      paso = "SOLICITAR_TELEFONO";
+      respuesta = "📅 **Perfecto, vamos a agendar tu cita médica.**\n\n" +
+                  "Te acompañaré paso a paso para registrar tu solicitud. " +
+                  "He asignado tu caso al equipo de **Agendamiento**." +
+                  "\n\nPor favor, proporciona tu número de teléfono en formato internacional (ejemplo: +584141234567).";
+    }
+    // Si dice SÍ en tarjetas - AHORA COMPORTAMIENTO IGUAL QUE PRECIOS Y SERVICIOS
+    else if (esAfirmativo(textLower) && paso === "MOSTRANDO_TARJETAS") {
+      contexto = "derivar_agendamiento";
+      datos_paciente.equipo_asignado = "Agendamiento_Tarjeta";
+      datos_paciente.requiere_seguimiento = true;
+      modo = "AGENDANDO_CITA";
+      paso = "SOLICITAR_TELEFONO";
+      respuesta = "📅 **Perfecto, vamos a agendar tu cita médica.**\n\n" +
+                  "Te acompañaré paso a paso para registrar tu solicitud. " +
+                  "He asignado tu caso al equipo de **Agendamiento**." +
+                  "\n\nPor favor, proporciona tu número de teléfono en formato internacional (ejemplo: +584141234567).";
+    }
+    // Si dice SÍ en otra consulta
+    else if (esAfirmativo(textLower) && paso === "MOSTRANDO_OTRA_CONSULTA") {
+      contexto = "derivar_agendamiento";
+      datos_paciente.equipo_asignado = "Agendamiento_Otra_Consulta";
+      datos_paciente.requiere_seguimiento = true;
+      modo = "AGENDANDO_CITA";
+      paso = "SOLICITAR_TELEFONO";
+      respuesta = "📅 **Perfecto, vamos a agendar tu cita médica.**\n\n" +
+                  "Te acompañaré paso a paso para registrar tu solicitud. " +
+                  "He asignado tu caso al equipo de **Agendamiento**." +
+                  "\n\nPor favor, proporciona tu número de teléfono en formato internacional (ejemplo: +584141234567).";
+    }
+    // Si dice NO en cualquier caso
+    else if (esNegativo(textLower)) {
+      contexto = "menu_principal";
+      modo = "MENU_PRINCIPAL";
+      paso = "INICIO";
+      datos_paciente.equipo_asignado = null;
+      datos_paciente.requiere_seguimiento = false;
+      respuesta = "👋 **Entendido.**\n\n" +
+                  "Recuerda que estoy aquí para ayudarte cuando lo necesites.\n\n" +
+                  "💲 **Precios**\n" +
+                  "🩺 **Servicios médicos**\n" +
+                  "📅 **Agendar cita**\n" +
+                  "💙 **Tarjeta UNISA / CrediUNISA**\n" +
+                  "❓ **Otra consulta**\n\n" +
+                  "Indica la opción que deseas 👇";
+    }
+  }
+  // 2. MENÚ PRINCIPAL
+  else if (
+    textLower === "" ||
+    contienePalabra(textLower, "hola,holaa,hi,hello,inicio,menu,menú,start,comenzar,volver,regresar")
+  ) {
+    contexto = "menu_principal";
+    modo = "MENU_PRINCIPAL";
+    paso = "INICIO";
+    datos_paciente.equipo_asignado = null;
+    datos_paciente.requiere_seguimiento = false;
+    respuesta =
+      "👋 **¡Bienvenido/a a UNISA, tu Unidad de Salud Integral!**\n\n" +
+      "Estoy aquí para ayudarte. Puedes escribirme directamente:\n\n" +
+      "💲 **Precios**\n" +
+      "🩺 **Servicios que ofrecemos**\n" +
+      "📅 **Agendar cita / laboratorio / estudios  **\n" +
+      "💙 **Tarjeta de la Salud o CREDIUNISA  **\n\n" +
+      "❓ **Otra consulta**\n\n" +
+      "Indica la opción que deseas 👇";
+  }
+  // 3. PRECIOS
+  else if (
+    contienePalabra(textLower, "precio,precios,costo,costos,tarifa,tarifas,valor,cuanto cuesta,1") ||
+    textLower === "1"
+  ) {
+    contexto = "mostrar_precios";
+    modo = "MENU_PRINCIPAL";
+    paso = "MOSTRANDO_PRECIOS";
+    datos_paciente.equipo_asignado = null;
+    datos_paciente.requiere_seguimiento = false;
+    respuesta =
+      "💲 **Tarifas de atención – UNISA** *(referenciales)*\n\n" +
+      "• Consulta médica general → 25 USD\n" +
+      "• Rayos X (cualquier proyección) → 10 USD\n" +
+      "• Mamografía sin implantes → 20 USD\n" +
+      "• Mamografía con implantes → 30 USD\n\n" +
+      "**¿Deseas agendar una cita con estos precios?**\n" +
+      "Responde *Sí* para agendar o *No* para continuar.";
+  }
+  // 4. SERVICIOS
+  else if (
+    contienePalabra(textLower, "servicio,servicios,medico,medicos,especialidad,especialidades,2") ||
+    textLower.includes("servicio medico") ||
+    textLower.includes("servicios medicos") ||
+    textLower === "2"
+  ) {
+    contexto = "mostrar_servicios";
+    modo = "MENU_PRINCIPAL";
+    paso = "MOSTRANDO_SERVICIOS";
+    datos_paciente.equipo_asignado = null;
+    datos_paciente.requiere_seguimiento = false;
+    respuesta =
+      "🩺 **Especialidades disponibles en UNISA**\n\n" +
+      "• Consultas médicas generales y de especialidades\n" +
+      "• Laboratorio clínico\n" +
+      "• Rayos X digital\n" +
+      "• Ecografías (general, obstétrica, doppler, etc.)\n" +
+      "• Mamografías\n" +
+      "• Densitometría ósea\n" +
+      "• Electrocardiograma y ecocardiograma\n" +
+      "• Espirometría\n" +
+      "• Holter de presión y ritmo\n" +
+      "• Área de Atención Primaria Médica 24/7 (nebulizaciones, curaciones, suturas, yesos, etc.)\n\n" +
+      "**¿Te gustaría agendar una cita en alguna de estas especialidades?**\n" +
+      "Responde *Sí* para agendar o *No* para continuar.";
+  }
+  // 5. TARJETAS
+  else if (
+    contienePalabra(textLower, "tarjeta,tarjetas,credito,financiamiento,descuento,crediunisa,4") ||
+    textLower.includes("tarjeta unisa") ||
+    textLower.includes("credi unisa") ||
+    textLower === "4"
+  ) {
+    contexto = "mostrar_tarjetas";
+    modo = "MENU_PRINCIPAL";
+    paso = "MOSTRANDO_TARJETAS";
+    datos_paciente.equipo_asignado = null;
+    datos_paciente.requiere_seguimiento = false;
+    respuesta =
+      "💙 **TARJETA DE LA SALUD / CrediUNISA**\n\n" +
+      "• ¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes: hasta 30% de descuento en todos los servicios, 1 consulta gratuita al año y vigencia de 12 meses. Costo total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD.\n" +
+      "• Puedes incluir hasta 5 personas (titular + 4 familiares). Más de 5 personas → solo 10 USD adicional por persona (pago único).\n" +
+      "• Además, puedes activar CREDIUNISA: te otorgamos 100 USD de crédito inmediato y lo cancelas en 6 cuotas cómodas. ¿Deseas que te ayudemos con la afiliación ahora? 😊\n\n" +
+      "**¿Deseas que uno de nuestros asesores se comunique contigo para más información?**\n" +
+      "Responde *Sí* para contactarte o *No* para continuar.";
+  }
+  // 6. AGENDAR CITA DIRECTO
+  else if (
+    textLower === "cita" ||
+    textLower === "3" ||
+    contienePalabra(textLower, "agendar,reservar,programar,solicitar,pedir") ||
+    textLower.includes("agendar cita") ||
+    textLower.includes("reservar cita") ||
+    textLower.includes("quiero una cita") ||
+    textLower.includes("necesito una cita") ||
+    textLower.includes("solicitar cita") ||
+    (textLower.includes("cita") && !textLower.includes("tarjeta"))
+  ) {
+    contexto = "derivar_agendamiento";
+    datos_paciente.equipo_asignado = "Agendamiento_Directo";
+    datos_paciente.requiere_seguimiento = true;
+    modo = "AGENDANDO_CITA";
+    paso = "SOLICITAR_TELEFONO";
+    respuesta = "📅 **Perfecto, vamos a agendar tu cita médica.**\n\n" +
+                "Te acompañaré paso a paso para registrar tu solicitud. " +
+                "He asignado tu caso al equipo de **Agendamiento**." +
+                "\n\nPor favor, proporciona tu número de teléfono en formato internacional (ejemplo: +584141234567).";
+  }
+  // 7. OTRA CONSULTA
+  else if (
+    contienePalabra(textLower, "otra consulta,otra,consulta,5,duda,pregunta,informacion") ||
+    textLower === "5"
+  ) {
+    contexto = "mostrar_otra_consulta";
+    modo = "MENU_PRINCIPAL";
+    paso = "MOSTRANDO_OTRA_CONSULTA";
+    datos_paciente.equipo_asignado = null;
+    datos_paciente.requiere_seguimiento = false;
+    respuesta =
+      "❓ **Otra consulta**\n\n" +
+      "Si tienes una consulta específica que no está cubierta en las opciones anteriores, nuestro equipo de asesores puede ayudarte personalmente.\n\n" +
+      "**¿Deseas que un asesor se comunique contigo para resolver tu consulta?**\n" +
+      "Responde *Sí* para contactarte o *No* para continuar.";
+  }
+  // 8. NO ENTENDIDO
+  else {
+    contexto = "no_entendido";
+    modo = "MENU_PRINCIPAL";
+    paso = "INICIO";
+    datos_paciente.equipo_asignado = null;
+    datos_paciente.requiere_seguimiento = false;
+    respuesta =
+      "👋 **¡Bienvenido/a a UNISA, tu Unidad de Salud Integral!**\n\n" +
+      "Estoy aquí para ayudarte. Puedes escribirme directamente:\n\n" +
+      "**Precios**\n"+
+      "🩺 **Servicios que ofrecemos**\n"+
+      "📅 **Agendar cita / laboratorio / estudios**\n"+
+      "💙 **Tarjeta de la Salud o CREDIUNISA**\n\n" +
+      "❓ **Otra consulta**\n\n"+
+      "Indica la opción que deseas 👇";
+  }
+
+  // ================= PREPARAR ESTADO ACTUAL =================
+  const timestamp = new Date().toISOString();
+  
+  const estado_nuevo = {
+    modo: modo,
+    paso: paso,
+    datos_paciente: datos_paciente,
+    timestamp: timestamp
+  };
+
+  // ================= SALIDA =================
+  return [
+    {
+      contexto: contexto,
+      estado_actual: estado_nuevo,
+      user_message: text,
+      session_id: session_id,
+      equipo_asignado: datos_paciente.equipo_asignado || null,
+      requiere_seguimiento: datos_paciente.requiere_seguimiento || false,
+      modo_actual: modo,
+      paso_actual: paso,
+      respuesta: respuesta,
+      datos_paciente: datos_paciente,
+      debug_timestamp: timestamp
+    }
+  ];
+
+} catch (error) {
+  console.error("Error en el router:", error);
+
+  const timestamp = new Date().toISOString();
+  const estado_json = {
+    modo: "MENU_PRINCIPAL",
+    paso: "INICIO",
+    datos_paciente: {
+      equipo_asignado: null,
+      requiere_seguimiento: false
+    },
+    timestamp: timestamp
+  };
+
+  return [
+    {
+      contexto: "error",
+      estado_actual: estado_json,
+      respuesta: "⚠️ Ocurrió un inconveniente técnico. Por favor, intenta nuevamente.",
+      equipo_asignado: null,
+      requiere_seguimiento: false,
+      datos_paciente: {
+        equipo_asignado: null,
+        requiere_seguimiento: false
+      }
+    }
+  ];
+}

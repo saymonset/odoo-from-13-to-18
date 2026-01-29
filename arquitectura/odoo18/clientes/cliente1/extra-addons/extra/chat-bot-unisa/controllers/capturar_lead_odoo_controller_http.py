@@ -188,11 +188,11 @@ class ChatBotController(http.Controller):
             return nombre_completo[:2].upper() if len(nombre_completo) >= 2 else nombre_completo[0].upper()
     
     @http.route('/chat-bot-unisa/capturar_lead_http',
-                    auth='public',
-                    type='http',
-                    methods=['POST'],
-                    csrf=False,
-                    cors='*')
+                auth='public',
+                type='http',
+                methods=['POST'],
+                csrf=False,
+                cors='*')
     def capturar_lead_http(self, **kw):
         """
         Crear cita completa usando ChatBotUtils
@@ -278,19 +278,43 @@ class ChatBotController(http.Controller):
             # Crea los grupos si no existen
             teams = ChatBotUtils.get_team_unisa(env)
             
-            # 6. OBTENER EQUIPO ASIGNADO (MODIFICACIÓN PRINCIPAL)
-            equipo_asignado = data.get('equipo_asignado', 'Grupo Citas')
+            # 6. OBTENER EQUIPO ASIGNADO SEGÚN EL VALOR RECIBIDO (MODIFICADO)
+            equipo_asignado = data.get('equipo_asignado', 'Agendamiento_Directo')
             
-            team = teams.get('Grupo Citas', env['crm.team'].search([], limit=1))
+            # Mapeo de tipos de agendamiento a grupos
+            mapeo_grupos = {
+                'Agendamiento_Directo': 'Grupo Citas',
+                'Agendamiento_Otra_Consulta': 'Grupo Citas',
+                'Agendamiento_Precios': 'Grupo Citas',
+                'Agendamiento_Tarjeta': 'Grupo Ventas',
+                'Agendamiento_Servicios': 'Grupo Ventas'
+            }
             
-            # 6. Crear lead (cita)
+            # Obtener el nombre del grupo según el mapeo
+            nombre_grupo = mapeo_grupos.get(equipo_asignado, 'Grupo Citas')  # Default a 'Grupo Citas'
+            
+            # Buscar el equipo
+            team = None
+            if teams and nombre_grupo in teams:
+                team = teams.get(nombre_grupo)
+            else:
+                # Buscar directamente en la base de datos
+                team = env['crm.team'].search([('name', '=', nombre_grupo)], limit=1)
+                if not team:
+                    # Fallback: usar cualquier equipo disponible
+                    team = env['crm.team'].search([], limit=1)
+                    _logger.warning(f"No se encontró el equipo {nombre_grupo}, usando {team.name if team else 'ninguno'}")
+            
+            _logger.info(f"Equipo asignado: {equipo_asignado} -> Grupo: {nombre_grupo} -> ID: {team.id if team else 'N/A'}")
+            
+            # 7. Crear lead (cita)
             lead = ChatBotUtils.create_lead(env, data, partner, team, medium, source, campaign, tag)
             
-            # 7. Asignar lead automáticamente (round robin)
+            # 8. Asignar lead automáticamente (round robin)
             if team and team.member_ids:
                 ChatBotUtils.assign_lead_round_robin(env, lead, team)
             
-            # 8. Manejar imágenes adjuntas si existen
+            # 9. Manejar imágenes adjuntas si existen
             if 'foto_cedula_url' in data or 'imagenes_adicionales' in data:
                 # Validar URLs de imágenes
                 validated_images = ChatBotUtils.validate_image_urls(data)
@@ -299,13 +323,40 @@ class ChatBotController(http.Controller):
                 # Crear adjuntos
                 ChatBotUtils.handle_images(env, data, lead, partner)
                         
-            # 9. Generar respuesta para el bot
+            # 10. Generar respuesta para el bot
             # Agrega el ID del lead a la respuesta
             respuesta_bot = ChatBotUtils.generate_response(data) + f"\n\n📝 **Número de referencia:** {lead.id}"
 
-
+            # 11. ELIMINAR SESSION SI SE PROPORCIONA session_id
+            session_id = data.get('session_id')
+            if session_id:
+                try:
+                    _logger.info("Intentando eliminar sesión: %s", session_id)
+                    # Buscar y eliminar la sesión
+                    session_record = env['session.state'].sudo().search([
+                        ('session_id', '=', session_id)
+                    ], limit=1)
+                    
+                    if session_record:
+                        # Guardar información de la sesión antes de eliminar
+                        session_info = {
+                            'session_id': session_record.session_id,
+                            'modo': session_record.modo,
+                            'paso': session_record.paso,
+                            'record_id': session_record.id
+                        }
+                        
+                        # Eliminar la sesión
+                        session_record.unlink()
+                        _logger.info("Sesión eliminada exitosamente: %s", session_id)
+                    else:
+                        _logger.warning("No se encontró sesión para eliminar: %s", session_id)
+                        
+                except Exception as e:
+                    _logger.error("Error al eliminar sesión %s: %s", session_id, str(e), exc_info=True)
+                    # No interrumpimos el flujo por un error al eliminar la sesión
             
-            # 10. Retornar respuesta exitosa
+            # 12. Retornar respuesta exitosa
             response_data = {
                 'existe': True,
                 'lead_id': lead.id,
@@ -316,7 +367,10 @@ class ChatBotController(http.Controller):
                 'fecha_preferida': data.get('fecha_preferida', ''),
                 'hora_preferida': data.get('hora_preferida', ''),
                 'respuesta_para_bot': respuesta_bot,
-                'mensaje': 'Cita registrada exitosamente. Un ejecutivo se contactará pronto.'
+                'mensaje': 'Cita registrada exitosamente. Un ejecutivo se contactará pronto.',
+                'session_eliminada': session_id if session_id else None,
+                'equipo_asignado': equipo_asignado,
+                'grupo_asignado': nombre_grupo
             }
             
             _logger.info("Cita creada exitosamente: Lead ID %s para cliente %s", lead.id, partner.name)
@@ -341,5 +395,5 @@ class ChatBotController(http.Controller):
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
-        
+    
     

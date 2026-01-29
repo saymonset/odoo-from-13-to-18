@@ -8,10 +8,10 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -3104,
-        -80
+        -2320,
+        160
       ],
-      "id": "e1bffe23-730a-43a1-9cbf-e11e5d29ce8d",
+      "id": "fee738ad-c958-48ba-8ee1-0180684c6369",
       "name": "answer-chastwoot-whatsapp"
     },
     {
@@ -23,10 +23,10 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -2480,
-        -32
+        -1744,
+        160
       ],
-      "id": "4ad70f1a-c0f0-454d-8d59-934571db5afc",
+      "id": "4ec6c26b-830a-4fa3-bfca-047f5109696b",
       "name": "Audio_a_Texto_whatsapp",
       "credentials": {
         "openAiApi": {
@@ -51,11 +51,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2656,
-        -32
+        -1920,
+        160
       ],
-      "id": "4154956a-02af-47a9-8e8e-98fc4ca1786c",
+      "id": "e0c82bd6-999c-42a4-9237-7f8dcf392c02",
       "name": "Get File Data",
+      "alwaysOutputData": true,
       "credentials": {
         "httpBearerAuth": {
           "id": "SxSs5ggMU2LgbDMZ",
@@ -128,10 +129,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2272,
-        -272
+        -2032,
+        -192
       ],
-      "id": "9353e675-639e-4d5f-8fce-7ba381954390",
+      "id": "0c5fa2af-5d54-4185-a0de-ab485c789897",
       "name": "Obtener_Info_whatsapp"
     },
     {
@@ -181,10 +182,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -848,
-        -48
+        -112,
+        192
       ],
-      "id": "c7223b33-ec14-4edb-a6a1-b87f95b5617c",
+      "id": "e22636ec-f93e-413b-8e87-eb063ab5e8f5",
       "name": "Preparar_Input_AI"
     },
     {
@@ -273,10 +274,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.3,
       "position": [
-        -2896,
-        -48
+        -2144,
+        144
       ],
-      "id": "f0767731-6dee-4326-8e76-b21b7ad10897",
+      "id": "6e885d33-b16c-4e42-a67f-bf46fe041e1f",
       "name": "Texto_o_Audio?"
     },
     {
@@ -292,7 +293,7 @@
             {
               "id": "uuid2",
               "name": "session_id",
-              "value": "={{ $json.phone_number }}",
+              "value": "={{ $json.session_id }}",
               "type": "string"
             },
             {
@@ -326,10 +327,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2240,
-        224
+        -1744,
+        320
       ],
-      "id": "3cd63d38-3416-4586-ac23-9fee33b1da63",
+      "id": "0634a0b6-7065-423a-a714-9c850c5b2a93",
       "name": "Procesar_Imagen_whatsapp"
     },
     {
@@ -373,10 +374,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2304,
-        -32
+        -1584,
+        160
       ],
-      "id": "42714dd6-f079-429a-9472-93a105426aaa",
+      "id": "65c35c25-3c2e-48b5-af70-49c8cf24db78",
       "name": "Extraer_Texto_Audio"
     },
     {
@@ -389,10 +390,10 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -1568,
-        -448
+        -768,
+        -176
       ],
-      "id": "dd3c945a-e0dd-44f8-adda-04eb4b698ac2",
+      "id": "ce404e06-61fb-4f88-957b-ddfa601f1b62",
       "name": "Get_buffer_data",
       "credentials": {
         "redis": {
@@ -411,10 +412,10 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -1856,
-        -448
+        -1248,
+        -176
       ],
-      "id": "25ae956f-523b-4546-a7a7-deec760bba5d",
+      "id": "bdb49ec2-f3c7-4b24-a2df-1c5e2d8f2b73",
       "name": "Buffer",
       "credentials": {
         "redis": {
@@ -425,15 +426,15 @@
     },
     {
       "parameters": {
-        "amount": 1
+        "amount": 0
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -1712,
-        -448
+        -992,
+        -176
       ],
-      "id": "ce47cb3c-f925-481f-855e-2cdffa0c240f",
+      "id": "4f071f37-beef-4744-a58f-1ab32d2d6bfe",
       "name": "Wait",
       "webhookId": "564db4dd-a6d5-4618-ba9a-d0bb8618e4b3"
     },
@@ -464,10 +465,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1328,
-        -448
+        -544,
+        -176
       ],
-      "id": "c8a86de8-34d1-4171-8236-c578ee526ddf",
+      "id": "333cc8b5-8fc0-42e7-946a-a99007f6ae92",
       "name": "If"
     },
     {
@@ -475,10 +476,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -1216,
-        -320
+        -416,
+        -48
       ],
-      "id": "d23293eb-bc75-4744-b3fe-3d32d218626e",
+      "id": "05b47a7f-73af-4191-a820-00cc3f504e6b",
       "name": "No Operation, do nothing"
     },
     {
@@ -486,10 +487,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -2016,
-        -160
+        -1472,
+        -176
       ],
-      "id": "7425a262-215e-4f84-b45f-a8851fad01b0",
+      "id": "cd8a74a5-b0ae-4122-b80c-009202047ba5",
       "name": "Merge"
     },
     {
@@ -500,10 +501,10 @@
       "type": "n8n-nodes-base.redis",
       "typeVersion": 1,
       "position": [
-        -816,
-        -496
+        -208,
+        -384
       ],
-      "id": "cbc8a3d5-5058-43c5-bdad-41096f0a42b3",
+      "id": "69f51caa-7b36-4ce4-b1e0-639952ca884c",
       "name": "Borrar_mensajes_buffer",
       "credentials": {
         "redis": {
@@ -511,18 +512,6 @@
           "name": "Redis account"
         }
       }
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -3024,
-        128
-      ],
-      "id": "19c8457b-22ac-41d5-81c2-ad654b10ca32",
-      "name": "When clicking ‘Execute workflow’",
-      "disabled": true
     },
     {
       "parameters": {
@@ -583,14 +572,208 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1072,
-        -496
+        -432,
+        -384
       ],
-      "id": "7bdc7729-c6a6-4886-b4dd-45d530912be4",
+      "id": "1896b338-35c9-470e-a143-a6c6d1de62af",
       "name": "Agrupar_texto_acumulado_resto_variables_enviar"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://jumpjibe.com/api/session/consultar",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        64,
+        544
+      ],
+      "id": "dd85e323-a1cb-439e-9bd2-fc326a51a664",
+      "name": "Consultar_estado_Odoo",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// UNIR DATOS DE AMBOS NODOS - FORMATO ESPECÍFICO\n// =============================================\n\n// 1. Obtener datos de Preparar_Input_AI (primer elemento del merge)\nconst datosPrepararInput = $input.all()[0]?.json || {};\n\n// 2. Obtener datos de Consultar_estado_Odoo (segundo elemento del merge)\n// La respuesta de Odoo viene como array: [{...}]\nlet datosOdoo = $input.all()[1]?.json;\nif (Array.isArray(datosOdoo) && datosOdoo.length > 0) {\n    datosOdoo = datosOdoo[0];\n} else {\n    datosOdoo = datosOdoo || {};\n}\n\nconsole.log(\"📥 DATOS DE ODOO (crudo):\", JSON.stringify($input.all()[1]?.json, null, 2));\nconsole.log(\"📥 DATOS DE ODOO (procesado):\", JSON.stringify(datosOdoo, null, 2));\n\n// 3. Extraer el estado_anterior - AHORA SE LLAMA \"estado\" en lugar de \"debug_estado_nuevo\"\nconst estado_anterior = datosOdoo.estado || null;\nconst modoOdoo = estado_anterior?.modo || datosOdoo.modo || null;\nconst pasoOdoo = estado_anterior?.paso || datosOdoo.paso || null;\n\n// 4. Crear el resultado en el formato EXACTO solicitado\nconst resultadoFinal = {\n    // Campos de Preparar_Input_AI\n    text: datosPrepararInput.text || \"0\",\n    session_id: datosPrepararInput.session_id || \"\",\n    image_url: datosPrepararInput.image_url || \"\",\n    platform: datosPrepararInput.platform || \"whatsapp\",\n    account_id: datosPrepararInput.account_id || \"\",\n    conversation_id: datosPrepararInput.conversation_id || \"\",\n    \n    // Campos de Odoo (estado_anterior completo)\n    estado_anterior: estado_anterior,\n    \n    // Campos adicionales de Odoo (modo y paso al nivel raíz también)\n    modo: modoOdoo,\n    paso: pasoOdoo,\n    \n    // Datos paciente para fácil acceso\n    datos_paciente: estado_anterior?.datos_paciente || {}\n};\n\n// 5. Si estado_anterior es null, crear estructura básica\nif (!estado_anterior) {\n    resultadoFinal.estado_anterior = {\n        modo: datosOdoo.modo || null,\n        paso: datosOdoo.paso || null,\n        datos_paciente: {},\n        timestamp: null\n    };\n}\n\nconsole.log(\"✅ RESULTADO FINAL:\");\nconsole.log(JSON.stringify(resultadoFinal, null, 2));\n\nreturn [{ json: resultadoFinal }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        336
+      ],
+      "id": "6f95a7b8-a5cb-44fd-afb3-94bdbe661535",
+      "name": "Procesar_respuesta_Odoo"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        208,
+        336
+      ],
+      "id": "38a9fdf8-43a1-4f8c-b392-2f855fdef955",
+      "name": "Combinar_entrada_session_odoo"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "abec1745-9884-494b-b11e-d7a2c6cf74b6",
+              "leftValue": "={{ $json.modo }}",
+              "rightValue": "AGENDANDO_CITA",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "bdb76473-e091-401d-8445-4b3e20b1fac5",
+              "leftValue": "={{ $json.paso }}",
+              "rightValue": "SOLICITAR_TELEFONO",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        544,
+        432
+      ],
+      "id": "126e7d6b-30de-458f-86ba-3b98e17b22d8",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// PROCESADOR SIMPLIFICADO DE RESULTADO DE BÚSQUEDA - CORREGIDO\n// =============================================\n\ntry {\n  // 1. OBTENER DATOS DE ENTRADA\n  const datosEntrada = $json || {};\n  \n  console.log(\"=== PROCESADOR DE BÚSQUEDA - ENTRADA ===\");\n  console.log(\"Tipo de entrada:\", typeof datosEntrada);\n  console.log(\"Es array?:\", Array.isArray(datosEntrada));\n  console.log(\"Contenido entrada:\", JSON.stringify(datosEntrada, null, 2));\n\n  // Variables por defecto\n  let estado_anterior = {\n    modo: \"AGENDANDO_CITA\",\n    paso: \"SOLICITAR_TELEFONO\",\n    timestamp: new Date().toISOString(),\n    datos_paciente: {}\n  };\n\n  let datos_paciente = {};\n  let siguiente_paso = \"SOLICITAR_TELEFONO\";\n  let respuesta = \"\";\n  let modo = \"AGENDANDO_CITA\";\n  let telefono_buscado = null;\n\n  // 2. BUSCAR EL ARRAY DE RESULTADO EN LA ENTRADA\n  let resultadoArray = null;\n\n  if (Array.isArray(datosEntrada)) {\n    resultadoArray = datosEntrada;\n    console.log(\"✅ Entrada detectada como array directo\");\n  } else if (typeof datosEntrada === 'object') {\n    for (const key in datosEntrada) {\n      if (Array.isArray(datosEntrada[key])) {\n        resultadoArray = datosEntrada[key];\n        console.log(`✅ Array encontrado en propiedad: ${key}`);\n        break;\n      }\n    }\n    \n    if (!resultadoArray && datosEntrada.existe !== undefined) {\n      resultadoArray = [datosEntrada];\n      console.log(\"✅ Objeto de paciente convertido a array\");\n    }\n  }\n\n  // 3. PROCESAR EL RESULTADO\n  if (resultadoArray && resultadoArray.length > 0) {\n    const resultado = resultadoArray[0];\n    \n    // Extraer el teléfono buscado de diferentes campos posibles\n    telefono_buscado = resultado.telefono_buscado || resultado.telefono || null;\n    \n    if (resultado.existe === true) {\n      console.log(\"✅ PACIENTE ENCONTRADO EN EL SISTEMA\");\n      \n      // Cargar datos del paciente\n      datos_paciente = {\n        nombre: resultado.nombre_completo || null,\n        cedula: resultado.cedula || null,\n        telefono: telefono_buscado || resultado.telefono || null,\n        fecha_nacimiento: resultado.fecha_nacimiento || null\n      };\n\n      const es_paciente_nuevo = (resultado.es_paciente_nuevo || \"\").toLowerCase();\n\n      // Determinar el siguiente paso\n      if (es_paciente_nuevo === \"si\") {\n        datos_paciente.paciente_nuevo = \"SI\";\n        siguiente_paso = \"SOLICITAR_MEDIO_PAGO\";\n        \n        respuesta = `✅ **TUS DATOS HAN SIDO CARGADOS AUTOMÁTICAMENTE**\\n\\n` +\n          `🔍 Encontramos tu información en el sistema:\\n\\n` +\n          `• Nombre: ${datos_paciente.nombre}\\n` +\n          `• Cédula: ${datos_paciente.cedula}\\n` +\n          `• Fecha de nacimiento: ${datos_paciente.fecha_nacimiento}\\n` +\n          `• Teléfono: ${datos_paciente.telefono || 'No cargado'}\\n\\n` +\n          `🏥 Eres paciente nuevo\\n\\n` +\n          `💳 Ahora necesito saber tu medio de pago:\\n\\nEscribe:\\n• PARTICULAR - para pago directo\\n• SEGURO - si tienes seguro médico`;\n          \n      } else if (es_paciente_nuevo === \"no\") {\n        datos_paciente.paciente_nuevo = \"NO\";\n        siguiente_paso = \"SOLICITAR_MEDIO_PAGO\";\n        \n        respuesta = `✅ **TUS DATOS HAN SIDO CARGADOS AUTOMÁTICAMENTE**\\n\\n` +\n          `🔍 Encontramos tu información en el sistema:\\n\\n` +\n          `• Nombre: ${datos_paciente.nombre}\\n` +\n          `• Cédula: ${datos_paciente.cedula}\\n` +\n          `• Fecha de nacimiento: ${datos_paciente.fecha_nacimiento}\\n` +\n          `• Teléfono: ${datos_paciente.telefono || 'No cargado'}\\n\\n` +\n          `🏥 Eres paciente existente\\n\\n` +\n          `💳 Ahora necesito saber tu medio de pago:\\n\\nEscribe:\\n• PARTICULAR - para pago directo\\n• SEGURO - si tienes seguro médico`;\n          \n      } else {\n        siguiente_paso = \"SOLICITAR_PACIENTE_NUEVO\";\n        \n        respuesta = `✅ **TUS DATOS HAN SIDO CARGADOS AUTOMÁTICAMENTE**\\n\\n` +\n          `🔍 Encontramos tu información en el sistema:\\n\\n` +\n          `• Nombre: ${datos_paciente.nombre}\\n` +\n          `• Cédula: ${datos_paciente.cedula}\\n` +\n          `• Fecha de nacimiento: ${datos_paciente.fecha_nacimiento}\\n` +\n          `• Teléfono: ${datos_paciente.telefono || 'No cargado'}\\n\\n` +\n          `🏥 ¿Es tu primera vez en UNISA? (Responde SI o NO)`;\n      }\n      \n      // Llenar también el estado_anterior.datos_paciente\n      estado_anterior.datos_paciente = { ...datos_paciente };\n      \n    } else {\n      // PACIENTE NO ENCONTRADO\n      console.log(\"❌ PACIENTE NO ENCONTRADO EN EL SISTEMA\");\n      \n      // Usar el mensaje que viene en el resultado o uno por defecto\n      respuesta = resultado.mensaje || `❌ No encontré datos registrados con el teléfono ${telefono_buscado || 'proporcionado'}.\\n\\n📋 Por favor, escribe tu cédula (solo números) para continuar con el registro:`;\n      \n      siguiente_paso = \"SOLICITAR_CEDULA\";\n      \n      // Llenar datos_paciente solo con el teléfono buscado\n      datos_paciente = {\n        telefono: telefono_buscado\n      };\n      \n      // estado_anterior.datos_paciente se queda vacío como solicitas\n      estado_anterior.datos_paciente = {};\n    }\n  } else {\n    // Sin resultado válido\n    siguiente_paso = \"SOLICITAR_TELEFONO\";\n    respuesta = `❌ No se pudo procesar la búsqueda.\\n\\n📞 Por favor, envía tu número de teléfono nuevamente en formato +58 seguido de 10 dígitos.\\n\\nEjemplo: +584141234567`;\n    \n    datos_paciente = {\n      telefono: null\n    };\n    \n    estado_anterior.datos_paciente = {};\n  }\n\n  // 4. CONSTRUIR SALIDA\n  const salida = {\n    respuesta: respuesta,\n    estado_anterior: estado_anterior,\n    modo: modo,\n    paso: siguiente_paso,\n    datos_paciente: datos_paciente\n  };\n\n  console.log(\"=== SALIDA FINAL ===\");\n  console.log(\"Salida generada:\", JSON.stringify(salida, null, 2));\n\n  return [salida];\n\n} catch (error) {\n  console.error(\"ERROR en procesador de búsqueda:\", error);\n  \n  // En caso de error, devolver estructura básica\n  const salida_error = {\n    respuesta: \"⚠️ Hubo un error al procesar la búsqueda.\\n\\n📞 Por favor, envía tu número de teléfono nuevamente en formato +58 seguido de 10 dígitos.\\n\\nEjemplo: +584141234567\",\n    estado_anterior: {\n      modo: \"AGENDANDO_CITA\",\n      paso: \"SOLICITAR_TELEFONO\",\n      timestamp: new Date().toISOString(),\n      datos_paciente: {}\n    },\n    modo: \"AGENDANDO_CITA\",\n    paso: \"SOLICITAR_TELEFONO\",\n    datos_paciente: {}\n  };\n\n  return [salida_error];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        416
+      ],
+      "id": "b5424dbb-2c32-4263-baf3-a8f54f04716a",
+      "name": "Paso_a_ejecutar"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://jumpjibe.com/chat-bot-unisa/buscar_por_telefono_http",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"telefono\": \"{{$json.text }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        768,
+        416
+      ],
+      "id": "7988e11e-bfeb-4206-8393-b5fff2bb3cb7",
+      "name": "BUSCAR_TELEFONO",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1280,
+        352
+      ],
+      "id": "ca133767-c2e6-4d35-b1eb-722c2beb7d8a",
+      "name": "Combinar_entrada_session_odoo1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// COMBINADOR OPTIMIZADO CON ESTADO_ACTUAL - VERSIÓN CORREGIDA\n// =============================================\n\ntry {\n  // Obtener las dos entradas del Merge (siempre llegan en este orden)\n  const entrada1 = $input.all()[0]?.json || {};  // Contexto de la conversación\n  const entrada2 = $input.all()[1]?.json || {};  // Resultado del procesador de búsqueda\n  \n  console.log(\"=== COMBINADOR CON ESTADO_ACTUAL ===\");\n  console.log(\"Entrada 1 (contexto):\", JSON.stringify(entrada1, null, 2));\n  console.log(\"Entrada 2 (procesador):\", JSON.stringify(entrada2, null, 2));\n\n  // Función auxiliar para verificar si un valor está realmente vacío\n  function estaVacio(valor) {\n    if (valor === null || valor === undefined) return true;\n    if (typeof valor === 'string') return valor.trim() === '';\n    if (typeof valor === 'object' && !Array.isArray(valor)) {\n      return Object.keys(valor).length === 0;\n    }\n    return false;\n  }\n\n  // 1. DETERMINAR MODO Y PASO (dar prioridad a la segunda entrada si existe)\n  let modo, paso;\n  \n  if (!estaVacio(entrada2)) {\n    // Usar modo y paso de la segunda entrada (prioridad)\n    modo = entrada2.modo || \"\";\n    paso = entrada2.paso || \"\";\n    \n    console.log(\"Usando modo y paso de entrada2:\", { modo, paso });\n  } else {\n    // Si no hay segunda entrada, usar modo y paso de la primera entrada\n    modo = entrada1.modo || \"\";\n    paso = entrada1.paso || \"\";\n    \n    console.log(\"Usando modo y paso de entrada1:\", { modo, paso });\n  }\n\n  // 2. DETERMINAR DATOS_PACIENTE (combinar ambos)\n  let datos_paciente = {};\n  \n  // Primero tomar los datos_paciente de la primera entrada\n  if (entrada1.datos_paciente && !estaVacio(entrada1.datos_paciente)) {\n    datos_paciente = { ...entrada1.datos_paciente };\n    console.log(\"Datos paciente iniciales de entrada1:\", datos_paciente);\n  }\n  \n  // Luego sobrescribir/agregar con los datos de la segunda entrada\n  if (entrada2.datos_paciente && !estaVacio(entrada2.datos_paciente)) {\n    datos_paciente = { ...datos_paciente, ...entrada2.datos_paciente };\n    console.log(\"Datos paciente actualizados con entrada2:\", datos_paciente);\n  }\n\n  // 3. CONSTRUIR ESTADO_ACTUAL\n  const timestamp = new Date().toISOString();\n  \n  const estado_actual = {\n    modo: modo,\n    paso: paso,\n    timestamp: timestamp,\n    datos_paciente: datos_paciente\n  };\n\n  // 4. CONSTRUIR RESULTADO FINAL\n  const resultado = {\n    // Campos de contexto (siempre de la primera entrada)\n    text: entrada1.text || \"\",\n    session_id: entrada1.session_id || \"\",\n    image_url: entrada1.image_url || \"\",\n    platform: entrada1.platform || \"whatsapp\",\n    account_id: entrada1.account_id || \"\",\n    conversation_id: entrada1.conversation_id || \"\",\n    \n    // Estado actual\n    estado_actual: estado_actual,\n    \n    // Campos redundantes para compatibilidad (se extraen del estado_actual)\n    modo: estado_actual.modo,\n    paso: estado_actual.paso,\n    datos_paciente: estado_actual.datos_paciente\n  };\n\n  console.log(\"=== SALIDA FINAL ===\");\n  console.log(\"Resultado generado:\", JSON.stringify(resultado, null, 2));\n\n  return [resultado];\n\n} catch (error) {\n  console.error(\"ERROR en combinador:\", error);\n  \n  // Estructura de error con estado_actual\n  const timestamp = new Date().toISOString();\n  const estado_actual_error = {\n    modo: \"\",\n    paso: \"\",\n    timestamp: timestamp,\n    datos_paciente: {}\n  };\n  \n  return [{\n    text: \"\",\n    session_id: \"\",\n    image_url: \"\",\n    platform: \"whatsapp\",\n    account_id: \"1\",\n    conversation_id: \"7\",\n    estado_actual: estado_actual_error,\n    modo: estado_actual_error.modo,\n    paso: estado_actual_error.paso,\n    datos_paciente: estado_actual_error.datos_paciente\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        352
+      ],
+      "id": "8d8fc066-f21b-4458-8dd7-86779d8fd2f2",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        624
+      ],
+      "id": "0ce4f00e-a13a-4431-afcf-e29022baceff",
+      "name": "When clicking ‘Execute workflow’"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "text": "12760187",
+          "session_id": "584142711347",
+          "image_url": "",
+          "platform": "whatsapp",
+          "account_id": "1",
+          "conversation_id": "7",
+          "estado_anterior": {
+            "modo": "AGENDANDO_CITA",
+            "paso": "SOLICITAR_CEDULA",
+            "timestamp": "2026-01-26T20:21:16.517Z",
+            "datos_paciente": {
+              "telefono": "+584142711346"
+            }
+          },
+          "modo": "AGENDANDO_CITA",
+          "paso": "SOLICITAR_CEDULA",
+          "datos_paciente": {
+            "telefono": "+584142711346"
+          }
+        }
+      }
+    ]
+  },
   "connections": {
     "answer-chastwoot-whatsapp": {
       "main": [
@@ -685,7 +868,18 @@
     },
     "Preparar_Input_AI": {
       "main": [
-        []
+        [
+          {
+            "node": "Consultar_estado_Odoo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Combinar_entrada_session_odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Buffer": {
@@ -761,16 +955,105 @@
         ]
       ]
     },
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        []
-      ]
-    },
     "Agrupar_texto_acumulado_resto_variables_enviar": {
       "main": [
         [
           {
             "node": "Borrar_mensajes_buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar_estado_Odoo": {
+      "main": [
+        [
+          {
+            "node": "Combinar_entrada_session_odoo",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combinar_entrada_session_odoo": {
+      "main": [
+        [
+          {
+            "node": "Procesar_respuesta_Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "BUSCAR_TELEFONO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Procesar_respuesta_Odoo": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Combinar_entrada_session_odoo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BUSCAR_TELEFONO": {
+      "main": [
+        [
+          {
+            "node": "Paso_a_ejecutar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso_a_ejecutar": {
+      "main": [
+        [
+          {
+            "node": "Combinar_entrada_session_odoo1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combinar_entrada_session_odoo1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
@@ -782,7 +1065,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6fbd5337-1c1b-4016-8a74-694611bcf28d",
+  "versionId": "fbc31e3c-58c2-40c7-a6b8-54a146b09c1e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"
