@@ -357,8 +357,7 @@ class ChatBotUtils:
         # Configuración por defecto si la plataforma no está en el mapeo
         default_config = {
             'name': f"{platform.title()} Bot",
-            'color': 1,  # Gris por defecto
-            'icon': 'fa-comment'
+            'color': 1
         }
         
         # Obtener configuración
@@ -377,10 +376,10 @@ class ChatBotUtils:
             }
             
             # Intentar añadir icono si el campo existe en el modelo
-            try:
-                tag_vals['icon'] = config['icon']
-            except:
-                pass  # Ignorar si el campo no existe
+            # try:
+            #     tag_vals['icon'] = config['icon']
+            # except:
+            #     pass  # Ignorar si el campo no existe
             
             tag = env['crm.tag'].sudo().create(tag_vals)
             _logger.info(f"✅ Etiqueta creada para {platform}: {tag.name} (color: {tag.color})")

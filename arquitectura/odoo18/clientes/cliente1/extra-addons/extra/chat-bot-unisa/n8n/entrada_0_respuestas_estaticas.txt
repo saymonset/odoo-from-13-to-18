@@ -16,6 +16,9 @@ try {
     .replace(/\s+/g, " "); // Unifica espacios múltiples
 
   const session_id = datosEntrada.session_id || "";
+  const conversation_id = datosEntrada.conversation_id || "";
+  const account_id = datosEntrada.account_id || "";
+  const platform = datosEntrada.platform || "";
   const image_url = datosEntrada.image_url || "";
   
   // OBTENER ESTADO ANTERIOR
@@ -295,10 +298,13 @@ try {
   // ================= SALIDA =================
   return [
     {
+      account_id,
+      conversation_id,
       contexto: contexto,
       estado_actual: estado_nuevo,
       user_message: text,
       session_id: session_id,
+      platform: platform,
       equipo_asignado: datos_paciente.equipo_asignado || null,
       requiere_seguimiento: datos_paciente.requiere_seguimiento || false,
       modo_actual: modo,
@@ -325,6 +331,7 @@ try {
 
   return [
     {
+      
       contexto: "error",
       estado_actual: estado_json,
       respuesta: "⚠️ Ocurrió un inconveniente técnico. Por favor, intenta nuevamente.",
