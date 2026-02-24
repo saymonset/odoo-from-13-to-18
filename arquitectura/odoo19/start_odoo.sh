@@ -4,11 +4,11 @@
 ## Si es la primera vez que se ejecuta, iniciar bdcon esto
 # ir a consola
 # source .venv/bin/activate
-# ./odoo/odoo-bin -d dbcliente1_19 -i base -c clientes/cliente1/conf/odoo.cfg
+# ./odoo/odoo-bin -d dbintegraia_19_19 -i base -c clientes/saymon_19/conf/odoo.cfg
 
 
 # Luego salir con ctrl+D y ejecutar este script
-# Script para levantar Odoo cliente1 con entorno virtual
+# Script para levantar Odoo saymon_19 con entorno virtual
 
 # Activar entorno virtual
 echo "Activando entorno virtual..."
@@ -23,13 +23,13 @@ fi
 PORT=18069
 
 # Base de datos
-DB="dbcliente1_19"
+DB="dbintegraia_19"
 
 # Ruta a odoo-bin
 ODOO_BIN="./odoo/odoo-bin"
 
 # Config
-ODOO_CONF="clientes/cliente1/conf/odoo.cfg"
+ODOO_CONF="clientes/saymon_19/conf/odoo.cfg"
 
 echo "Verificando si hay procesos usando el puerto $PORT..."
 

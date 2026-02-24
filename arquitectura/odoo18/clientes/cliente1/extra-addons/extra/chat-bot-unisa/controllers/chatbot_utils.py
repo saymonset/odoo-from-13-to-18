@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Archivo: unisa_chatbot_utils.py
+import pytz
 from datetime import datetime
 import json
 import logging
@@ -125,81 +126,48 @@ class ChatBotUtils:
             _logger.info(f"Contacto creado: {partner.id} - {partner.name}")
         
         return partner
+   
     @staticmethod
     def search_contact(env, data):
         """
-        Búsqueda optimizada de contacto por múltiples criterios
-        Reemplaza al método _get_or_create_partner original
+        Búsqueda de contacto únicamente por teléfono
         """
-        cedula = data.get('cedula', '').strip()
         telefono = data.get('telefono', '').strip()
-        nombre_completo = data.get('nombre_completo', '').strip()
-        fecha_nacimiento = data.get('fecha_nacimiento', '').strip()
-        
         partner = None
         
-        # 1. Buscar por cédula exacta
-        if cedula:
-            partner = env['res.partner'].search([
-                ('vat', '=', cedula),
-                ('active', '=', True)
-            ], limit=1)
-        
-        # 2. Si no hay cédula o no se encontró, buscar por teléfono
-        if not partner and telefono:
+        if telefono:
+            # Extraer solo dígitos del teléfono
             phone_clean = ''.join(filter(str.isdigit, telefono))
+            
+            # Si después de filtrar sigue vacío, el teléfono no tiene dígitos
+            if not phone_clean:
+                _logger.warning(f"El teléfono '{telefono}' no contiene dígitos válidos")
+                return None
+            
+            # Tomar los últimos 10 dígitos si es más largo (para números internacionales)
             if len(phone_clean) > 10:
                 phone_clean = phone_clean[-10:]
+                _logger.debug(f"Teléfono truncado a últimos 10 dígitos: {phone_clean}")
             
-            partner = env['res.partner'].search([
-                ('mobile', 'ilike', f'%{phone_clean}%'),
-                ('active', '=', True)
-            ], limit=1)
-        
-        # 3. Si hay nombre y teléfono, buscar combinación
-        if not partner and nombre_completo and telefono:
-            phone_clean = ''.join(filter(str.isdigit, telefono))[-10:] if len(telefono) > 10 else telefono
-            
-            partner = env['res.partner'].search([
-                ('name', 'ilike', f'%{nombre_completo.split()[0]}%'),
-                ('mobile', 'ilike', f'%{phone_clean}%'),
-                ('active', '=', True)
-            ], limit=1)
-        
-        # Preparar datos para crear/actualizar
-        partner_data = {
-            'name': nombre_completo,
-            'vat': cedula,
-            'mobile': telefono,
-            'type': 'contact',
-            'company_type': 'person',
-        }
-        
-        # Solo agregar birthdate si la fecha es válida
-        fecha_convertida = ChatBotUtils.convert_fecha_nacimiento(fecha_nacimiento)
-        if fecha_convertida:
-            # Verificar si el campo existe en el modelo
-            if 'birthdate' in env['res.partner']._fields:
-                partner_data['birthdate'] = fecha_convertida
+            # Validar longitud mínima
+            if len(phone_clean) >= 7:
+                # Buscar en ambos campos de teléfono
+                partner = env['res.partner'].search([
+                    '|',  # OR condition
+                    ('mobile', 'ilike', f'%{phone_clean}%'),
+                    ('phone', 'ilike', f'%{phone_clean}%'),
+                    ('active', '=', True)
+                ], limit=1)
+                
+                if partner:
+                    _logger.info(f"Contacto encontrado con teléfono {phone_clean}: {partner.name}")
+                else:
+                    _logger.info(f"No se encontró contacto con teléfono {phone_clean}")
             else:
-                _logger.warning("Campo 'birthdate' no disponible en res.partner")
-            
-        if partner:
-            # Actualizar solo campos vacíos
-            update_data = {}
-            for field, value in partner_data.items():
-                   # update_data[field] = value
-                    _logger.info(f"Contacto actualizado: {partner.id} - {partner.name}")
-            
-            if update_data:
-             #   partner.write(update_data)
-                _logger.info(f"Contacto actualizado: {partner.id} - {partner.name}")
-        else:
-            #partner = env['res.partner'].create(partner_data)
-            _logger.info(f"Contacto creado: {partner.id} - {partner.name}")
+                _logger.warning(f"Teléfono '{phone_clean}' tiene menos de 7 dígitos, búsqueda no realizada")
         
         return partner
-
+    
     @staticmethod
     def get_ultima_cita(env, partner_id):
         """Obtiene información de la última cita del paciente"""
@@ -425,8 +393,13 @@ class ChatBotUtils:
     @staticmethod
     def generate_description(data):
         """Generar descripción del lead"""
+        # Zona horaria de Caracas
+        tz_ve = pytz.timezone('America/Caracas')
+        # Obtener fecha/hora actual en Venezuela
+        fecha_actual = datetime.now(tz_ve).strftime('%d/%m/%Y %H:%M')
         return (
             "Cita desde WhatsApp Bot UNISA\n\n"
+            f"• Fecha/Hora creación (Venezuela): {fecha_actual}\n"
             f"• Paciente: {data.get('nombre_completo', 'N/A')}\n"
             f"• Cédula: {data.get('cedula', 'N/A')}\n"
             f"• Fecha de nacimiento: {data.get('fecha_nacimiento', 'N/A')}\n"

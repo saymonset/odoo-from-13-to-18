@@ -1,1 +1,2 @@
 ### Debes cambiar la carpeta odoo18 por  19 o la que vallas a depurar
+## Con conrol shift p te sale el '>' , busca el python interpreter la ruta del .env del odoo que estas. coriiendo por ejemplo busca .env de la carpeta odo18

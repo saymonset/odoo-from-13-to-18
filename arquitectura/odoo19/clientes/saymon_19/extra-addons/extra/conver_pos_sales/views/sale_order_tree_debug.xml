@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista DEBUG - Hereda de la vista tree con prioridad máxima -->
+    <record id="view_order_line_tree_debug" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.debug</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <!-- Cambia el nombre de una columna EXISTENTE para ver si se aplica -->
+            <xpath expr="//field[@name='product_uom_qty']" position="attributes">
+                <attribute name="string">CANTIDAD DEBUG</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

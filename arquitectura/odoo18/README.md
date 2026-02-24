@@ -39,13 +39,14 @@ sudo ln -sf /usr/local/bin/wkhtmltoimage /usr/bin/wkhtmltoimage
 wkhtmltopdf --version
 ```
 
+
 # Bajar fuentes
 
 ```bash
-  ls
-  
-  
+  git clone -b 18.0 --single-branch --depth 1 https://github.com/odoo/odoo.git odoo
 ```
+  
+  
 
 # Instalar version python con uv
 

@@ -1,6 +1,8 @@
 {
   "version": "0.2.0",
   "configurations": [
+    
+
     {
       "name": "backend + Debug (cliente1)",
       "type": "debugpy",
@@ -23,7 +25,7 @@
       "name": "fronteEnd cliente1",
       "request": "launch",
       "type": "chrome",
-      "url": "https://jumpjibe.com", // Cambia a tu puerto real
+      "url": "https://integraia.lat", // Cambia a tu puerto real
       "webRoot": "${workspaceFolder}/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/"
     }
   ]

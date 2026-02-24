@@ -1,0 +1,20 @@
+=Mensaje del usuario: {{ $json.text }}
+URL de imagen: {{ $json.image_url }}
+Modo: {{ $json.modo }}
+Paso: {{ $json.paso }}
+Datos del paciente: {{ JSON.stringify($json.datos_paciente) }}
+Session ID: {{ $json.session_id }}
+Conversation ID: {{ $json.conversation_id }}
+Account ID: {{ $json.account_id }}
+Platform: {{ $json.platform }}
+Timestamp actividad: {{ $json.timestamp_actividad }}
+Fecha/hora actual (debes usarla en timestamp_actividad): {{ $now }}
+
+---
+
+INSTRUCCIÓN FINAL:
+- Sigue ESTRICTAMENTE el prompt del sistema (BOT UNISA).
+- En el paso ESPERANDO_FOTO_CEDULA: PRIMERO verifica image_url. Si hay imagen (no vacía y empieza con http), IGNORA el texto y procesa la imagen.
+- Tu respuesta debe ser ÚNICAMENTE un objeto JSON válido, sin texto adicional, sin markdown, sin comillas escapadas.
+- Los campos session_id, conversation_id, account_id, platform deben copiarse de los valores proporcionados arriba.
+- timestamp_actividad debe ser el valor de "Fecha/hora actual" que se te pasó.{{ $json.text }}

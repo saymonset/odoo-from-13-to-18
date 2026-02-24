@@ -6,6 +6,9 @@
 ```bash
 cd /home/odoo/odoo-from-13-to-18/arquitectura/odoo19
 ```
+
+### En el archivo start_odoo.sh , debes cambiar el nombre del cliente a correr
+
 ## Buscar un modulo
 
 ## ejemplo , find con eso

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_session_state_user,session.state user,model_session_state,base.group_user,1,1,1,1
+access_session_state_public,session.state public,model_session_state,base.group_public,1,1,1,1
+access_session_state_manager,session.state manager,model_session_state,base.group_system,1,1,1,1

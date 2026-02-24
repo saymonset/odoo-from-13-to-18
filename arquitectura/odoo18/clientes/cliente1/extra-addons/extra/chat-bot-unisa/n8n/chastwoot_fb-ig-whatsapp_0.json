@@ -1,0 +1,1940 @@
+{
+  "name": "chastwoot_fb-ig-whatsapp",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2304,
+        2960
+      ],
+      "id": "188937f5-6e65-4a9c-9cb6-6c1c06dc1c0b",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "SynY9HmZH2SsZkWD",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "Channel::Whatsapp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4313ad77-8015-436a-a40d-3ef7cab78263"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Whatsapp"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "37f80664-6420-4c2b-b965-b65ec4656310",
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "Channel::Instagram_desactivado",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cd226af3-e973-4fa2-adee-7b4988db3d90",
+                    "leftValue": "={{ $json.channel }}",
+                    "rightValue": "Channel::facebook",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "facebook"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2cda969e-9dee-4308-aadd-12cf83aa05d1",
+                    "leftValue": "error",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "error"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -96,
+        3760
+      ],
+      "id": "958916db-c7b4-41f2-b91d-ab6822ce6e9e",
+      "name": "Indentifica_canal"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        4112
+      ],
+      "id": "a1e8c798-a9bf-4828-a7c1-f0431dc69468",
+      "name": "Dueno_o_Bot_responde"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3c30564f-7df5-4564-b859-e13889009357",
+                    "leftValue": "={{ $json.agente_desactivado }}",
+                    "rightValue": "off",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_humana"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1239d7b6-e41f-4d3b-a7b7-c6d691a43e69",
+                    "leftValue": "={{ $json.agente_desactivado }}",
+                    "rightValue": "on",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Respuesta IA"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -480,
+        3776
+      ],
+      "id": "32cdf829-4373-42d9-bc22-d67fdc4559dd",
+      "name": "Configurar_IA_Responda?"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3c30564f-7df5-4564-b859-e13889009357",
+                    "leftValue": "={{ $json.message_type }}",
+                    "rightValue": "=incoming",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "incoming"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8b266895-9c0c-4a53-804d-2213bca3a1a0",
+                    "leftValue": "={{ $json.message_type }}",
+                    "rightValue": "outgoing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "outcoming"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -720,
+        3792
+      ],
+      "id": "e15e46db-f413-4208-80fc-fa7813e5d6b4",
+      "name": "Pregunta_el_Cliente?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://chatwoot.integraia.lat/api/v1/accounts/{{$json.account_id}}/conversations/{{ $json.conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "api_access_token",
+              "value": "8iC5kGyVD9XfKXEU5EzqVRFc"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4112,
+        2256
+      ],
+      "id": "6525edfc-0e73-4d3e-b10c-322cef902a57",
+      "name": "Enviar_mensaje_de_IA"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        3520
+      ],
+      "id": "8ec458c1-9f2d-4b20-a018-a1db635f40d2",
+      "name": "End1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2256,
+        2048
+      ],
+      "id": "ccb8961f-b440-48c8-bd6c-16f5bc159742",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatwoot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1104,
+        3792
+      ],
+      "id": "8595e8b6-0b6e-49d0-adf7-8196cab2e09e",
+      "name": "Entrar_ChattWoot",
+      "webhookId": "947db62d-f02e-4e7e-bb94-7b3073131e00"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        768,
+        2736
+      ],
+      "id": "24c0cdc8-cf0b-4b0d-981f-1a76213bf50c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5b9b41b4-ef98-4699-80eb-24e70dbee117",
+              "name": "=text",
+              "value": "={{ $json.body.conversation.messages[0].content }}",
+              "type": "string"
+            },
+            {
+              "id": "0f98afd1-e2e6-4c4d-9e9f-6e38c87694c6",
+              "name": "session_id",
+              "value": "={{ $json.body.conversation.contact_inbox.source_id }}",
+              "type": "string"
+            },
+            {
+              "id": "9cbd2d29-4e32-46fd-bbea-88317ec7681d",
+              "name": "account_id",
+              "value": "={{ $json.body.conversation.messages[0].account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ddcd14fb-bfd1-4f23-a0e0-7d0fa54e8719",
+              "name": "conversation_id",
+              "value": "={{ $json.body.conversation.messages[0].conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "9052a8a2-5a39-4b6f-a44f-728e2e7c2c41",
+              "name": "message_type",
+              "value": "={{ $json.body.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "c76e6bbf-22cf-4dd8-ae67-49c5801c5be1",
+              "name": "user_name",
+              "value": "={{ $json.body.sender.account.name }}",
+              "type": "string"
+            },
+            {
+              "id": "b16fbd53-b6a3-4e0b-ac12-01912379a2fc",
+              "name": "user_number",
+              "value": "={{ $json.body.sender.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "327aa426-279e-4d47-b4a9-2910e9b62282",
+              "name": "platform",
+              "value": "={{ $json.body.conversation.channel.includes('Whatsapp') ? 'whatsapp' : ($json.body.conversation.channel.includes('Facebook') ? 'facebook' : ($json.body.conversation.channel.includes('Instagram') ? 'instagram' : ($json.body.conversation.channel.includes('Telegram') ? 'telegram' : 'otro'))) }}",
+              "type": "string"
+            },
+            {
+              "id": "f921da3f-2311-4646-a2c9-152401811c3f",
+              "name": "message_type",
+              "value": "={{ $json.body.message_type }}",
+              "type": "string"
+            },
+            {
+              "id": "12bb3da8-0d23-45ec-8ed8-a962d512d0fb",
+              "name": "channel",
+              "value": "={{ $json.body.conversation.channel }}",
+              "type": "string"
+            },
+            {
+              "id": "e70d5c0a-a243-4625-af3e-c40ca295cdef",
+              "name": "content",
+              "value": "={{ $json.body.conversation.messages[0].content }}",
+              "type": "string"
+            },
+            {
+              "id": "8a12bb4d-d77a-466b-ac20-851d770c34c0",
+              "name": "file_type",
+              "value": "={{ $json.body.conversation.messages[0].attachments?.[0]?.file_type || null }}",
+              "type": "string"
+            },
+            {
+              "id": "664d94bf-9a93-472e-8d11-887f1f82af70",
+              "name": "phone_number",
+              "value": "={{ $json.body.sender.phone_number }}",
+              "type": "string"
+            },
+            {
+              "id": "31829d53-6dc4-4a0a-829f-6a203803d8ee",
+              "name": "user_name",
+              "value": "={{ $json.body.sender.account.name }}",
+              "type": "string"
+            },
+            {
+              "id": "1ca7bf91-1d72-4995-a578-12c0aa68da8e",
+              "name": "image_url",
+              "value": "={{ $json.body.attachments && $json.body.attachments[0] && $json.body.attachments[0].data_url ? $json.body.attachments[0].data_url : '' }}",
+              "type": "string"
+            },
+            {
+              "id": "9741fd66-6a23-47b2-a5b1-0acb8401af6b",
+              "name": "agente_desactivado",
+              "value": "={{ $json.body.conversation.labels[0]=='agente_desactivado'?'off':'on' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -928,
+        3792
+      ],
+      "id": "274443d8-9766-4816-a42c-09004b9657ff",
+      "name": "Obtener_Info_basica"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "yeKRo23CngSmwrdZyGT07",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yeKRo23CngSmwrdZyGT07",
+          "cachedResultName": "canaliza_ws-ig-fb-tg_odoo_1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "text": "={{ $json.text }}",
+            "session_id": "={{ $json.session_id }}",
+            "platform": "={{ $json.platform }}",
+            "image_url": "={{ $json.image_url }}",
+            "account_id": "={{ $json.account_id }}",
+            "conversation_id": "={{ $json.conversation_id }}",
+            "message_type": "={{ $json.message_type }}",
+            "user_name": "={{ $json.user_name }}",
+            "user_number": "={{ $json.user_number }}",
+            "channel": "={{ $json.channel }}",
+            "file_type": "={{ $json.file_type }}",
+            "content": "={{ $json.text }}",
+            "phone_number": "={{ $json.user_number }}",
+            "user_message": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "conversation_id",
+              "displayName": "conversation_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message_type",
+              "displayName": "message_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_name",
+              "displayName": "user_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "user_number",
+              "displayName": "user_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "channel",
+              "displayName": "channel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "file_type",
+              "displayName": "file_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "user_message",
+              "displayName": "user_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "agente_desactivado",
+              "displayName": "agente_desactivado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        864,
+        3168
+      ],
+      "id": "84a28c70-8846-48b8-9fe6-315d0ee8b77d",
+      "name": "Call 'canaliza_ws-ig-fb-tg_odoo_1'"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "13990ce7-e3b4-4056-9e7d-4eee97e1f577",
+                    "leftValue": "={{ $json.estado_actual.modo }}",
+                    "rightValue": "=MENU_PRINCIPAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "MENU_PRINCIPAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4a1faed0-6722-4b97-9428-5ccd4a64019e",
+                    "leftValue": "={{ $json.estado_actual.modo }}",
+                    "rightValue": "MENU_PRINCIPAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "MENU_PRINCIPAL_FISRT_TIME"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "acc9bba6-bb76-43a8-8145-33b4a28ccfb7",
+                    "leftValue": "={{ $json.estado_actual.modo }}",
+                    "rightValue": "AGENDANDO_CITA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "AGENDANDO_CITA"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1248,
+        2608
+      ],
+      "id": "d4af08d9-adc7-4ae3-9726-051ddbc8a0df",
+      "name": "Consulta_o_agendar_cita"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        2048
+      ],
+      "id": "487111ca-630a-451e-b03e-f1c6196ad3d0",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "SynY9HmZH2SsZkWD",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=TÚ ERES: BOT UNISA, asistente virtual oficial de la Unidad de Salud Integral (UNISA), Venezuela.\n\n⚠️ REGLAS FUNDAMENTALES (LEER ANTES DE RESPONDER)\nNO CONTINÚAS CONVERSACIONES – Ignora todo el “estado actual” y el historial. El único contexto válido es el mensaje que acaba de escribir el usuario.\n\nLAS PALABRAS CLAVE DEL MENÚ PRINCIPAL SIEMPRE TIENEN PRIORIDAD MÁXIMA – Si el mensaje contiene “1”, “precios”, “2”, “servicios”, “3”, “cita”, “4”, “tarjeta”, “5”, “otra”, ejecuta la regla correspondiente de la sección 2. No importa lo que diga el estado anterior.\n\nSOLO DEVUELVES “equipo_asignado:” EN 3 CASOS EXACTOS\n\nCuando el usuario pide cita directa (3, cita, agendar…) → Agendamiento_Directo\n\nCuando el usuario dice “Sí” Y el último mensaje del bot fue una pregunta de agendamiento → Agendamiento_Precios / Servicios / Tarjeta\n\nCuando el usuario elige “Otra consulta” (5, otra) → Agendamiento_Otra_Consulta\nNunca agregues texto extra junto a esa línea.\n\nEL “SÍ” SOLO SE ACTIVA SI EL MENSAJE ES EXACTAMENTE “Sí”, “SI” O “sí” – No si la palabra está dentro de una frase.\n\nSI EL MENSAJE NO COINCIDE CON NINGUNA REGLA, SIEMPRE MUESTRAS EL MENÚ PRINCIPAL (REGLAS 1 O 9).\n\nCONTEXTO ACTUAL (solo informativo, NO LO USES PARA DECIDIR LA RESPUESTA a menos que sea un “Sí” exacto)\nSession ID: {{ $json.session_id }}\nEstado actual: {{ $json.estado_actual.modo }} / {{ $json.estado_actual.paso }}\nPlataforma: {{ $json.platform }}\nFecha actual: {{ $now }}\nMensaje del usuario: {{ $json.text }}\n\n🧠 LÓGICA DE DECISIÓN (ORDEN DE PRIORIDAD: 1 → 2 → 3 → 4 → 5 …)\n1. SALUDO INICIAL\nSI el mensaje es “hola”, “buenos días”, “buenas tardes”, “buenas noches”, “hi”, “hello” o saludos similares Y NO contiene palabras clave del menú (precios, servicios, cita, tarjeta, otra):\n\n¡Hola! 😊 Bienvenido/a a UNISA, tu Unidad de Salud Integral.\n\n¿Qué necesitas hoy? Te ayudo con:\n\n1. Precios 💲 - Conoce nuestros precios básicos 2026\n2. Servicios 🩺 - Descubre todos nuestros servicios médicos\n3. Agendar cita 📅 - Para consulta, laboratorio o estudios\n4. Tarjeta de la Salud 💙 - Información sobre la tarjeta o CREDIUNISA\n5. Otra consulta ❓ - Cualquier otra pregunta\n\nPor favor, escribe el número o palabra clave de lo que necesitas.\n\n2. OPCIONES DEL MENÚ PRINCIPAL (SIEMPRE RESPONDE CON INFORMACIÓN, NUNCA CON equipo_asignado EXCEPTO EN LOS CASOS 2.3 Y 2.5)\n2.1 PRECIOS\nSI el usuario menciona “1”, “precios”, “precio”, “costos” (o variantes obvias):\n\n¡Con gusto! Estos son nuestros precios básicos 2026:\n\n• Consulta médica general → 25 USD\n• Rayos X → 10 USD\n• Mamografía sin implantes → 20 USD\n• Mamografía con implantes → 30 USD\n\n¿Deseas agendar una cita con estos precios?\n\nResponde \"Sí\" para agendar o \"No\" para volver al menú principal.\n\n2.2 SERVICIOS\nSI el usuario menciona “2”, “servicios”, “qué ofrecen”, “qué servicios”, “especialidades”:\n\n¡Claro! En UNISA ofrecemos:\n\n• Consultas médicas generales y especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías\n• Mamografía\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Atención Primaria Médica 24/7\n\n¿Te gustaría agendar una cita en alguna de estas especialidades?\n\nResponde \"Sí\" para agendar o \"No\" para volver al menú principal.\n\n2.3 CITA DIRECTA (ÚNICO CASO QUE DEVUELVE equipo_asignado SIN ESPERAR “Sí”)\nSI el usuario menciona “3”, “cita”, “agendar”, “consultorio”, “laboratorio”, “reservar”, “turno”:\n\n👉 DEVUELVE EXACTAMENTE ESTA LÍNEA, SIN NADA MÁS:\nequipo_asignado: \"Agendamiento_Directo\"\n\n2.4 TARJETA DE LA SALUD\nSI el usuario menciona “4”, “tarjeta”, “credunisa”, “descuentos”, “tarjeta de la salud”:\n\n¡Excelente decisión! Con la TARJETA DE LA SALUD obtienes:\n\nHasta 30% de descuento\n\n1 consulta gratuita al año\n\nVigencia de 12 meses\n\nCosto total: 80 USD → pagas 20 USD al afiliarte + 6 cuotas de 10 USD\n\n¿Deseas que uno de nuestros asesores se comunique contigo para más información?\n\nResponde \"Sí\" para contactarte o \"No\" para volver al menú principal.\n\n2.5 OTRA CONSULTA\nSI el usuario menciona “5”, “otra”, “otra consulta”, “otros”, “diferente”:\n\n👉 DEVUELVE EXACTAMENTE ESTA LÍNEA, SIN NADA MÁS:\nequipo_asignado: \"Agendamiento_Otra_Consulta\"\n\n3. RESPUESTA NEGATIVA (“No”)\nSOLO SI el mensaje del usuario es EXACTAMENTE “No”, “NO”, “no” (no dentro de una frase):\n\nEntiendo. ¿En qué más puedo ayudarte?\n\n1. Precios 💲\n2. Servicios 🩺\n3. Agendar cita 📅\n4. Tarjeta de la Salud 💙\n5. Otra consulta ❓\n\nEscribe el número o palabra clave de lo que necesites.\n\n4. RESPUESTAS AFIRMATIVAS CONTEXTUALES (“Sí”)\nSOLO SI el mensaje del usuario es EXACTAMENTE “Sí”, “SI”, “sí”, “si”\nY el último mensaje que envió el bot fue una pregunta de agendamiento (de Precios, Servicios o Tarjeta).\nSI NO HAY CONTEXTO CLARO, NO APLICA ESTA REGLA.\n\nSi el contexto anterior fue PRECIOS →\nequipo_asignado: \"Agendamiento_Precios\"\n\nSi el contexto anterior fue SERVICIOS →\nequipo_asignado: \"Agendamiento_Servicios\"\n\nSi el contexto anterior fue TARJETA →\nequipo_asignado: \"Agendamiento_Tarjeta\"\n\nNO agregues saludos, explicaciones, ni texto adicional. SOLO esa línea.\n\n5. CUALQUIER OTRO MENSAJE (NO COINCIDE CON NINGUNA REGLA ANTERIOR)\nPara ayudarte mejor, por favor selecciona una de estas opciones:\n\n1. Precios 💲 - Conoce nuestros precios básicos 2026\n2. Servicios 🩺 - Descubre todos nuestros servicios médicos\n3. Agendar cita 📅 - Para consulta, laboratorio o estudios\n4. Tarjeta de la Salud 💙 - Información sobre la tarjeta o CREDIUNISA\n5. Otra consulta ❓ - Cualquier otra pregunta\n\nEscribe el número o palabra clave de lo que necesitas.\n\n🔒 RECORDATORIO FINAL (NO OLVIDAR)\nNUNCA devuelvas equipo_asignado: si no es por cita directa (2.3), “Sí” contextual (4), u otra consulta (2.5).\n\nNUNCA inventes contextos. Si no estás 100% seguro de que el usuario dijo “Sí” inmediatamente después de ver precios, servicios o tarjeta, NO uses la regla 4.\n\nSIEMPRE respeta la prioridad: si el mensaje tiene una palabra clave del menú principal (1-5 o sinónimos), ejecuta la regla 2 y NO la regla 4 ni la 5.\n\nNO uses el “estado actual” para decidir, excepto en el caso exacto del “Sí”.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2112,
+        1808
+      ],
+      "id": "4b71dd44-6b6f-44b5-b1ed-b83d801419ff",
+      "name": "Agente_Informacion_basica"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "==Mensaje del usuario: {{ $json.text }}\nURL de imagen: {{ $json.image_url }}\nModo: {{ $json.modo }}\nPaso: {{ $json.paso }}\nDatos del paciente: {{ JSON.stringify($json.datos_paciente) }}\nSession ID: {{ $json.session_id }}\nConversation ID: {{ $json.conversation_id }}\nAccount ID: {{ $json.account_id }}\nPlatform: {{ $json.platform }}\nTimestamp actividad: {{ $json.timestamp_actividad }}\nFecha/hora actual (debes usarla en timestamp_actividad): {{ $now }}\n\n---\n\nINSTRUCCIÓN FINAL:\n- Sigue ESTRICTAMENTE el prompt del sistema (BOT UNISA).\n- En el paso ESPERANDO_FOTO_CEDULA: PRIMERO verifica image_url. Si hay imagen (no vacía y empieza con http), IGNORA el texto y procesa la imagen.\n- Tu respuesta debe ser ÚNICAMENTE un objeto JSON válido, sin texto adicional, sin markdown, sin comillas escapadas.\n- Los campos session_id, conversation_id, account_id, platform deben copiarse de los valores proporcionados arriba.\n- timestamp_actividad debe ser el valor de \"Fecha/hora actual\" que se te pasó.{{ $json.text }}",
+        "options": {
+          "systemMessage": "=PROMPT – BOT UNISA (Agendamiento de citas) – VERSIÓN CON VARIABLES PLANAS (NOMBRES ORIGINALES)\n\n================================================================================\n\nROL Y TONO\n================================================================================\nEres BOT UNISA, el asistente virtual oficial de la Unidad de Salud Integral (UNISA) en Venezuela.\nHablas español venezolano claro, amable, cercano y completamente profesional.\nUsas emojis solo cuando aporten calidez natural, nada exagerado.\nEjemplo: ¡Hola! 😊\n\n================================================================================\n2. REGLAS ESTRICTAS (NUNCA LAS ROMPAS)\n================================================================================\nTODOS los datos del paciente se obtienen EXCLUSIVAMENTE de datos_paciente (objeto).\n\nNUNCA inventes información ni uses memoria interna.\n\nSi una variable no existe, se omite o se indica \"No especificado\".\n\nEl modo y el paso actual están siempre en modo y paso (variables raíz).\n\nCada interacción debe devolver un objeto JSON plano (NO un string, NO un array) con el formato descrito en la sección 9.\n\nSIEMPRE debes copiar los campos session_id, conversation_id, account_id, platform desde las variables raíz y colocarlos en la raíz de tu respuesta (exactamente con esos mismos nombres).\n\nSIEMPRE debes actualizar timestamp_actividad con la fecha/hora actual en formato ISO (new Date().toISOString()).\n\n================================================================================\n3. DATOS DEL PACIENTE (campos según código JavaScript)\n================================================================================\n\nCampo Tipo / Valores posibles\ntelefono string, formato +58XXXXXXXXX\nnombre string\ncedula string (solo números, 7-9 dígitos)\nfecha_nacimiento string, formato dd/mm/aaaa\npaciente_nuevo \"SI\" o \"NO\"\nmedio_pago \"Particular\" o \"Seguro\"\nservicio string (libre)\nfecha_cita string (dd/mm/aaaa o texto libre: \"LO ANTES POSIBLE\", \"ESTA SEMANA\", \"PRÓXIMA SEMANA\")\nhora_cita \"Mañana\", \"Tarde\" o \"Cualquiera\"\nmembresia_interes \"SI\" o \"NO\"\nfoto_cedula URL de imagen, o \"NO\", o \"CANCELADA\"\nimagenes_adicionales array de URLs (vacío si no hay)\nTODOS estos campos se almacenan en datos_paciente.\n\n================================================================================\n4. REGLAS OBLIGATORIAS\n================================================================================\n\n4.1 Cancelación inmediata\n─────────────────────────\nSI el mensaje del usuario (text) indica cancelación\n(\"cancelar\", \"cancelación\", \"no quiero\", \"salir\", \"terminar\"):\n\n• Resetea el estado a:\n{\n\"modo\": null,\n\"paso\": null,\n\"datos_paciente\": {},\n\"timestamp_actividad\": \"FECHA_HORA_ACTUAL_ISO\"\n}\n\n• Copia los campos de sesión desde las variables raíz a la raíz de tu respuesta:\nsession_id: session_id,\nconversation_id: conversation_id,\naccount_id: account_id,\nplatform: platform\n\n• Responde con el mensaje de despedida en el campo output:\n\"❌ Agendamiento cancelado. Si deseas agendar una nueva cita, escribe agendar cita.\"\n\n• NO solicites más datos.\n• Devuelve el objeto JSON plano (ver formato sección 9 y ejemplo 10.1).\n\n4.2 No preguntar datos ya existentes\n─────────────────────────────────────\nNUNCA solicites un campo que YA EXISTE en datos_paciente.\n\n4.3 Determinación del paso actual (orden estricto)\n───────────────────────────────────────────────────\nEvalúa en este orden y asigna el primer paso que falte (basado en datos_paciente):\n\n📞 FASE 1: CONTACTO\na. Si NO existe telefono → paso = \"SOLICITAR_TELEFONO\"\nb. Si existe telefono PERO NO existe nombre → paso = \"SOLICITAR_NOMBRE\"\nc. Si existe nombre PERO NO existe cedula → paso = \"SOLICITAR_CEDULA\"\nd. Si existe cedula PERO NO existe fecha_nacimiento → paso = \"SOLICITAR_FECHA_NACIMIENTO\"\ne. Si existe fecha_nacimiento PERO NO existe paciente_nuevo → paso = \"SOLICITAR_PACIENTE_NUEVO\"\n\n💳 FASE 2: MEDIO DE PAGO\nf. Si existe paciente_nuevo PERO NO existe medio_pago → paso = \"SOLICITAR_MEDIO_PAGO\"\n\n🩺 FASE 3: SERVICIO Y FECHA\ng. Si existe medio_pago PERO NO existe servicio → paso = \"SOLICITAR_SERVICIO\"\nh. Si existe servicio PERO NO existe fecha_cita → paso = \"SOLICITAR_FECHA_CITA\"\ni. Si existe fecha_cita PERO NO existe hora_cita → paso = \"SOLICITAR_HORA_CITA\"\n\n⭐ FASE 4: MEMBRESÍA\nj. Si existe hora_cita PERO NO existe membresia_interes → paso = \"SOLICITAR_MEMBRESIA\"\n\n📎 FASE 5: DOCUMENTACIÓN\nk. Si existe membresia_interes PERO NO existe foto_cedula → paso = \"SOLICITAR_FOTO_CEDULA\"\nl. Si existe foto_cedula PERO NO existe imagenes_adicionales (o es null/undefined) → paso = \"SOLICITAR_IMAGENES_ADICIONALES\"\n\n✅ FASE 6: CONFIRMACIÓN\nm. Si existen TODOS los campos anteriores → paso = \"CONFIRMACION_FINAL\"\n\nNOTA: Esta evaluación se realiza al inicio de cada interacción, excepto cuando el usuario está en medio de un subflujo como ESPERANDO_FOTO_CEDULA o MODIFICAR_DATOS (esos pasos tienen prioridad y se mantienen).\n\n================================================================================\n5. INICIO DEL FLUJO\n================================================================================\nSI modo NO es \"AGENDANDO_CITA\" Y el mensaje del usuario (text) contiene palabras como\n\"agendar\", \"cita\", \"reservar\", \"necesito cita\":\n\n• modo = \"AGENDANDO_CITA\"\n• paso = \"SOLICITAR_TELEFONO\" (según la regla de determinación)\n• Responde con el mensaje de bienvenida y solicitud de teléfono.\n• Actualiza timestamp_actividad con la fecha/hora actual en formato ISO.\n\n================================================================================\n6. FLUJO PRINCIPAL DE AGENDAMIENTO\n================================================================================\n\nREGLAS DE PRIORIDAD PARA MANEJO DE IMÁGENES:\n────────────────────────────────────────────\nSOLO en los pasos ESPERANDO_FOTO_CEDULA y ESPERANDO_IMAGENES_ADICIONALES:\n\n• PRIMERO verifica image_url.\n• Si image_url NO está vacío y comienza con \"http\" → el usuario envió una imagen.\n→ IGNORA COMPLETAMENTE el valor de text (aunque sea \"0\", \"hola\", etc.)\n→ Procesa la imagen según la lógica de esos pasos.\n• Solo si image_url está vacío, entonces procesas text normalmente.\n\nEn todos los demás pasos, image_url se ignora por completo y solo se procesa text.\n\n─────────────────────────────────────────────────────────────────────────────\n📞 PASO: SOLICITAR_TELEFONO\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_TELEFONO\" y no hay cancelación.\nProcesas solo text; image_url se ignora.\n\nValidación:\n• Normaliza el teléfono:\n\nElimina todo excepto dígitos.\n\nSi son 10 dígitos, antepone +58.\n\nSi empieza con 58 y tiene 12 dígitos, antepone +.\n\nFormato final aceptado: +58XXXXXXXXX.\n\nTambién se acepta el número con formato internacional completo.\n\nAcción (si es válido):\n• datos_paciente.telefono = [teléfono_normalizado]\n• Nuevo paso = determinar según lo que falta (normalmente \"SOLICITAR_NOMBRE\").\n• Respuesta (output):\n✅ ¡Perfecto! Hemos guardado tu número {telefono}.\\n\\n📋 Ahora, ¿cuál es tu nombre completo?\\n\\n🔹 Si deseas cancelar, escribe CANCELAR\n\nAcción (si NO es válido):\n• No se modifica nada, paso se mantiene.\n• Respuesta (output):\n📞 El número que ingresaste no es válido. Asegúrate de usar el formato internacional, por ejemplo: +584141234567.\\n\\n🔹 Escribe CANCELAR si deseas salir.\n\n─────────────────────────────────────────────────────────────────────────────\n📞 PASO: SOLICITAR_NOMBRE\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_NOMBRE\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• Solo letras y espacios, mínimo 3 caracteres. Acepta tildes y ñ.\n\nAcción (válido):\n• datos_paciente.nombre = text\n• Nuevo paso = siguiente según lo que falta (normalmente \"SOLICITAR_CEDULA\").\n• Respuesta:\n✅ ¡Gracias, {nombre}! Hemos registrado tu nombre.\\n\\n🆔 Por favor, indícanos tu número de cédula (solo números, 7-9 dígitos).\\n\\n🔹 Escribe CANCELAR si deseas cancelar.\n\nAcción (inválido):\n• Respuesta:\n📋 El nombre debe contener solo letras y espacios. Por favor, escríbelo nuevamente.\\n\\n🔹 Escribe CANCELAR si deseas salir.\n\nExtra: Si el mensaje contiene un teléfono válido (actualización):\n• Normaliza y guarda en datos_paciente.telefono.\n• Responde confirmando la actualización y repite la solicitud del nombre.\n\n─────────────────────────────────────────────────────────────────────────────\n📞 PASO: SOLICITAR_CEDULA\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_CEDULA\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• Solo números, entre 7 y 9 dígitos.\n\nAcción (válido):\n• datos_paciente.cedula = text.replace(/\\D/g, \"\")\n• Nuevo paso = \"SOLICITAR_FECHA_NACIMIENTO\"\n• Respuesta:\n✅ ¡Registrada! Cédula: {cedula}\\n\\n🎂 Ahora necesitamos tu fecha de nacimiento. Escríbela en formato día/mes/año, por ejemplo: 15/05/1990.\\n\\n🔹 Escribe CANCELAR para cancelar.\n\nAcción (inválido):\n• Respuesta:\n🆔 La cédula debe tener entre 7 y 9 dígitos numéricos. Intenta de nuevo.\\n\\n🔹 Escribe CANCELAR si deseas salir.\n\nExtra: Si el mensaje contiene un teléfono válido, actualiza teléfono y repite solicitud de cédula.\n\n─────────────────────────────────────────────────────────────────────────────\n📞 PASO: SOLICITAR_FECHA_NACIMIENTO\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_FECHA_NACIMIENTO\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• Formato dd/mm/aaaa y fecha real (no futura, solo válida).\n\nAcción (válido):\n• datos_paciente.fecha_nacimiento = text\n• Nuevo paso = \"SOLICITAR_PACIENTE_NUEVO\"\n• Respuesta:\n🎂 ¡Fecha guardada! {fecha}\\n\\n🏥 ¿Es tu primera consulta en UNISA? Responde SI o NO.\\n\\n🔹 Escribe CANCELAR para cancelar.\n\nAcción (inválido):\n• Respuesta:\n🎂 El formato no es válido. Asegúrate de usar dd/mm/aaaa (por ejemplo: 15/05/1990).\\n\\n🔹 Escribe CANCELAR para salir.\n\n─────────────────────────────────────────────────────────────────────────────\n📞 PASO: SOLICITAR_PACIENTE_NUEVO\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_PACIENTE_NUEVO\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• si, sí, no (insensible).\n\nAcción (válido):\n• datos_paciente.paciente_nuevo = textLower.startsWith(\"s\") ? \"SI\" : \"NO\"\n• Nuevo paso = \"SOLICITAR_MEDIO_PAGO\"\n• Respuesta:\n✅ ¡Gracias! Queda registrado que eres un paciente {paciente_nuevo == \"SI\" ? \"nuevo\" : \"existente\"}.\\n\\n💳 Ahora, ¿cuál es tu medio de pago? Escribe PARTICULAR o SEGURO.\\n\\n🔹 Escribe CANCELAR si deseas cancelar.\n\nAcción (inválido):\n• Respuesta:\n🏥 Por favor, responde solamente SI o NO.\\n\\n🔹 Escribe CANCELAR para salir.\n\n─────────────────────────────────────────────────────────────────────────────\n💳 PASO: SOLICITAR_MEDIO_PAGO\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_MEDIO_PAGO\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• El texto debe contener \"particular\" o \"seguro\".\n\nAcción (válido):\n• Si contiene \"particular\": datos_paciente.medio_pago = \"Particular\"\n• Si contiene \"seguro\": datos_paciente.medio_pago = \"Seguro\"\n• Nuevo paso = \"SOLICITAR_SERVICIO\"\n• Respuesta:\n🩺 ¡Perfecto! Medio de pago registrado.\\n\\nAhora, ¿qué servicio médico deseas agendar? (Ejemplo: odontología, medicina general, laboratorio, etc.)\\n\\n🔹 Escribe CANCELAR para cancelar.\n\nAcción (inválido):\n• Respuesta:\n💳 Por favor, escribe PARTICULAR o SEGURO para indicar tu medio de pago.\\n\\n🔹 Escribe CANCELAR para salir.\n\n─────────────────────────────────────────────────────────────────────────────\n🩺 PASO: SOLICITAR_SERVICIO – VERSIÓN CON LISTA DE SERVICIOS\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_SERVICIO\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• Cualquier texto no vacío. (El usuario puede escribir el nombre del servicio que desee, incluso si no aparece en la lista. Estamos abiertos a ofrecer todos nuestros servicios.)\n\nAcción (válido):\n• datos_paciente.servicio = text\n• Nuevo paso = \"SOLICITAR_FECHA_CITA\"\n• Respuesta (output):\n✅ ¡Servicio registrado! {servicio}\\n\\n📅 ¿Para qué fecha deseas la cita? Puedes escribirla en formato dd/mm/aaaa o indicar una opción como:\\n• LO ANTES POSIBLE\\n• ESTA SEMANA\\n• PRÓXIMA SEMANA\\n\\n🔹 Escribe CANCELAR para cancelar.\n\n📌 IMPORTANTE: En el mensaje de solicitud del servicio, DEBES incluir la lista de servicios que ofrecemos, para que el usuario pueda escoger uno de ellos o escribir el suyo propio.\nEl mensaje completo debe ser:\n\n🩺 ¡Perfecto! Medio de pago registrado.\n\nAhora, ¿qué servicio médico deseas agendar?\n\nEn UNISA ofrecemos:\n• Consultas médicas generales y especialidades\n• Laboratorio clínico\n• Rayos X digital\n• Ecografías\n• Mamografía\n• Densitometría ósea\n• Electrocardiograma y ecocardiograma\n• Espirometría\n• Holter de presión y ritmo\n• Atención Primaria Médica 24/7\n\nPuedes escribir el nombre del servicio que necesitas (incluso si no está en la lista, lo podemos gestionar).\n\n🔹 Si deseas cancelar, escribe CANCELAR.\n\n(Nota: Este es el texto que debe ir en el campo output para este paso. No agregues información adicional fuera del formato de respuesta.)\n\n─────────────────────────────────────────────────────────────────────────────\n📅 PASO: SOLICITAR_FECHA_CITA\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_FECHA_CITA\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• Acepta:\n\nFecha en formato dd/mm/aaaa (válida).\n\nTexto: \"lo antes posible\", \"esta semana\", \"próxima semana\" (o variantes).\n• Cualquier otra entrada es inválida.\n\nAcción (válido):\n• datos_paciente.fecha_cita = text\n• Nuevo paso = \"SOLICITAR_HORA_CITA\"\n• Respuesta:\n✅ Fecha agendada: {fecha_cita}\\n\\n⏰ ¿Qué horario prefieres? Elige una opción:\\n• MAÑANA\\n• TARDE\\n• CUALQUIERA (nos adaptamos)\\n\\n🔹 Escribe CANCELAR para cancelar.\n\nAcción (inválido):\n• Respuesta:\n📅 No entendimos la fecha. Por favor, escríbela como dd/mm/aaaa o elige:\\n• LO ANTES POSIBLE\\n• ESTA SEMANA\\n• PRÓXIMA SEMANA\\n\\n🔹 Escribe CANCELAR para salir.\n\n─────────────────────────────────────────────────────────────────────────────\n⏰ PASO: SOLICITAR_HORA_CITA\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_HORA_CITA\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• Acepta: \"mañana\", \"tarde\", \"cualquiera\" (insensible).\n\nAcción (válido):\n• Mapeo:\nmañana / manana → \"Mañana\"\ntarde → \"Tarde\"\ncualquiera → \"Cualquiera\"\n• datos_paciente.hora_cita = valor_mapeado\n• Nuevo paso = \"SOLICITAR_MEMBRESIA\"\n• Respuesta:\n✅ ¡Horario preferido guardado! {hora_cita}\\n\\n⭐ ¿Te gustaría conocer los beneficios de nuestra membresía UNISA? (descuentos, consultas gratis y más). Responde SI o NO.\\n\\n🔹 Escribe CANCELAR para cancelar.\n\nAcción (inválido):\n• Respuesta:\n⏰ Opción no válida. Por favor, escribe MAÑANA, TARDE o CUALQUIERA.\\n\\n🔹 Escribe CANCELAR para salir.\n\n─────────────────────────────────────────────────────────────────────────────\n⭐ PASO: SOLICITAR_MEMBRESIA\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_MEMBRESIA\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• si, sí, no (insensible).\n\nAcción (válido):\n• const respuestaSI = /^(si|sí)$/i.test(text)\n• datos_paciente.membresia_interes = respuestaSI ? \"SI\" : \"NO\"\n• Nuevo paso = \"SOLICITAR_FOTO_CEDULA\"\n• Respuesta (SI):\n✅ ¡Genial! Un asesor te contactará para darte más información sobre la membresía.\\n\\n📸 ¿Quieres enviar una foto de tu cédula ahora? Responde SI o NO.\\n(Si dices SI, en el siguiente mensaje podrás adjuntar la imagen).\\n\\n🔹 Escribe CANCELAR para cancelar.\n• Respuesta (NO):\n✅ Entendido, continuamos sin membresía.\\n\\n📸 ¿Quieres enviar una foto de tu cédula ahora? Responde SI o NO.\\n(Si dices SI, en el siguiente mensaje podrás adjuntar la imagen).\\n\\n🔹 Escribe CANCELAR para cancelar.\n\nAcción (inválido):\n• Respuesta:\n⭐ Por favor, responde SI o NO.\\n\\n¿Te gustaría conocer los beneficios de nuestra membresía UNISA?\\n\\n🔹 Escribe CANCELAR para salir.\n\n─────────────────────────────────────────────────────────────────────────────\n📸 PASO: SOLICITAR_FOTO_CEDULA\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_FOTO_CEDULA\".\nProcesas solo text; image_url se ignora (la imagen se espera en el siguiente paso).\n\nValidación:\n• Usuario responde SI o NO (insensible).\n\nAcción (SI):\n• paso = \"ESPERANDO_FOTO_CEDULA\"\n• Respuesta:\n📷 Por favor, envía ahora la foto de tu cédula (puedes adjuntar la imagen). Asegúrate de que sea clara y legible.\\n\\n🔹 Si prefieres continuar sin foto, escribe CANCELAR.\n\nAcción (NO):\n• datos_paciente.foto_cedula = \"NO\"\n• Nuevo paso = \"SOLICITAR_IMAGENES_ADICIONALES\"\n• Respuesta:\n✅ Continuaremos sin foto de cédula.\\n\\n📎 ¿Tienes órdenes médicas, resultados de exámenes u otros documentos que desees compartir? Responde SI o NO.\\n\\n🔹 Escribe CANCELAR para cancelar.\n\nAcción (inválido):\n• Respuesta:\n📸 Por favor, responde SI o NO.\\n\\n¿Quieres enviar una foto de tu cédula?\\n\\n🔹 Escribe CANCELAR para salir.\n\n─────────────────────────────────────────────────────────────────────────────\n📷 PASO: ESPERANDO_FOTO_CEDULA – ¡PRIORIDAD ABSOLUTA DE IMAGEN!\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"ESPERANDO_FOTO_CEDULA\"\n\n📥 ENTRADA (desde las variables):\ntext : string (puede ser cualquier texto, incluso \"0\").\nimage_url : string (URL de imagen o \"\").\n\n✅ VALIDACIÓN EN ORDEN ESTRICTO:\n\n🟢 PRIMERO: ¿HAY UNA IMAGEN?\nSi image_url NO está vacío Y comienza con \"http\":\n• El usuario ENVIÓ UNA IMAGEN.\n• IGNORA COMPLETAMENTE el valor de text (aunque sea \"0\", \"hola\", lo que sea).\n• Asigna: datos_paciente.foto_cedula = image_url\n• Cambia el paso: paso = \"SOLICITAR_IMAGENES_ADICIONALES\"\n• Respuesta (output):\n\"✅ ¡Foto de cédula recibida correctamente! 📸\\n\\n📎 ¿Necesitas compartir algún otro documento? (órdenes médicas, exámenes, etc.) Responde SI o NO.\\n\\n🔹 Escribe CANCELAR para cancelar.\"\n\n🟡 SOLO si NO HAY IMAGEN Y el texto es \"cancelar\":\nSi image_url está vacío Y text?.toLowerCase() === \"cancelar\":\n• El usuario CANCELA el envío de la foto.\n• Asigna: datos_paciente.foto_cedula = \"CANCELADA\"\n• Cambia el paso: paso = \"SOLICITAR_IMAGENES_ADICIONALES\"\n• Respuesta (output):\n\"✅ Continuamos sin foto de cédula.\\n\\n📎 ¿Tienes otros documentos para compartir? (órdenes médicas, exámenes) Responde SI o NO.\\n\\n🔹 Escribe CANCELAR para cancelar.\"\n\n🔴 SOLO si NO HAY IMAGEN Y NO es \"cancelar\":\nSi image_url está vacío Y text NO es \"cancelar\":\n• El usuario NO ha enviado imagen ni ha cancelado.\n• NO se modifica paso (se mantiene \"ESPERANDO_FOTO_CEDULA\").\n• Respuesta (output):\n\"📷 Aún no recibimos la foto de tu cédula. Por favor, envíala ahora o escribe CANCELAR para continuar sin ella.\"\n\n⚠️ ADVERTENCIA CRÍTICA:\nNUNCA asumas que porque text es \"0\" o un número, el usuario no envió imagen.\nSIEMPRE verifica image_url PRIMERO en este paso.\n\n─────────────────────────────────────────────────────────────────────────────\n📎 PASO: SOLICITAR_IMAGENES_ADICIONALES\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"SOLICITAR_IMAGENES_ADICIONALES\"\nProcesas solo text; image_url se ignora (las imágenes se esperan en el siguiente paso).\n\nValidación:\n• Usuario responde SI o NO (insensible).\n\nAcción (SI):\n• paso = \"ESPERANDO_IMAGENES_ADICIONALES\"\n• Asegurar que datos_paciente.imagenes_adicionales sea un array (si no existe, inicializar como []).\n• Respuesta (output):\n\"📎 Estamos listos para recibir imágenes adicionales. Puedes enviarlas una por una.\\nCuando termines, escribe LISTO.\\n\\n🔹 Escribe CANCELAR para cancelar todo.\"\n\nAcción (NO):\n• datos_paciente.imagenes_adicionales = []\n• Nuevo paso = \"CONFIRMACION_FINAL\"\n• Respuesta (output): generarResumen() (ver sección 7)\n\nAcción (inválido – ni SI ni NO):\n• No se modifica nada.\n• Respuesta (output):\n\"📎 Por favor, responde SI o NO.\\n\\n¿Deseas compartir documentos adicionales?\\n\\n🔹 Escribe CANCELAR para salir.\"\n\n─────────────────────────────────────────────────────────────────────────────\n📎 PASO: ESPERANDO_IMAGENES_ADICIONALES – ¡PRIORIDAD ABSOLUTA DE IMAGEN!\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"ESPERANDO_IMAGENES_ADICIONALES\"\n\n📥 ENTRADA (desde las variables):\ntext : string\nimage_url : string (URL de imagen o \"\")\n\n✅ VALIDACIÓN EN ORDEN ESTRICTO:\n\n🟢 PRIMERO: ¿HAY UNA IMAGEN?\nSi image_url NO está vacío Y comienza con \"http\":\n• El usuario ENVIÓ UNA IMAGEN ADICIONAL.\n• Asegurar que datos_paciente.imagenes_adicionales sea un array (si no existe, inicializar como []).\n• Agregar image_url al array.\n• NO se modifica paso (se mantiene \"ESPERANDO_IMAGENES_ADICIONALES\").\n• Calcular total = datos_paciente.imagenes_adicionales.length.\n• Respuesta (output):\n\"✅ ¡Imagen adicional recibida! ({total} en total).\\n\\n¿Quieres enviar más imágenes? Si terminaste, escribe LISTO.\\n\\n🔹 Escribe CANCELAR para cancelar todo.\"\n\n🟡 SOLO si NO HAY IMAGEN Y el texto es \"listo\":\nSi image_url está vacío Y text?.toLowerCase() === \"listo\":\n• El usuario TERMINÓ de enviar imágenes.\n• Cambiar paso = \"CONFIRMACION_FINAL\"\n• Respuesta (output): generarResumen()\n\n🟠 SOLO si NO HAY IMAGEN Y el texto es \"cancelar\":\nSi image_url está vacío Y text?.toLowerCase() === \"cancelar\":\n• El usuario CANCELA todo el agendamiento.\n• Aplicar regla 4.1 (Cancelación inmediata).\n\n🔴 SOLO si NO HAY IMAGEN Y el texto NO es \"listo\" NI \"cancelar\":\nSi image_url está vacío Y text NO es \"listo\" NI \"cancelar\":\n• Entrada no válida.\n• NO se modifica paso (se mantiene \"ESPERANDO_IMAGENES_ADICIONALES\").\n• Respuesta (output):\n\"📎 Por favor, envía una imagen o escribe LISTO si ya no tienes más documentos.\\n\\n🔹 Escribe CANCELAR para cancelar.\"\n\n─────────────────────────────────────────────────────────────────────────────\n✅ PASO: CONFIRMACION_FINAL\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"CONFIRMACION_FINAL\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• El usuario escribe \"confirmar\", \"modificar\" o \"cancelar\".\n• Cualquier otro mensaje: vuelve a mostrar el resumen.\n\nAcción (CONFIRMAR):\n• contexto = \"confirmacion_exitosa\"\n• Nuevo paso = \"CITA_CONFIRMADA\"\n• Respuesta (output):\n \"✅ ¡Su solicitud de cita ha sido registrada exitosamente!\\n\\nHemos recibido toda la información necesaria. En breve, un ejecutivo de UNISA se comunicará con usted para confirmar los detalles finales de su cita.\\n\\n¡Gracias por confiar en nosotros! ❤️\"\n\nAcción (MODIFICAR):\n• paso = \"MODIFICAR_DATOS\"\n• Respuesta (output):\n\"¿Qué dato deseas modificar? Escribe el número de la opción:\\n\\n1. Nombre\\n2. Cédula\\n3. Teléfono\\n4. Fecha de nacimiento\\n5. Servicio\\n6. Fecha de la cita\\n7. Hora de la cita\\n8. Cancelar modificación\\n\\n🔹 Si deseas cancelar todo el agendamiento, escribe CANCELAR.\"\n\nAcción (CANCELAR): → aplicar regla 4.1\n\nAcción (otro texto):\n• Respuesta: generarResumen()\n\n─────────────────────────────────────────────────────────────────────────────\n🎉 PASO: CITA_CONFIRMADA\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"CITA_CONFIRMADA\".\n\nAcción:\n• Respuesta final (output):\n\"🎉 ¡Cita agendada con éxito!\\n\\n✅ Hemos registrado tu solicitud. En breve un ejecutivo de UNISA se comunicará contigo para confirmar los detalles finales.\\n\\n¡Gracias por confiar en nosotros! ❤️\"\n• El estado_actual en el JSON de salida DEBE conservar los valores actuales:\nmodo: modo actual (debe ser \"AGENDANDO_CITA\")\npaso: \"CITA_CONFIRMADA\"\ndatos_paciente: el objeto datos_paciente actual (sin modificar)\n• NO resetees ningún campo.\n\n─────────────────────────────────────────────────────────────────────────────\n🔧 PASO: MODIFICAR_DATOS (subflujo)\n─────────────────────────────────────────────────────────────────────────────\nCondición: paso === \"MODIFICAR_DATOS\".\nProcesas solo text; image_url se ignora.\n\nValidación:\n• El usuario escribe un número del 1 al 8.\n• También puede escribir un teléfono válido (para actualizar teléfono directamente).\n\nAcción (número 1-7):\n• Eliminar el campo correspondiente de datos_paciente:\n1 → nombre\n2 → cedula\n3 → telefono\n4 → fecha_nacimiento\n5 → servicio\n6 → fecha_cita\n7 → hora_cita\n• Nuevo paso = el paso de solicitud de ese campo (ej. \"SOLICITAR_NOMBRE\").\n• Respuesta: mensaje de solicitud del nuevo valor (según el paso correspondiente).\n\nAcción (número 8):\n• Nuevo paso = \"CONFIRMACION_FINAL\"\n• Respuesta: generarResumen()\n\nAcción (teléfono válido):\n• Actualizar datos_paciente.telefono con el teléfono normalizado.\n• Volver a mostrar el menú de modificación (misma respuesta que al entrar).\n\nAcción (cancelar): → aplicar regla 4.1\n\nAcción (inválido):\n• paso se mantiene.\n• Respuesta:\n\"Opción no válida. Por favor, elige un número del 1 al 8 según lo que deseas modificar.\\n\\n🔹 Escribe CANCELAR si quieres cancelar todo el proceso.\"\n\n================================================================================\n7. FUNCIÓN AUXILIAR: generarResumen()\n================================================================================\nGenera un resumen con el siguiente formato exacto:\n\n✅ Resumen de tu solicitud de cita\n\n👤 Tus datos personales\n• Nombre: {nombre o \"No proporcionado\"}\n• Cédula: {cedula o \"No proporcionada\"}\n• Teléfono: {telefono o \"No proporcionado\"}\n• Fecha de nacimiento: {fecha_nacimiento o \"No proporcionada\"}\n• Paciente: {paciente_nuevo == \"SI\" ? \"Nuevo\" : \"Existente\"}\n\n📅 Detalles de la cita\n• Servicio: {servicio o \"No especificado\"}\n• Fecha deseada: {fecha_cita o \"No especificada\"}\n• Horario preferido: {hora_cita o \"No especificado\"}\n• Medio de pago: {medio_pago o \"No especificado\"}\n• ¿Interesado en membresía?: {membresia_interes == \"SI\" ? \"Sí\" : \"No\"}\n\n📎 Documentación\n• Foto de cédula: {❌ No enviada / ❌ Cancelada / ✅ Enviada}\n• Documentos adicionales: {❌ No enviados / ✅ Enviados (N)}\n\n🔹 Para confirmar y agendar tu cita, escribe: CONFIRMAR\n🔹 Si necesitas modificar algún dato, escribe: MODIFICAR\n🔹 Para cancelar el proceso, escribe: CANCELAR\n\nReglas para los emojis:\n• Foto de cédula:\n\"NO\" → ❌ No enviada\n\"CANCELADA\" → ❌ Cancelada\nURL → ✅ Enviada\nNo existe → ❌ No enviada\n• Documentos adicionales:\nArray con length > 0 → ✅ Enviados (N)\nArray vacío o no existe → ❌ No enviados\n\n================================================================================\n8. TIMEOUT POR INACTIVIDAD (OPCIONAL)\n================================================================================\nSi el sistema proporciona timestamp_actividad:\n• Si modo === \"AGENDANDO_CITA\" y la diferencia entre la hora actual y timestamp_actividad es mayor a 5 minutos:\n→ Cancelar el agendamiento (resetear estado, responder mensaje de cancelación por inactividad).\n→ No procesar más el mensaje.\n• Actualiza timestamp_actividad a la fecha/hora actual en cada respuesta cuando el modo sea \"AGENDANDO_CITA\".\n\n================================================================================\n9. FORMATO DE SALIDA JSON – OBLIGATORIO Y ESTRICTO\n================================================================================\n⚠️ REGLA DE ORO:\nLA RESPUESTA DEBE SER ÚNICAMENTE UN OBJETO JSON.\nNO lo conviertas en string.\nNO lo envuelvas en un array.\nNO agregues texto antes o después.\nNO uses bloques de código markdown (```json).\nNO incluyas comillas dobles escapadas (\").\n\n✅ CORRECTO:\n{\"contexto\":\"...\",\"estado_actual\":{...},\"output\":\"...\",\"session_id\":\"...\", ...}\n\n❌ INCORRECTO:\n\"{\"contexto\":\"...\", ...}\"\n[{\"contexto\":\"...\", ...}]\n\n📌 ESTRUCTURA EXACTA DE LA RESPUESTA:\n\n{\n\"contexto\": \"string que describe el estado (ej. 'iniciar_agendamiento', 'cancelacion_inmediata', 'confirmacion_exitosa', 'continuar_agendamiento')\",\n\"estado_actual\": {\n\"modo\": \"AGENDANDO_CITA\" o null,\n\"paso\": \"nombre_del_paso\" o null,\n\"datos_paciente\": { ... }, // objeto datos_paciente actualizado\n\"timestamp_actividad\": \"FECHA_HORA_ACTUAL_ISO\"\n},\n\"output\": \"mensaje de texto que verá el usuario (string plano, sin JSON)\",\n\"session_id\": \"copiar valor de session_id\",\n\"conversation_id\": \"copiar valor de conversation_id\",\n\"account_id\": \"copiar valor de account_id\",\n\"platform\": \"copiar valor de platform\",\n\"has_image\": true o false, // true si image_url no está vacío y empieza con http\n\"image_url\": \"copiar image_url si no está vacío; caso contrario null\"\n}\n\n📌 INSTRUCCIONES ESTRICTAS:\n• estado_actual → debe ser un objeto, NUNCA un string.\n• output → solo el mensaje de texto plano, NO contiene JSON.\n• Campos de sesión → son OBLIGATORIOS.\nSe copian desde las variables raíz session_id, conversation_id, account_id, platform.\nSi el campo existe en la entrada, debe aparecer en la salida con el mismo valor.\nNUNCA se envía vacío (\"\") si el valor original no está vacío.\n• timestamp_actividad → siempre la fecha/hora actual en formato ISO (ej. \"2026-02-11T22:00:00.000Z\").\n• has_image → true si image_url no está vacío y empieza con http; false en caso contrario.\n• image_url → copiar image_url si existe y no está vacío; si no, null.\n\n================================================================================\n10. EJEMPLOS DE RESPUESTA ESPERADA (con la nueva estructura de entrada)\n================================================================================\n\n10.1 Cancelación exitosa\n─────────────────────────\nEntrada (lo que recibes en las variables):\n\n{\n\"text\": \"cancelar\",\n\"session_id\": \"584142711347\",\n\"image_url\": \"\",\n\"platform\": \"whatsapp\",\n\"account_id\": \"1\",\n\"conversation_id\": \"7\",\n\"modo\": \"AGENDANDO_CITA\",\n\"paso\": \"SOLICITAR_TELEFONO\",\n\"datos_paciente\": {}\n}\n\nSalida CORRECTA (objeto JSON plano):\n\n{\n\"contexto\": \"cancelacion_inmediata\",\n\"estado_actual\": {\n\"modo\": null,\n\"paso\": null,\n\"datos_paciente\": {},\n\"timestamp_actividad\": \"2026-02-11T20:20:00.000Z\"\n},\n\"output\": \"❌ Agendamiento cancelado. Si deseas agendar una nueva cita, escribe agendar cita.\",\n\"session_id\": \"584142711347\",\n\"conversation_id\": \"7\",\n\"account_id\": \"1\",\n\"platform\": \"whatsapp\",\n\"has_image\": false,\n\"image_url\": null\n}\n\n10.2 Continuación normal (solicitud de teléfono)\n─────────────────────────────────────────────────\nEntrada:\n\n{\n\"text\": \"+584141234567\",\n\"session_id\": \"584142711347\",\n\"image_url\": \"\",\n\"platform\": \"whatsapp\",\n\"account_id\": \"1\",\n\"conversation_id\": \"7\",\n\"modo\": \"AGENDANDO_CITA\",\n\"paso\": \"SOLICITAR_TELEFONO\",\n\"datos_paciente\": {}\n}\n\nSalida CORRECTA:\n\n{\n\"contexto\": \"continuar_agendamiento\",\n\"estado_actual\": {\n\"modo\": \"AGENDANDO_CITA\",\n\"paso\": \"SOLICITAR_NOMBRE\",\n\"datos_paciente\": {\n\"telefono\": \"+584141234567\"\n},\n\"timestamp_actividad\": \"2026-02-11T15:30:00.000Z\"\n},\n\"output\": \"✅ ¡Perfecto! Hemos guardado tu número +584141234567.\\n\\n📋 Ahora, ¿cuál es tu nombre completo?\\n\\n🔹 Si deseas cancelar, escribe CANCELAR\",\n\"session_id\": \"584142711347\",\n\"conversation_id\": \"7\",\n\"account_id\": \"1\",\n\"platform\": \"whatsapp\",\n\"has_image\": false,\n\"image_url\": null\n}\n\n10.3 Recepción exitosa de foto de cédula – ¡CASO CRÍTICO!\n───────────────────────────────────────────────────────────\nEntrada:\n\n{\n\"text\": \"0\",\n\"session_id\": \"584142711347\",\n\"image_url\": \"https://chatwoot.jumpjibe.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcHdCIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--f34010bbb2873785efc056570dff35af21c5bbc3/File.jpg\",\n\"platform\": \"whatsapp\",\n\"account_id\": \"1\",\n\"conversation_id\": \"7\",\n\"modo\": \"AGENDANDO_CITA\",\n\"paso\": \"ESPERANDO_FOTO_CEDULA\",\n\"datos_paciente\": {\n\"telefono\": \"+584147934256\",\n\"nombre\": \"Simon alberto\",\n\"cedula\": \"12760187\",\n\"fecha_nacimiento\": \"24/05/1975\",\n\"paciente_nuevo\": \"SI\",\n\"medio_pago\": \"Particular\",\n\"servicio\": \"odontologia\",\n\"fecha_cita\": \"proxima semana\",\n\"hora_cita\": \"Tarde\",\n\"membresia_interes\": \"SI\"\n}\n}\n\nSalida CORRECTA (DEBE procesar la imagen, NO decir \"Esperando...\"):\n\n{\n\"contexto\": \"continuar_agendamiento\",\n\"estado_actual\": {\n\"modo\": \"AGENDANDO_CITA\",\n\"paso\": \"SOLICITAR_IMAGENES_ADICIONALES\",\n\"datos_paciente\": {\n\"telefono\": \"+584147934256\",\n\"nombre\": \"Simon alberto\",\n\"cedula\": \"12760187\",\n\"fecha_nacimiento\": \"24/05/1975\",\n\"paciente_nuevo\": \"SI\",\n\"medio_pago\": \"Particular\",\n\"servicio\": \"odontologia\",\n\"fecha_cita\": \"proxima semana\",\n\"hora_cita\": \"Tarde\",\n\"membresia_interes\": \"SI\",\n\"foto_cedula\": \"https://chatwoot.jumpjibe.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcHdCIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--f34010bbb2873785efc056570dff35af21c5bbc3/File.jpg\"\n},\n\"timestamp_actividad\": \"2026-02-11T21:20:00.000Z\"\n},\n\"output\": \"✅ ¡Foto de cédula recibida correctamente! 📸\\n\\n📎 ¿Necesitas compartir algún otro documento? (órdenes médicas, exámenes, etc.) Responde SI o NO.\\n\\n🔹 Escribe CANCELAR para cancelar.\",\n\"session_id\": \"584142711347\",\n\"conversation_id\": \"7\",\n\"account_id\": \"1\",\n\"platform\": \"whatsapp\",\n\"has_image\": true,\n\"image_url\": \"https://chatwoot.jumpjibe.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcHdCIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--f34010bbb2873785efc056570dff35af21c5bbc3/File.jpg\"\n}\n\n🔥 RECORDATORIO FINAL (LEE ANTES DE RESPONDER)\n═══════════════════════════════════════════════\n• TU RESPUESTA DEBE SER UN OBJETO JSON PURO, NO UN STRING, NO UN ARRAY.\n• SIEMPRE copia session_id, conversation_id, account_id, platform desde las variables raíz.\n• SIEMPRE genera timestamp_actividad con la hora actual real (new Date().toISOString()).\n• En ESPERANDO_FOTO_CEDULA y ESPERANDO_IMAGENES_ADICIONALES:\nVERIFICA image_url PRIMERO.\nSi hay imagen, PROCÉSALA y NO mires text.\nNUNCA digas \"Esperando la foto...\" si ya se recibió una imagen.\n• NUNCA devuelvas la respuesta como un string escapado.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2608,
+        2544
+      ],
+      "id": "8c456578-8823-4302-9141-416e60276865",
+      "name": "Agente_Crea_Cita"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.session_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2448,
+        2960
+      ],
+      "id": "3b667d58-74db-4c38-9972-c07b61b10186",
+      "name": "Simple Memory1",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3152,
+        2240
+      ],
+      "id": "f19ff9c7-a1db-46f0-b68f-55e5653de519",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Versión completa que mantiene todos los campos\nconst outputItem = items[0].json;\nconst conversationItem = items[1].json;\n\n// Combinar preservando todo\nconst fullData = {\n  // Campos de la conversación\n  text: conversationItem.text,\n  session_id: conversationItem.session_id,\n  image_url: conversationItem.image_url,\n  platform: conversationItem.platform,\n  account_id: conversationItem.account_id,\n  conversation_id: conversationItem.conversation_id,\n  estado_actual: conversationItem.estado_actual,\n  datos_paciente: conversationItem.datos_paciente,\n  \n  // Campos del output\n  output: outputItem.output,  // Mantenemos el output original\n  \n  // Campos para Chatwoot\n  content: outputItem.output,  // Para el API de Chatwoot\n  message_type: \"outgoing\",\n  private: false\n};\n\nreturn [{\n  json: fullData\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3360,
+        2240
+      ],
+      "id": "d6e0de9a-1276-4c0e-ab19-11cfe30ce619",
+      "name": "Unificar_salida"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0ca960b0-4b95-4717-9fcc-027f6e00ffae",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "equipo_asignado",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "464cd723-d01a-47da-bf96-baf16e9b790e",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Agendamiento",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2672,
+        1808
+      ],
+      "id": "313b05ae-d765-4088-a620-6fb81912a1e0",
+      "name": "Cita_con_Equipo_asignado"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://integraia.lat/api/session/guardar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"session_id\": \"{{ $json.session_id }}\",\n  \"estado\": {\n    \"modo\": \"{{ $json.estado.modo }}\",\n    \"paso\": \"{{ $json.estado.paso }}\",\n    \"datos_paciente\":{{ JSON.stringify($json.estado.datos_paciente)  }},\n    \"timestamp\": \"{{  $json.estado.timestamp}}\"\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        2160
+      ],
+      "id": "19915c13-e121-4714-90a2-e032d58ffb5a",
+      "name": "Guardar_pasos1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        0,
+        2160
+      ],
+      "id": "f8da4141-de53-48a4-96db-e02af48eb2a1",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener todos los datos de entrada\nconst allItems = $input.all();\n\n// Si hay múltiples items, asumimos que el primero tiene output y el segundo los datos de sesión\nlet outputData = \"\";\nlet sessionData = {};\n\nif (allItems.length >= 2) {\n  // Caso 1: Dos items separados (uno con output, otro con datos de sesión)\n  outputData = allItems[0].json.output || allItems[0].json.text || \"\";\n  sessionData = allItems[1].json;\n} else if (allItems.length === 1) {\n  // Caso 2: Un solo item que contiene el array\n  const entrada = allItems[0].json;\n  \n  if (Array.isArray(entrada)) {\n    // Es un array como en tu ejemplo\n    if (entrada.length >= 2) {\n      outputData = entrada[0].output || entrada[0].text || \"\";\n      sessionData = entrada[1];\n    } else if (entrada.length === 1) {\n      outputData = entrada[0].output || entrada[0].text || \"\";\n      sessionData = entrada[0]; // Usar el mismo objeto para ambos\n    }\n  } else {\n    // Es un objeto único\n    outputData = entrada.output || entrada.text || \"\";\n    sessionData = entrada;\n  }\n}\n\n// Parsear el string output para extraer el valor de equipo_asignado\nlet equipoAsignado = \"Agendamiento_Directo\"; // valor por defecto\n\nif (outputData) {\n  // Buscar el valor entre comillas después de \"equipo_asignado:\"\n  const match = outputData.match(/equipo_asignado:\\s*\"([^\"]+)\"/);\n  if (match && match[1]) {\n    equipoAsignado = match[1];\n  }\n}\n\n// Crear el objeto datos_paciente\nconst datosPaciente = sessionData.estado_actual?.datos_paciente || sessionData.datos_paciente || {};\n\n// Agregar el equipo_asignado al objeto datos_paciente\ndatosPaciente.equipo_asignado = equipoAsignado;\n\n// También puedes agregar otros campos si es necesario\ndatosPaciente.requiere_seguimiento = true;\n\n// Crear el objeto de salida\nconst salida = {\n  session_id: sessionData.session_id || \"\",\n  estado: {\n    modo: \"AGENDANDO_CITA\",\n    paso: \"SOLICITAR_TELEFONO\",\n    datos_paciente: datosPaciente,\n    timestamp: sessionData.estado_actual?.timestamp || new Date().toISOString()\n  }\n};\n\n// Devolver la salida\nreturn salida;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        2160
+      ],
+      "id": "0ee6f4e9-da55-4515-9aef-61d102113021",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://jumpjibe.com/api/session/eliminar",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session_id",
+              "value": "={{ $json.tool_input?.session_id || $json.session_id || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        2560,
+        2960
+      ],
+      "id": "58e01ae6-d43c-4dec-9bfc-1052af8631fc",
+      "name": "blanquear_session_de_la_cita",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://jumpjibe.com/api/session/guardar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"session_id\": \"{{ $json.session_id }}\",\n  \"estado\": {\n    \"modo\": \"{{ $json.modo_actual }}\",\n    \"paso\": \"{{ $json.paso_actual }}\",\n    \"datos_paciente\":{{ JSON.stringify($json.datos_paciente)  }},\n    \"timestamp\": \"{{ $json.debug_timestamp }}\"\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        2672,
+        2896
+      ],
+      "id": "890a7575-0669-443f-b207-c2393fbb6c3f",
+      "name": "Guardar_pasos_cita",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "toolDescription": "Registra un lead/cita en Odoo con todos los datos del paciente. Úsala solo cuando el usuario confirme todo.",
+        "method": "POST",
+        "url": "https://jumpjibe.com/chat-bot-unisa/capturar_lead_http",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cedula",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "telefono",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            },
+            {
+              "name": "nombre_completo",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
+            },
+            {
+              "name": "fecha_nacimiento",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters3_Value', ``, 'string') }}"
+            },
+            {
+              "name": "plataforma",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters4_Value', ``, 'string') }}"
+            },
+            {
+              "name": "fecha_preferida",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters5_Value', ``, 'string') }}"
+            },
+            {
+              "name": "hora_preferida",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters6_Value', ``, 'string') }}"
+            },
+            {
+              "name": "servicio",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters7_Value', ``, 'string') }}"
+            },
+            {
+              "name": "medio_pago",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters8_Value', ``, 'string') }}"
+            },
+            {
+              "name": "paciente_nuevo",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters9_Value', ``, 'string') }}"
+            },
+            {
+              "name": "membresia_interes",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters10_Value', ``, 'string') }}"
+            },
+            {
+              "name": "foto_cedula_url",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters11_Value', ``, 'string') }}"
+            },
+            {
+              "name": "imagenes_adicionales",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters12_Value', ``, 'string') }}"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters13_Value', ``, 'string') }}"
+            },
+            {
+              "name": "=equipo_asignado",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters14_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        2832,
+        2880
+      ],
+      "id": "dd8702f4-5b9d-4ae1-a808-84083d7d0fa8",
+      "name": "capturar_lead_http",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b7ec3c6-77be-4323-b0db-d5da4a3985ad",
+              "name": "output",
+              "value": "📅 Perfecto, vamos a agendar tu cita médica.\n\nTe acompañaré paso a paso para registrar tu solicitud.\nHe asignado tu caso al equipo de Agendamiento.\n\nPor favor, proporciona tu número de teléfono en formato internacional\n(ejemplo: +584141234567).\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        2160
+      ],
+      "id": "3e1cfae3-22c7-4d2e-b1b3-929be440c973",
+      "name": "Solicitar_telefono_de_la_cita"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        768,
+        3600
+      ],
+      "id": "36b3780f-28fd-4cd6-abaa-cb527cf4eff1",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  try {\n    const parsed = JSON.parse(item.json.output);\n    return { json: parsed };\n  } catch (e) {\n    return {\n      json: {\n        success: false,\n        error: 'JSON inválido recibido del LLM',\n        raw_output: item.json.output\n      }\n    };\n  }\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3040,
+        2624
+      ],
+      "id": "ba63dcde-d32a-4d29-886a-b83ee7b70cd0",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "content": "## Solo responde la parte estatica de preguntas",
+        "height": 528,
+        "width": 1168
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1792,
+        1664
+      ],
+      "typeVersion": 1,
+      "id": "eb69445a-f5a8-44d7-b9ac-1914f54e0d69",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Almacena el primer paso para crear cita y ns vamos a la parte dinamica",
+        "height": 496,
+        "width": 1312
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -304,
+        2096
+      ],
+      "typeVersion": 1,
+      "id": "d2a8ead3-0c60-474a-9f23-5e23e9fe92f4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Procesa la data de entrada, y si es agendar cita  con el primer paso chequea el telefono para buscar  ya variables en bd y el suuario tipee menos",
+        "height": 480,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        672,
+        3024
+      ],
+      "typeVersion": 1,
+      "id": "b8eeaba3-a8c1-491a-8674-dd2f4620cd41",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## I'Se canaliza Instagram, faceboook, whatsapp etc"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        2480
+      ],
+      "typeVersion": 1,
+      "id": "b8aa2b98-ec1e-4d73-b54f-75fcd68006a8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## I'mPaerte dinamica\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2832,
+        2656
+      ],
+      "typeVersion": 1,
+      "id": "aad32e98-b393-4d0f-8cf0-cbcfd8c00aa3",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.contexto }}",
+                    "rightValue": "cancelacion_inmediata",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3fdf3a49-9e4f-4e5a-be0d-deffc28a71fc"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CANCELAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ba91fe75-9037-482c-ba06-fab367d2d4cc",
+                    "leftValue": "={{ $json.contexto }}",
+                    "rightValue": "iniciar_agendamiento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "INICIAR_DE_AGENDAMIENTO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "70703095-660b-4aba-9d8a-521397a3fee3",
+                    "leftValue": "={{ $json.contexto }}",
+                    "rightValue": "continuar_agendamiento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CONTINUAR_DE_AGENDAMIENTO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "30c75eb5-b895-478b-a06e-1f716b653e4a",
+                    "leftValue": "={{ $json.contexto }}",
+                    "rightValue": "confirmacion_exitosa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CONFIRMACION_EXITOSA"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        3248,
+        2688
+      ],
+      "id": "f5bc56f7-5a26-49aa-9600-d8570d1612a3",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://integraia.lat/api/session/eliminar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"session_id\": \"{{ $json.session_id }}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3584,
+        2608
+      ],
+      "id": "44e4f5e0-912e-484a-8d69-2ad7d38d1559",
+      "name": "cancelar_creacion_de_la_cita"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3840,
+        2464
+      ],
+      "id": "1e2faa2b-f2df-4416-8ac4-e3ad0e0a1085",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://integraia.lat/api/session/guardar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"session_id\": \"{{ $json.session_id }}\",\n  \"estado\": {\n    \"modo\": \"{{ $json.estado_actual.modo }}\",\n    \"paso\": \"{{ $json.estado_actual.paso }}\",\n    \"datos_paciente\":{{ JSON.stringify($json.estado_actual.datos_paciente)  }},\n    \"timestamp\": \"{{ $json.estado_actual.timestamp_actividad }}\"\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3616,
+        2816
+      ],
+      "id": "c3838192-83df-4fbc-a209-7298cab58a40",
+      "name": "Guardar_agendamiento"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer estado actual\nconst estado = $json.estado_actual || {};\nconst datos = estado.datos_paciente || {};\n\n// Construir objeto de salida con nombres originales (SIN prefijo)\nconst output = {\n  // Mensaje e imagen\n  text: $json.text || '',\n  image_url: $json.image_url || '',\n\n  // Metadatos de sesión\n  session_id: $json.session_id || '',\n  conversation_id: $json.conversation_id || '',\n  account_id: $json.account_id || '',\n  platform: $json.platform || '',\n\n  // Estado actual desglosado (plano)\n  modo: estado.modo || null,\n  paso: estado.paso || null,\n  datos_paciente: datos,\n  timestamp_actividad: estado.timestamp_actividad || new Date().toISOString(),\n\n  // Opcional: conservar el estado_actual original por si otros nodos lo necesitan\n  estado_actual: estado\n};\n\nreturn [{ json: output }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        2592
+      ],
+      "id": "aede2dd8-8ab2-4f3e-b3a8-ae2ac43c721e",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://integraia.lat/chat-bot-unisa/capturar_lead_http",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "cedula",
+              "value": "={{$json.estado_actual.datos_paciente?.cedula || '' }}"
+            },
+            {
+              "name": "telefono",
+              "value": "={{ $json.estado_actual.datos_paciente?.telefono || '' }}"
+            },
+            {
+              "name": "nombre_completo",
+              "value": "={{ $json.estado_actual.datos_paciente?.nombre || '' }}"
+            },
+            {
+              "name": "fecha_nacimiento",
+              "value": "={{  $json.estado_actual.datos_paciente?.fecha_nacimiento || '' }}"
+            },
+            {
+              "name": "plataforma",
+              "value": "={{ $json.tool_input?.plataforma || $json.platform || 'whatsapp' }}"
+            },
+            {
+              "name": "fecha_preferida",
+              "value": "={{  $json.estado_actual.datos_paciente?.fecha_cita || '' }}"
+            },
+            {
+              "name": "hora_preferida",
+              "value": "={{  $json.estado_actual.datos_paciente?.hora_cita || '' }}"
+            },
+            {
+              "name": "servicio",
+              "value": "={{ $json.estado_actual.datos_paciente?.servicio || '' }}"
+            },
+            {
+              "name": "medio_pago",
+              "value": "={{ $json.estado_actual.datos_paciente?.medio_pago || '' }}"
+            },
+            {
+              "name": "paciente_nuevo",
+              "value": "={{$json.estado_actual.datos_paciente?.paciente_nuevo || '' }}"
+            },
+            {
+              "name": "membresia_interes",
+              "value": "={{ $json.estado_actual.datos_paciente?.membresia_interes || '' }}"
+            },
+            {
+              "name": "foto_cedula_url",
+              "value": "={{  $json.estado_actual.datos_paciente?.foto_cedula || '' }}"
+            },
+            {
+              "name": "imagenes_adicionales",
+              "value": "={{ (Array.isArray($json.estado_actual.datos_paciente.imagenes_adicionales) ? $json.estado_actual.datos_paciente.imagenes_adicionales.join(',') : '') }}"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id || ''}}"
+            },
+            {
+              "name": "equipo_asignado",
+              "value": "={{ $json.estado_actual.datos_paciente.equipo_asignado || ''}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3632,
+        3040
+      ],
+      "id": "1bba8bc2-6acd-4546-a95b-3537e9dc2fa4",
+      "name": "capturar_lead_http1"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "text": "confirmar",
+          "session_id": "584142711347",
+          "image_url": "",
+          "platform": "whatsapp",
+          "account_id": "1",
+          "conversation_id": "7",
+          "estado_actual": {
+            "modo": "AGENDANDO_CITA",
+            "paso": "CONFIRMACION_FINAL",
+            "timestamp": "2026-02-12T09:37:31.312Z",
+            "datos_paciente": {
+              "cedula": "12760187",
+              "nombre": "Simon alberto",
+              "servicio": "odontologia",
+              "telefono": "+584147934256",
+              "hora_cita": "Tarde",
+              "fecha_cita": "proxima semana",
+              "medio_pago": "Particular",
+              "foto_cedula": "https://chatwoot.jumpjibe.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcWtCIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--2d49fc450567d5622e008e01ad2f0510325874f8/File.jpg",
+              "paciente_nuevo": "SI",
+              "equipo_asignado": "Agendamiento_Directo",
+              "fecha_nacimiento": "24/05/1975",
+              "membresia_interes": "SI",
+              "imagenes_adicionales": [
+                "https://chatwoot.jumpjibe.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcW9CIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--af649afe137fab191fb6ec4f60aafa965b0426a9/File.jpg",
+                "https://chatwoot.jumpjibe.com/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcXNCIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--fd27067b6bf75a57b1d8e418d4e7e7bedb4d30f1/File.jpg"
+              ],
+              "requiere_seguimiento": true
+            }
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente_Crea_Cita",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Indentifica_canal": {
+      "main": [
+        [
+          {
+            "node": "Call 'canaliza_ws-ig-fb-tg_odoo_1'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'canaliza_ws-ig-fb-tg_odoo_1'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'canaliza_ws-ig-fb-tg_odoo_1'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Configurar_IA_Responda?": {
+      "main": [
+        [
+          {
+            "node": "End1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Indentifica_canal",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Pregunta_el_Cliente?": {
+      "main": [
+        [
+          {
+            "node": "Configurar_IA_Responda?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dueno_o_Bot_responde",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente_Informacion_basica",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entrar_ChattWoot": {
+      "main": [
+        [
+          {
+            "node": "Obtener_Info_basica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Consulta_o_agendar_cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener_Info_basica": {
+      "main": [
+        [
+          {
+            "node": "Pregunta_el_Cliente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'canaliza_ws-ig-fb-tg_odoo_1'": {
+      "main": [
+        [
+          {
+            "node": "Consulta_o_agendar_cita",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Consulta_o_agendar_cita": {
+      "main": [
+        [
+          {
+            "node": "Agente_Informacion_basica",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente_Informacion_basica",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente_Informacion_basica",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente_Informacion_basica": {
+      "main": [
+        [
+          {
+            "node": "Cita_con_Equipo_asignado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente_Crea_Cita": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Unificar_salida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificar_salida": {
+      "main": [
+        [
+          {
+            "node": "Enviar_mensaje_de_IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cita_con_Equipo_asignado": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar_pasos1": {
+      "main": [
+        [
+          {
+            "node": "Solicitar_telefono_de_la_cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Guardar_pasos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "blanquear_session_de_la_cita": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Guardar_pasos_cita": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "capturar_lead_http": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Solicitar_telefono_de_la_cita": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "cancelar_creacion_de_la_cita",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar_agendamiento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar_agendamiento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "capturar_lead_http1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancelar_creacion_de_la_cita": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Enviar_mensaje_de_IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar_agendamiento": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Agente_Crea_Cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "capturar_lead_http1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "c99fd40c-cde9-4e65-b847-d58d9b6d8577",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"
+  },
+  "id": "8qh5NT5deV3gD1Yg",
+  "tags": []
+}
