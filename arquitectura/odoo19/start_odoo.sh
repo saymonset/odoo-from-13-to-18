@@ -29,7 +29,7 @@ DB="dbintegraia_19"
 ODOO_BIN="./odoo/odoo-bin"
 
 # Config
-ODOO_CONF="clientes/saymon_19/conf/odoo.cfg"
+ODOO_CONF="clientes/integraia_19/conf/odoo.cfg"
 
 echo "Verificando si hay procesos usando el puerto $PORT..."
 

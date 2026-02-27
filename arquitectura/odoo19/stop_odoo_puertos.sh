@@ -37,7 +37,7 @@ echo "🔍 Verificando estado de puertos..."
 netstat -tlnp 2>/dev/null | grep -E '(18069|18070)' || echo "✅ Puertos 18069 y 18070 liberados"
 
 # Mostrar logs recientes si existen
-LOG_FILE="/home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/log/odoo.log"
+LOG_FILE="/home/odoo/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraia_19/log/odoo.log"
 if [ -f "$LOG_FILE" ]; then
     echo "📝 Últimas líneas del log (shutdown):"
     tail -n 3 "$LOG_FILE" | grep -i "shutdown\|stop\|exit" || echo "ℹ️  No se encontraron mensajes de cierre en el log"
