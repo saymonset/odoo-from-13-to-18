@@ -662,7 +662,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://integraia.lat/chat-bot-unisa/buscar_por_telefono_http",
+        "url": "https://integraia.lat/chat_bot_integra/buscar_por_telefono_http",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [

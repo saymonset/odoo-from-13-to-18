@@ -1006,7 +1006,7 @@
       "parameters": {
         "toolDescription": "Registra un lead/cita en Odoo con todos los datos del paciente. Úsala solo cuando el usuario confirme todo.",
         "method": "POST",
-        "url": "https://jumpjibe.com/chat-bot-unisa/capturar_lead_http",
+        "url": "https://jumpjibe.com/chat_bot_integra/capturar_lead_http",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1393,7 +1393,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://integraia.lat/chat-bot-unisa/capturar_lead_http",
+        "url": "https://integraia.lat/chat_bot_integra/capturar_lead_http",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [

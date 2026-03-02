@@ -4,11 +4,11 @@
 ## Si es la primera vez que se ejecuta, iniciar bdcon esto
 # ir a consola
 # source .venv/bin/activate
-# ./odoo/odoo-bin -d dbintegraia_19_19 -i base -c clientes/saymon_19/conf/odoo.cfg
+# ./odoo/odoo-bin -d dbintegraiadev -i base -c clientes/integraiadev/conf/odoo.cfg
 
 
 # Luego salir con ctrl+D y ejecutar este script
-# Script para levantar Odoo saymon_19 con entorno virtual
+# Script para levantar Odoo integraiadev con entorno virtual
 
 # Activar entorno virtual
 echo "Activando entorno virtual..."
@@ -20,16 +20,17 @@ fi
 
 # Puerto por defecto de Odoo
 #PORT=8069
-PORT=18069
+#PORT=18069
+PORT=38069
 
 # Base de datos
-DB="dbintegraia_19"
+DB="dbintegraiadev"
 
 # Ruta a odoo-bin
 ODOO_BIN="./odoo/odoo-bin"
 
 # Config
-ODOO_CONF="clientes/integraia_19/conf/odoo.cfg"
+ODOO_CONF="clientes/integraiadev/conf/odoo.cfg"
 
 echo "Verificando si hay procesos usando el puerto $PORT..."
 

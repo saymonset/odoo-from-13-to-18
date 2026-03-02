@@ -17,11 +17,11 @@
 ```
 ## Arquitectura y Componentes
  
-chat-bot-unisa (Módulo de IA): Interfaz web para visualizar y gestionar mensajes, incorpora IA para transcripción y análisis de textos.
+chat_bot_integra  (Módulo de IA): Interfaz web para visualizar y gestionar mensajes, incorpora IA para transcripción y análisis de textos.
  
  # Primero debex instalar 
 ```bash
-     Intalar el modulo  chat-bot-unisa en odoo 
+     Intalar el modulo  chat_bot_integra en odoo 
 ```
 
  0-) Copiar modulo a test
@@ -31,10 +31,10 @@ chat-bot-unisa (Módulo de IA): Interfaz web para visualizar y gestionar mensaje
 
 
 # En el webhook de n8n en la erramienta httprequest:  capturar_lead_odoo1
-# Cambiar a https://integraia.lat/chat-bot-unisa/capturar_lead
+# Cambiar a https://integraia.lat/chat_bot_integra/capturar_lead
 
 2-)
-cp -r /home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chat-bot-unisa /home/odoo/odoo-skeleton/n8n-evolution-api-odoo-18/v18/addons/extra
+cp -r /home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chat_bot_integra /home/odoo/odoo-skeleton/n8n-evolution-api-odoo-18/v18/addons/extra
 ```
 
 ###################   PRODUCCION      ##############
@@ -43,10 +43,10 @@ cp -r /home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-
 ```
 1-) 
 # En el webhook de n8n en la erramienta httprequest:  capturar_lead_odoo1
-# Cambiar a https://lead.integraia.lat/chat-bot-unisa/capturar_lead
+# Cambiar a https://lead.integraia.lat/chat_bot_integra/capturar_lead
 
 2-)
-cp -r /home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chat-bot-unisa //home/odoo/odoo-skeleton/leads/odoo_instancia_2/v18_2/addons/extra
+cp -r /home/odoo/odoo-from-13-to-18/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chat_bot_integra //home/odoo/odoo-skeleton/leads/odoo_instancia_2/v18_2/addons/extra
 ```
 
 Opción 1: Regla por Etiqueta

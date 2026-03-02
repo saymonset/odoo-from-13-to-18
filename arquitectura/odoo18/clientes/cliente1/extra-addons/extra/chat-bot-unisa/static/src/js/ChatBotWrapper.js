@@ -4,7 +4,7 @@ import { loadCSS } from "@web/core/assets";
 import { registry } from "@web/core/registry";
 
 export class ChatBotWrapper extends Component {
-    static template = "chat-bot-unisa.ChatBotWrapper";
+    static template = "chat_bot_integra.ChatBotWrapper";
 
     static props = {
         webhookUrl: { type: String, required: true },
@@ -34,7 +34,7 @@ export class ChatBotWrapper extends Component {
             console.log('✅ CSS n8n loaded');
             
             // ✅ CORREGIDO: Ruta absoluta del módulo
-            await loadCSS('/chat-bot-unisa/static/src/css/chat-bot.css');
+            await loadCSS('/chat_bot_integra/static/src/css/chat-bot.css');
             console.log('✅ Custom CSS loaded');
         
             const module = await import('https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js');

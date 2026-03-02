@@ -93,14 +93,14 @@ CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 \q
 docker exec -it odoo-db18-n8n bash
    psql -U odoo18 -d postgres
-   CREATE USER odoo19 WITH PASSWORD 'odoo';
-   ALTER USER odoo19 WITH SUPERUSER;
+   CREATE USER integraia_19 WITH PASSWORD 'odoo';
+   ALTER USER ointegraia_19 WITH SUPERUSER;
 
    \q
    docker exec -it odoo-db18-n8n bash
-   psql -U odoo19 -d postgres
-   CREATE DATABASE dbcliente1_19;
-   GRANT ALL PRIVILEGES ON DATABASE dbcliente1_19 TO odoo19;
+   psql -U integraia_19 -d postgres
+   CREATE DATABASE dbintegraia_19;
+   GRANT ALL PRIVILEGES ON DATABASE dbintegraia_19 TO odoo19;
 
 
 ```
@@ -132,7 +132,7 @@ source .venv/bin/activate
 ```
 
 ```bash
-./odoo/odoo-bin -d dbcliente1_19 -i base -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbintegraia_19 -i base -c clientes/cliente1/conf/odoo.cfg
 ```
 
 # Arrancamos odoo de manera regular
@@ -148,7 +148,7 @@ sudo lsof -i :8019
 ```
 
 ```bash
-./odoo/odoo-bin -d dbcliente1_19 -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbintegraia_19 -c clientes/cliente1/conf/odoo.cfg
 ```
 # Accedemos
 ```bash
@@ -156,6 +156,6 @@ http://5.189.161.7:18069/
 ```
 # Base de datos
 ```bash
-psql -U panna19 -d dbcliente1_19
+psql -U panna19 -d dbintegraia_19
 password:odoo
 ```
