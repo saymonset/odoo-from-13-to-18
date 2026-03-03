@@ -1,2 +1,1 @@
-from . import partner
-from . import session_state
+from . import res_config_settings

@@ -66,11 +66,11 @@ export class ChatBotWrapper extends Component {
             ],
             i18n: {
                 en: {
-                    title: 'Bienvenido/a a UNISA, tu Unidad de Salud Integral.',
-                    subtitle: "Inicia un chat. Estamos aquí para ayudarte 24/7.",
+                    title: 'Bienvenido/a a integraIA,  tu asistente digital inteligente.',
+                    subtitle: "Estamos aquí para ayudarte 24/7. ¿En qué puedo asistirte hoy?",
                     footer: '',
                     getStarted: 'Nueva Conversación',
-                    inputPlaceholder: 'Por ejemplo: Precios,Servicios,Citas,Tarjeta de Salud o CREDIUNISA...',
+                    inputPlaceholder: 'Escribe tu consulta...',
                 },
             },
             theme: {

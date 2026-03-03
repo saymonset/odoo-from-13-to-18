@@ -9,19 +9,24 @@
     'depends': ['base', 'crm', 'web','website'],
     "data": [
         "security/ir.model.access.csv",
+        "views/res_config_settings_view.xml",  # AÑADIDO: El XML debe ir aquí
         "views/login_templates.xml",  # AÑADIDO: El XML debe ir aquí
     ],
     'assets': {
+        
+#         Tu componente:
+            # Se monta usando <owl-component> en website.homepage
+            # Está registrado en registry.category("public_components")
+            # Solo se usa en el frontend del website
         "web.assets_frontend": [
             'chat_bot_integra/static/src/css/chat-bot.css',
             'chat_bot_integra/static/src/js/ChatBotWrapper.js',  
             'chat_bot_integra/static/src/xml/ChatBotWrapper.xml'
             
         ],
+        #Si lo usas en el backend (vista CRM, formulario, kanban, etc.), 
+        # así que cargarlo en web.assets_backend 
         'web.assets_backend': [
-            'chat_bot_integra/static/src/css/chat-bot.css',
-            'chat_bot_integra/static/src/js/ChatBotWrapper.js', 
-            
         ],
         
     },
