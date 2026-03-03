@@ -9,19 +9,21 @@
     'depends': ['base', 'crm', 'web','website'],
     "data": [
         "security/ir.model.access.csv",
-        "views/ChatBotWrapper.xml",  # AÑADIDO: El XML debe ir aquí
         "views/login_templates.xml",  # AÑADIDO: El XML debe ir aquí
     ],
     'assets': {
         "web.assets_frontend": [
             'chat_bot_integra/static/src/css/chat-bot.css',
-            'chat_bot_integra/static/src/js/ChatBotWrapper.js',  # Cambiado a ruta específica
-            'chat_bot_integra/static/src/js/ChatBotWrapper.js',
+            'chat_bot_integra/static/src/js/ChatBotWrapper.js',  
+            'chat_bot_integra/static/src/xml/ChatBotWrapper.xml'
+            
         ],
         'web.assets_backend': [
             'chat_bot_integra/static/src/css/chat-bot.css',
-            'chat_bot_integra/static/src/js/ChatBotWrapper.js',  # Cambiado a ruta específica
+            'chat_bot_integra/static/src/js/ChatBotWrapper.js', 
+            
         ],
+        
     },
     'application': True,
     'installable': True,
