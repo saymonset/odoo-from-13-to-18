@@ -15,7 +15,7 @@ class SessionStateController(http.Controller):
     Permite probar el modelo SessionState desde Postman
     """
     
-    @http.route('/api/session/guardar',
+    @http.route('/chat_bot_integra/session/guardar',
                 auth='public',
                 type='http',
                 methods=['POST', 'OPTIONS'],
@@ -155,7 +155,7 @@ class SessionStateController(http.Controller):
             # Agregar información adicional a la respuesta
             respuesta = {
                 **resultado,
-                'endpoint': '/api/session/guardar',
+                'endpoint': '/chat_bot_integra/session/guardar',
                 'method': 'POST',
                 'timestamp': datetime.datetime.now().isoformat(),
                 'request_id': str(uuid.uuid4())
@@ -180,14 +180,14 @@ class SessionStateController(http.Controller):
                     'detalle': str(e),
                     'traceback': traceback.format_exc() if _logger.isEnabledFor(logging.DEBUG) else None,
                     'timestamp': datetime.datetime.now().isoformat(),
-                    'endpoint': '/api/session/guardar'
+                    'endpoint': '/chat_bot_integra/session/guardar'
                 }),
                 status=500,
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
     
-    @http.route('/api/session/consultar',
+    @http.route('/chat_bot_integra/session/consultar',
             auth='public',
             type='http',
             methods=['POST', 'GET', 'OPTIONS'],
@@ -204,7 +204,7 @@ class SessionStateController(http.Controller):
         }
         
         GET (query params):
-        /api/session/consultar?session_id=session_123456
+        /chat_bot_integra/session/consultar?session_id=session_123456
         """
         try:
             # Manejar preflight CORS
@@ -341,7 +341,7 @@ class SessionStateController(http.Controller):
                         "create_date": None,
                         "write_date": None,
                         "record_id": None,
-                        "endpoint": '/api/session/consultar',
+                        "endpoint": '/chat_bot_integra/session/consultar',
                         "method": http_request.method,
                         "timestamp": datetime.datetime.now().isoformat(),
                         "request_id": str(uuid.uuid4())
@@ -355,7 +355,7 @@ class SessionStateController(http.Controller):
                         **resultado,
                         "original_session_id": original_session_id,
                         "matched_variation": matched_variation,
-                        "endpoint": '/api/session/consultar',
+                        "endpoint": '/chat_bot_integra/session/consultar',
                         "method": http_request.method,
                         "timestamp": datetime.datetime.now().isoformat(),
                         "request_id": str(uuid.uuid4())
@@ -382,14 +382,14 @@ class SessionStateController(http.Controller):
                     'error': 'Error interno del servidor',
                     'detalle': str(e),
                     'timestamp': datetime.datetime.now().isoformat(),
-                    'endpoint': '/api/session/consultar'
+                    'endpoint': '/chat_bot_integra/session/consultar'
                 }),
                 status=500,
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
 
-    @http.route('/api/session/listar',
+    @http.route('/chat_bot_integra/session/listar',
                 auth='public',
                 type='http',
                 methods=['GET', 'OPTIONS'],
@@ -481,7 +481,7 @@ class SessionStateController(http.Controller):
                 'limit': limit,
                 'offset': offset,
                 'sesiones': datos_sesiones,
-                'endpoint': '/api/session/listar',
+                'endpoint': '/chat_bot_integra/session/listar',
                 'timestamp': datetime.datetime.now().isoformat(),
                 'request_id': str(uuid.uuid4())
             }
@@ -503,14 +503,14 @@ class SessionStateController(http.Controller):
                     'error': 'Error interno del servidor',
                     'detalle': str(e),
                     'timestamp': datetime.datetime.now().isoformat(),
-                    'endpoint': '/api/session/listar'
+                    'endpoint': '/chat_bot_integra/session/listar'
                 }),
                 status=500,
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
     
-    @http.route('/api/session/eliminar',
+    @http.route('/chat_bot_integra/session/eliminar',
                 auth='public',
                 type='http',
                 methods=['POST', 'DELETE', 'OPTIONS'],
@@ -618,7 +618,7 @@ class SessionStateController(http.Controller):
                 'success': True,
                 'message': f'Sesión eliminada exitosamente',
                 'sesion_eliminada': sesion_info,
-                'endpoint': '/api/session/eliminar',
+                'endpoint': '/chat_bot_integra/session/eliminar',
                 'method': http_request.method,
                 'timestamp': datetime.datetime.now().isoformat(),
                 'request_id': str(uuid.uuid4())
@@ -641,14 +641,14 @@ class SessionStateController(http.Controller):
                     'error': 'Error interno del servidor',
                     'detalle': str(e),
                     'timestamp': datetime.datetime.now().isoformat(),
-                    'endpoint': '/api/session/eliminar'
+                    'endpoint': '/chat_bot_integra/session/eliminar'
                 }),
                 status=500,
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
     
-    @http.route('/api/session/limpiar_antiguas',
+    @http.route('/chat_bot_integra/session/limpiar_antiguas',
                 auth='public',
                 type='http',
                 methods=['POST', 'OPTIONS'],
@@ -714,7 +714,7 @@ class SessionStateController(http.Controller):
             # 5. Preparar respuesta
             respuesta = {
                 **resultado,
-                'endpoint': '/api/session/limpiar_antiguas',
+                'endpoint': '/chat_bot_integra/session/limpiar_antiguas',
                 'timestamp': datetime.datetime.now().isoformat(),
                 'request_id': str(uuid.uuid4())
             }
@@ -736,14 +736,14 @@ class SessionStateController(http.Controller):
                     'error': 'Error interno del servidor',
                     'detalle': str(e),
                     'timestamp': datetime.datetime.now().isoformat(),
-                    'endpoint': '/api/session/limpiar_antiguas'
+                    'endpoint': '/chat_bot_integra/session/limpiar_antiguas'
                 }),
                 status=500,
                 content_type='application/json; charset=utf-8',
                 headers=[('Access-Control-Allow-Origin', '*')]
             )
     
-    @http.route('/api/session/health',
+    @http.route('/chat_bot_integra/session/health',
                 auth='public',
                 type='http',
                 methods=['GET', 'OPTIONS'],
@@ -793,12 +793,12 @@ class SessionStateController(http.Controller):
                 'timestamp': datetime.datetime.now().isoformat(),
                 'version': '1.0.0',
                 'endpoints': {
-                    'guardar': '/api/session/guardar',
-                    'consultar': '/api/session/consultar',
-                    'listar': '/api/session/listar',
-                    'eliminar': '/api/session/eliminar',
-                    'limpiar': '/api/session/limpiar_antiguas',
-                    'health': '/api/session/health'
+                    'guardar': '/chat_bot_integra/session/guardar',
+                    'consultar': '/chat_bot_integra/session/consultar',
+                    'listar': '/chat_bot_integra/session/listar',
+                    'eliminar': '/chat_bot_integra/session/eliminar',
+                    'limpiar': '/chat_bot_integra/session/limpiar_antiguas',
+                    'health': '/chat_bot_integra/session/health'
                 }
             }
             

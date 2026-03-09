@@ -83,10 +83,7 @@ class ChatBotController(http.Controller):
             # 4. Buscar cliente usando método optimizado de ChatBotUtils
             # Preparamos datos para la búsqueda
             search_data = {
-                'telefono': telefono,
-                # Podemos incluir otros datos si están disponibles
-                'cedula': data.get('cedula', ''),
-                'nombre_completo': data.get('nombre_completo', '')
+                'telefono': telefono
             }
             
             # Usar búsqueda inteligente que maneja múltiples formatos de teléfono

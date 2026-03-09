@@ -152,8 +152,6 @@ class ChatBotUtils:
             if len(phone_clean) >= 7:
                 # Buscar en ambos campos de teléfono
                 partner = env['res.partner'].search([
-                    '|',  # OR condition
-                    ('mobile', 'ilike', f'%{phone_clean}%'),
                     ('phone', 'ilike', f'%{phone_clean}%'),
                     ('active', '=', True)
                 ], limit=1)
