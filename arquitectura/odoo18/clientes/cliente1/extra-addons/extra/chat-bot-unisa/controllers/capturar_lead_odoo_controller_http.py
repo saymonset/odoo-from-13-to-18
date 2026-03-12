@@ -92,7 +92,7 @@ class ChatBotController(http.Controller):
             # Usar búsqueda inteligente que maneja múltiples formatos de teléfono
             partner = ChatBotUtils.search_contact(env, search_data)
             
-            # 5. Si encontramos el cliente
+            # 5. Si encontrdamos el cliente
             if partner and partner.id and partner.name and partner.name != 'Sin nombre':
                 _logger.info("Cliente encontrado: %s (ID: %s)", partner.name, partner.id)
                 

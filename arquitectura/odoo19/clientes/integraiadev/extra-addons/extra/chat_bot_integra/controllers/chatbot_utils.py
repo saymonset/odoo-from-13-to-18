@@ -55,75 +55,77 @@ class ChatBotUtils:
     @staticmethod
     def update_create_contact(env, data):
         """
-        Búsqueda optimizada de contacto por múltiples criterios
-        Reemplaza al método _get_or_create_partner original
+        Busca o crea un contacto basado en el teléfono.
+        Si encuentra un contacto existente, actualiza solo los campos vacíos.
         """
-        cedula = data.get('cedula', '').strip()
         telefono = data.get('telefono', '').strip()
         nombre_completo = data.get('nombre_completo', '').strip()
+        cedula = data.get('cedula', '').strip()
         fecha_nacimiento = data.get('fecha_nacimiento', '').strip()
-        
-        partner = None
-        
-        # 1. Buscar por cédula exacta
-        if cedula:
-            partner = env['res.partner'].search([
-                ('vat', '=', cedula),
-                ('active', '=', True)
-            ], limit=1)
-        
-        # 2. Si no hay cédula o no se encontró, buscar por teléfono
-        if not partner and telefono:
+
+        partner = False
+
+        # Búsqueda por teléfono si se proporcionó
+        if telefono:
             phone_clean = ''.join(filter(str.isdigit, telefono))
-            if len(phone_clean) > 10:
-                phone_clean = phone_clean[-10:]
-            
-            partner = env['res.partner'].search([
-                ('mobile', 'ilike', f'%{phone_clean}%'),
-                ('active', '=', True)
-            ], limit=1)
-        
-        # 3. Si hay nombre y teléfono, buscar combinación
-        if not partner and nombre_completo and telefono:
-            phone_clean = ''.join(filter(str.isdigit, telefono))[-10:] if len(telefono) > 10 else telefono
-            
-            partner = env['res.partner'].search([
-                ('name', 'ilike', f'%{nombre_completo.split()[0]}%'),
-                ('mobile', 'ilike', f'%{phone_clean}%'),
-                ('active', '=', True)
-            ], limit=1)
-        
-        # Preparar datos para crear/actualizar
+            if phone_clean:
+                # Normalizar: tomar últimos 10 dígitos si es más largo
+                if len(phone_clean) > 10:
+                    phone_clean = phone_clean[-10:]
+                # Validar longitud mínima razonable (opcional, pero recomendable)
+                if len(phone_clean) >= 7:
+                    # Primero búsqueda exacta al final del número (más precisa)
+                    partner = env['res.partner'].search([
+                        ('phone', '=like', f'%{phone_clean}'),
+                        ('active', '=', True)
+                    ], limit=1)
+                    # Si no encuentra, fallback a búsqueda amplia con ilike
+                    if not partner:
+                        partner = env['res.partner'].search([
+                            ('phone', 'ilike', f'%{phone_clean}%'),
+                            ('active', '=', True)
+                        ], limit=1)
+                else:
+                    _logger.warning(f"Teléfono normalizado '{phone_clean}' tiene menos de 7 dígitos, se omite búsqueda")
+            else:
+                _logger.warning(f"El teléfono '{telefono}' no contiene dígitos")
+        else:
+            _logger.warning("No se proporcionó teléfono, se creará un nuevo contacto sin teléfono")
+
+        # Preparar datos para creación/actualización
         partner_data = {
             'name': nombre_completo,
             'vat': cedula,
-            'mobile': telefono,
+            'phone': telefono,
             'type': 'contact',
             'company_type': 'person',
         }
-        
-        # Solo agregar birthdate si la fecha es válida
+
+        # Agregar fecha de nacimiento si es válida y el campo existe
         fecha_convertida = ChatBotUtils.convert_fecha_nacimiento(fecha_nacimiento)
         if fecha_convertida:
-            # Verificar si el campo existe en el modelo
             if 'birthdate' in env['res.partner']._fields:
                 partner_data['birthdate'] = fecha_convertida
             else:
-                _logger.warning("Campo 'birthdate' no disponible en res.partner")
-            
+                _logger.warning("Campo 'birthdate' no disponible en res.partner, se omite")
+
         if partner:
-            # Actualizar solo campos vacíos
-            update_data = {}
+            # Actualizar solo campos que actualmente están vacíos en el partner
+            update_vals = {}
             for field, value in partner_data.items():
-                    update_data[field] = value
-            
-            if update_data:
-                partner.write(update_data)
+                # Verificar que el campo exista en el modelo y que su valor actual sea vacío
+                if field in partner and not partner[field]:
+                    update_vals[field] = value
+            if update_vals:
+                partner.write(update_vals)
                 _logger.info(f"Contacto actualizado: {partner.id} - {partner.name}")
+            else:
+                _logger.info(f"Contacto ya existente sin campos vacíos: {partner.id} - {partner.name}")
         else:
+            # Crear nuevo contacto
             partner = env['res.partner'].create(partner_data)
             _logger.info(f"Contacto creado: {partner.id} - {partner.name}")
-        
+
         return partner
    
     @staticmethod
@@ -367,7 +369,7 @@ class ChatBotUtils:
             'partner_id': partner.id,
             'contact_name': data.get('nombre_completo', 'Sin nombre'),
             'phone': data.get('telefono'),
-            'mobile': (data.get('telefono') or '').replace('+58', '0'),
+            'phone': (data.get('telefono') or '').replace('+58', '0'),
             'description': description,
             'medium_id': medium.id,
             'source_id': source.id,
@@ -408,7 +410,6 @@ class ChatBotUtils:
     def get_default_stage(env):
         """Obtener etapa por defecto para leads"""
         stage = env['crm.stage'].search([
-            ('team_id', '=', False),
             ('name', 'ilike', 'nuevo')
         ], limit=1)
         
