@@ -1,10 +1,10 @@
 ## Debes actualizar la bd
 ```bash
           # 1. Conéctate a PostgreSQL
-          sudo -u postgres psql
+          docker exec -it odoo-db18-n8n bash
+          psql -U integraiadev -d dbintegraiadev
+          # deprecated , solo para local : sudo -u postgres psql
 
-          # 2. Selecciona tu base de datos
-          \c dbcliente1_18
 
           # 3. Agrega la columna birthdate (ESTO ES CRÍTICO)
           ALTER TABLE res_partner ADD COLUMN birthdate DATE;

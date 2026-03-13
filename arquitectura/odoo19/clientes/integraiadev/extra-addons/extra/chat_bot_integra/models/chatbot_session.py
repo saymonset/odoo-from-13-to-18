@@ -3,7 +3,7 @@ from odoo.exceptions import ValidationError
 import json
 import logging
 from datetime import datetime
-
+from odoo.addons.chat_bot_integra.controllers.chatbot_utils import ChatBotUtils
 _logger = logging.getLogger(__name__)
 
 class SessionState(models.Model):
@@ -119,67 +119,9 @@ class SessionState(models.Model):
             'pasos_pendientes': registro.pasos_pendientes
         }
     
-    def validar_valor(self, valor, tipo_dato):
-        """Valida un valor según el tipo de dato del paso."""
-        if tipo_dato == 'text':
-            return True, valor
-        elif tipo_dato == 'integer':
-            try:
-                return True, int(valor)
-            except:
-                return False, "Debe ser un número entero"
-        elif tipo_dato == 'float':
-            try:
-                return True, float(valor)
-            except:
-                return False, "Debe ser un número decimal"
-        elif tipo_dato == 'date':
-            # Intentar con varios formatos comunes
-            formatos = [
-                '%Y-%m-%d',      # ISO (2025-12-31)
-                '%d/%m/%Y',      # dd/mm/yyyy (31/12/2025)
-                '%d-%m-%Y',      # dd-mm-yyyy
-                '%d.%m.%Y',      # dd.mm.yyyy
-                '%m/%d/%Y',      # mm/dd/yyyy (opcional, si lo deseas)
-            ]
-            valor_str = str(valor).strip()
-            for fmt in formatos:
-                try:
-                    fecha = datetime.strptime(valor_str, fmt).date()
-                    return True, fecha.isoformat()  # siempre devolvemos en ISO
-                except ValueError:
-                    continue
-            return False, "Fecha inválida. Use formato DD/MM/YYYY o YYYY-MM-DD"
-        elif tipo_dato == 'datetime':
-            try:
-                dt = fields.Datetime.from_string(valor)
-                return True, dt.isoformat()
-            except:
-                return False, "Fecha y hora inválida"
-        elif tipo_dato == 'boolean':
-            if isinstance(valor, bool):
-                return True, valor
-            if isinstance(valor, str):
-                v = valor.lower()
-                if v in ['true', '1', 'yes', 'sí']:
-                    return True, True
-                elif v in ['false', '0', 'no']:
-                    return True, False
-            return False, "Debe ser un booleano (true/false)"
-        elif tipo_dato == 'image':
-            # Aceptamos cualquier string (p.ej., base64)
-            return True, valor
-        elif tipo_dato == 'selection':
-            # Sin opciones predefinidas, aceptamos cualquier texto
-            return True, valor
-        else:
-            return False, f"Tipo de dato no soportado: {tipo_dato}"
+   
     
-    def procesar_paso(self, session_id, valor):
-        """
-        Procesa el paso actual de la sesión con el valor ingresado.
-        Valida, guarda en datos_paciente y avanza al siguiente paso.
-        """
+    def procesar_paso(self, session_id, valor, paso):
         registro = self.search([('session_id', '=', session_id)], limit=1)
         if not registro:
             return {'success': False, 'error': 'Sesión no encontrada'}
@@ -190,8 +132,12 @@ class SessionState(models.Model):
         paso_actual = registro.pasos_pendientes[0]
         tipo = paso_actual.get('tipo_dato', 'text')
         campo_destino = paso_actual.get('campo_destino')
+        es_paso_telefono = paso_actual.get('es_paso_telefono', False)
+        if 'solicitar_phone' == campo_destino:
+            es_paso_telefono = True
 
-        valido, resultado = self.validar_valor(valor, tipo)
+        utils = ChatBotUtils()
+        valido, resultado = utils.validar_valor(valor, tipo, paso)
         if not valido:
             return {
                 'success': False,
@@ -199,16 +145,37 @@ class SessionState(models.Model):
                 'paso_actual': paso_actual
             }
 
-        # Actualizar datos_paciente
         estado_actual = registro.estado or {}
         if 'datos_paciente' not in estado_actual:
             estado_actual['datos_paciente'] = {}
         estado_actual['datos_paciente'][campo_destino] = resultado
 
-        # Remover paso procesado
-        nuevos_pasos = registro.pasos_pendientes[1:]
+        nuevos_pasos = registro.pasos_pendientes[1:]  # Quitamos el paso actual
 
-        # Actualizar paso actual en estado
+        # Si es el paso de teléfono y existe el contacto, auto‑rellenamos
+        if es_paso_telefono:
+            partner = utils.find_partner_by_phone(self.env, valor)  # usamos el valor original
+            if partner:
+                # Mapeo de campos del partner a campos del flujo
+                auto_map = {}
+                if partner.name:
+                    auto_map['solicitar_name'] = partner.name
+                if partner.vat:
+                    auto_map['solicitar_vat'] = partner.vat
+                if partner.birthdate:
+                    # Convertir a string ISO (YYYY-MM-DD) que es el formato que espera el paso date
+                    auto_map['solicitar_birthdate'] = partner.birthdate.isoformat()
+                # Como el paciente ya existe, marcamos 'no' en solicitar_es_paciente_nuevo
+                auto_map['solicitar_es_paciente_nuevo'] = 'no'
+
+                # Actualizar datos_paciente con los valores del partner
+                for campo, valor_auto in auto_map.items():
+                    estado_actual['datos_paciente'][campo] = valor_auto
+
+                # Filtrar nuevos_pasos para eliminar aquellos cuyos campo_destino ya fueron auto‑rellenados
+                nuevos_pasos = [p for p in nuevos_pasos if p.get('campo_destino') not in auto_map]
+
+        # Determinar el siguiente paso
         if nuevos_pasos:
             siguiente = nuevos_pasos[0]
             estado_actual.update({
@@ -220,9 +187,14 @@ class SessionState(models.Model):
                 'modo': 'FLUJO',
             })
         else:
+            # Flujo completado
             estado_actual.update({
                 'paso': 'COMPLETADO',
                 'modo': 'COMPLETADO',
+                'nombre_mostrar': None,
+                'tipo_dato': None,
+                'mensaje_prompt': None,
+                'es_requerido': None,
             })
 
         estado_actual['timestamp'] = fields.Datetime.now().isoformat()
@@ -236,10 +208,10 @@ class SessionState(models.Model):
             'success': True,
             'session_id': session_id,
             'paso_actual': estado_actual['paso'],
-            'nombre_mostrar': estado_actual['nombre_mostrar'],
-            'tipo_dato': estado_actual['tipo_dato'],
-            'mensaje_prompt': estado_actual['mensaje_prompt'],
-            'es_requerido': estado_actual['es_requerido'],
+            'nombre_mostrar': estado_actual.get('nombre_mostrar'),
+            'tipo_dato': estado_actual.get('tipo_dato'),
+            'mensaje_prompt': estado_actual.get('mensaje_prompt'),
+            'es_requerido': estado_actual.get('es_requerido'),
             'pasos_restantes': len(nuevos_pasos),
             'proximo_paso': nuevos_pasos[0] if nuevos_pasos else None,
             'datos_paciente': estado_actual.get('datos_paciente', {}),

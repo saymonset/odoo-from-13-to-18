@@ -38,6 +38,7 @@ class InicioAgendarController(http.Controller):
                     'mensaje_error': paso.mensaje_error,
                     'es_requerido': paso.es_requerido,
                     'campo_destino': paso.campo_destino,
+                    'es_paso_telefono': paso.es_paso_telefono,  
                 })
 
         return {
@@ -193,14 +194,17 @@ class InicioAgendarController(http.Controller):
             data = json.loads(request.httprequest.get_data(as_text=True))
             session_id = data.get('session_id')
             valor = data.get('valor')
+            paso = data.get('paso')
 
             if not session_id:
                 return Response(json.dumps({'success': False, 'error': 'session_id requerido'}), status=400, content_type='application/json')
             if 'valor' not in data:
                 return Response(json.dumps({'success': False, 'error': 'valor requerido'}), status=400, content_type='application/json')
+            if not paso:
+                return Response(json.dumps({'success': False, 'error': 'paso requerido'}), status=400, content_type='application/json')
 
             env = request.env(user=2)  # admin
-            resultado = env['chatbot.session'].sudo().procesar_paso(session_id, valor)
+            resultado = env['chatbot.session'].sudo().procesar_paso(session_id, valor, paso)
 
             status = 200 if resultado.get('success') else 200
             return Response(json.dumps(resultado, default=str), status=status, content_type='application/json', headers=[('Access-Control-Allow-Origin', '*')])

@@ -49,3 +49,17 @@ class ChatbotPaso(models.Model):
         default=False,
         help='Marca este paso como el obligatorio de teléfono (solo uno por flujo)'
     )
+  
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('nombre_interno') == 'solicitar_phone':
+                vals['es_paso_telefono'] = True
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if vals.get('nombre_interno') == 'solicitar_phone':
+            vals['es_paso_telefono'] = True
+        elif 'nombre_interno' in vals and vals['nombre_interno'] != 'solicitar_phone':
+            vals['es_paso_telefono'] = False
+        return super().write(vals)

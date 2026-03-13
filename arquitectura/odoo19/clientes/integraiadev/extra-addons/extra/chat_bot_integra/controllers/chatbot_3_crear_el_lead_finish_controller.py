@@ -55,8 +55,7 @@ class ChatBotController(http.Controller):
                     data = dict(http_request.args)
             
             # 2. Extraer teléfono de múltiples campos posibles
-            telefono = (data.get('telefono') or data.get('phone') or 
-                       data.get('telefono_cliente') or data.get('numero') or '')
+            telefono = (data.get('solicitar_phone') or '')
             
             if not telefono:
                 _logger.warning("No se proporcionó teléfono en la petición")
@@ -64,7 +63,7 @@ class ChatBotController(http.Controller):
                     json.dumps({
                         'existe': False,
                         'error': True,
-                        'mensaje': 'Parámetro "telefono" es requerido'
+                        'mensaje': 'Parámetro "solicitar_phone" es requerido'
                     }),
                     content_type='application/json; charset=utf-8',
                     headers=[('Access-Control-Allow-Origin', '*')]
@@ -115,7 +114,7 @@ class ChatBotController(http.Controller):
                          f"👤 **Datos del paciente:**\n"
                          f"• Nombre: {partner.name}\n"
                          f"• Cédula: {partner.vat or 'No registrada'}\n"
-                         f"• Teléfono: {partner.mobile or partner.phone}\n",
+                         f"• Teléfono: {partner.phone}\n",
                     'ultima_cita': ultima_cita_str,
                     'cedula': partner.vat or '',
                     'nombre_completo': partner.name or '',
@@ -229,17 +228,17 @@ class ChatBotController(http.Controller):
             
             # Verificar específicamente imágenes
             _logger.info("=== VERIFICACIÓN DE IMÁGENES ===")
-            _logger.info("foto_cedula_url existe? %s", 'foto_cedula_url' in data)
-            if 'foto_cedula_url' in data:
-                _logger.info("Valor de foto_cedula_url: %s", data.get('foto_cedula_url'))
-                _logger.info("Es URL válida? %s", bool(re.match(r'^https?://', str(data.get('foto_cedula_url', '')))))
+            _logger.info("solicitar_foto_vat existe? %s", 'solicitar_foto_vat' in data)
+            if 'solicitar_foto_vat' in data:
+                _logger.info("Valor de solicitar_foto_vat: %s", data.get('solicitar_foto_vat'))
+                _logger.info("Es URL válida? %s", bool(re.match(r'^https?://', str(data.get('solicitar_foto_vat', '')))))
             
-            _logger.info("imagenes_adicionales existe? %s", 'imagenes_adicionales' in data)
-            if 'imagenes_adicionales' in data:
-                _logger.info("Valor de imagenes_adicionales: %s", data.get('imagenes_adicionales'))
+            _logger.info("solicitar_imagenes_adicionales existe? %s", 'solicitar_imagenes_adicionales' in data)
+            if 'solicitar_imagenes_adicionales' in data:
+                _logger.info("Valor de solicitar_imagenes_adicionales: %s", data.get('solicitar_imagenes_adicionales'))
             
             # 2. Validar datos requeridos
-            campos_requeridos = ['cedula', 'telefono', 'nombre_completo', 'fecha_nacimiento']
+            campos_requeridos = ['solicitar_vat', 'solicitar_phone', 'solicitar_name', 'solicitar_birthdate']
             for campo in campos_requeridos:
                 if campo not in data or not data[campo]:
                     return Response(
@@ -260,10 +259,10 @@ class ChatBotController(http.Controller):
             
             # 4. Buscar o crear contacto usando ChatBotUtils
             partner = ChatBotUtils.update_create_contact(env, {
-                'cedula': data.get('cedula', ''),
-                'telefono': data.get('telefono', ''),
-                'nombre_completo': data.get('nombre_completo', ''),
-                'fecha_nacimiento': data.get('fecha_nacimiento', '')
+                'solicitar_vat': data.get('solicitar_vat', ''),
+                'solicitar_phone': data.get('solicitar_phone', ''),
+                'solicitar_name': data.get('solicitar_name', ''),
+                'solicitar_birthdate': data.get('solicitar_birthdate', '')
             })
             
             # 5. Configurar UTM y etiquetas
@@ -312,7 +311,7 @@ class ChatBotController(http.Controller):
                 ChatBotUtils.assign_lead_round_robin(env, lead, team)
             
             # 9. Manejar imágenes adjuntas si existen
-            if 'foto_cedula_url' in data or 'imagenes_adicionales' in data:
+            if 'solicitar_foto_solicitar_vat' in data or 'solicitar_imagenes_adicionales' in data:
                 # Validar URLs de imágenes
                 validated_images = ChatBotUtils.validate_image_urls(data)
                 data.update(validated_images)
@@ -359,10 +358,10 @@ class ChatBotController(http.Controller):
                 'lead_id': lead.id,
                 'cliente_id': partner.id,
                 'cliente_nombre': partner.name,
-                'telefono': data.get('telefono'),
-                'cedula': data.get('cedula'),
-                'fecha_preferida': data.get('fecha_preferida', ''),
-                'hora_preferida': data.get('hora_preferida', ''),
+                'telefono': data.get('solicitar_phone'),
+                'cedula': data.get('solicitar_vat'),
+                'fecha_preferida': data.get('solicitar_fecha_preferida', ''),
+                'hora_preferida': data.get('solicitar_hora_preferida', ''),
                 'respuesta_para_bot': respuesta_bot,
                 'mensaje': 'Cita registrada exitosamente. Un ejecutivo se contactará pronto.',
                 'session_eliminada': session_id if session_id else None,
