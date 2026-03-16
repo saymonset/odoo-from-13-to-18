@@ -354,6 +354,9 @@ class ChatBotController(http.Controller):
             
             # 12. Retornar respuesta exitosa
             response_data = {
+                'session_id': data.get('session_id'),
+                'conversation_id': data.get('conversation_id'),
+                'account_id': data.get('account_id'),
                 'existe': True,
                 'lead_id': lead.id,
                 'cliente_id': partner.id,
@@ -363,6 +366,9 @@ class ChatBotController(http.Controller):
                 'fecha_preferida': data.get('solicitar_fecha_preferida', ''),
                 'hora_preferida': data.get('solicitar_hora_preferida', ''),
                 'respuesta_para_bot': respuesta_bot,
+                'text': respuesta_bot,
+                'content': respuesta_bot,
+                'output': respuesta_bot,
                 'mensaje': 'Cita registrada exitosamente. Un ejecutivo se contactará pronto.',
                 'session_eliminada': session_id if session_id else None,
                 'equipo_asignado': equipo_asignado,

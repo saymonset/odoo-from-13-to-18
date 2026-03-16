@@ -68,7 +68,7 @@ class SessionState(models.Model):
     
     
     @api.model
-    def iniciar_flujo(self, session_id, flow_name, steps):
+    def iniciar_flujo(self, session_id, flow_name, steps, equipo_asignado):
         """
         Inicia un flujo para una sesión, guardando los pasos pendientes y estableciendo el primer paso.
         steps: lista de diccionarios con la definición de cada paso (debe incluir nombre_interno, campo_destino, tipo_dato, etc.)
@@ -82,7 +82,7 @@ class SessionState(models.Model):
                 'tipo_dato': steps[0]['tipo_dato'] if steps else 'SIN_PASOS',
                 'mensaje_prompt': steps[0]['mensaje_prompt'] if steps else 'SIN_PASOS',
                 'es_requerido': steps[0]['es_requerido'] if steps else 'SIN_PASOS',
-                'datos_paciente': {},
+                'datos_paciente': {'equipo_asignado': equipo_asignado},
                 'timestamp': fields.Datetime.now().isoformat()
             }
             vals = {

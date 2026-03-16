@@ -32,15 +32,31 @@ class ChatBotUtils:
 
     @staticmethod
     def convert_fecha_nacimiento(fecha_str):
-        """Convierte fecha de dd/mm/yyyy a yyyy-mm-dd para Odoo"""
+        """Convierte fecha a formato yyyy-mm-dd para Odoo, aceptando múltiples formatos de entrada."""
         if not fecha_str:
             return False
-        try:
-            fecha_obj = datetime.strptime(fecha_str, '%d/%m/%Y')
-            return fecha_obj.strftime('%Y-%m-%d')
-        except Exception as e:
-            _logger.error(f"Error convirtiendo fecha {fecha_str}: {str(e)}")
-            return False
+
+        # Lista de formatos posibles (ordena por probabilidad de uso)
+        formatos = [
+            '%Y-%m-%d',      # 1975-05-24 (ISO)
+            '%d/%m/%Y',      # 24/05/1975
+            '%d-%m-%Y',      # 24-05-1975
+            '%Y/%m/%d',      # 1975/05/24
+            '%m/%d/%Y',      # 05/24/1975 (US)
+            '%d.%m.%Y',      # 24.05.1975
+        ]
+
+        for fmt in formatos:
+            try:
+                fecha_obj = datetime.strptime(fecha_str, fmt)
+                return fecha_obj.strftime('%Y-%m-%d')
+            except ValueError:
+                continue
+
+        # Si ningún formato funciona
+        _logger.error(f"Error convirtiendo fecha {fecha_str}: formato no reconocido")
+        return False
+
 
     @staticmethod
     def convert_date(date_str):
@@ -326,7 +342,8 @@ class ChatBotUtils:
         }
         
         lead = env['crm.lead'].create(lead_data)
-        updated_name = f"{lead.name} - ID {lead.id}"
+        fecha_creacion = lead.create_date.strftime('%d/%m/%Y') if lead.create_date else datetime.now().strftime('%d/%m/%Y')
+        updated_name = f"{lead.name} - ID {lead.id} ({fecha_creacion})"
         lead.write({'name': updated_name})
         _logger.info(f"Lead creado: ID {lead.id} - {lead.name}")
         
@@ -334,20 +351,52 @@ class ChatBotUtils:
 
     @staticmethod
     def generate_description(data):
-        """Generar descripción del lead"""
-        return (
-            "Cita desde WhatsApp Bot \n\n"
-            f"• Paciente: {data.get('solicitar_name', 'N/A')}\n"
-            f"• Cédula: {data.get('solicitar_vat', 'N/A')}\n"
-            f"• Fecha de nacimiento: {data.get('solicitar_birthdate', 'N/A')}\n"
-            f"• Teléfono: {data.get('solicitar_phone', 'N/A')}\n"
-            f"• Servicio: {data.get('solicitar_servicio', 'N/A')}\n"
-            f"• Fecha preferida: {data.get('solicitar_fecha_preferida', 'lo antes posible')}\n"
-            f"• Horario: {data.get('hora_preferida', 'cualquier hora')}\n"
-            f"• Medio de pago: {data.get('solicitar_medio_pago', 'N/A')}\n"
-            f"• Paciente nuevo: {'Sí' if str(data.get('solicitar_es_paciente_nuevo','')).lower() in ['sí','si','yes','s'] else 'No'}\n"
-            f"• Interés Tarjeta Salud: {'Sí' if str(data.get('solicitar_membresia_interes','')).lower() in ['sí','si','yes','s'] else 'No'}"
-        )
+        """Generar descripción del lead, omitiendo campos ausentes."""
+        platform = data.get('plataforma', 'WhatsApp')
+        # Normalizar a "WhatsApp" si es 'whatsapp' o 'Whatsapp'
+        if platform.lower() == 'whatsapp':
+            platform = 'WhatsApp'
+        lines = [f"Cita desde {platform} Bot \n"]
+
+        # Valores por defecto para campos que pueden venir vacíos
+        defaults = {
+            'solicitar_fecha_preferida': 'lo antes posible',
+            'hora_preferida': 'cualquier hora',
+        }
+
+        fields_order = [
+            ('solicitar_name', 'Paciente'),
+            ('solicitar_vat', 'Cédula'),
+            ('solicitar_birthdate', 'Fecha de nacimiento'),
+            ('solicitar_phone', 'Teléfono'),
+            ('solicitar_servicio', 'Servicio'),
+            ('solicitar_fecha_preferida', 'Fecha preferida'),
+            ('hora_preferida', 'Horario'),
+            ('solicitar_medio_pago', 'Medio de pago'),
+            ('solicitar_es_paciente_nuevo', 'Paciente nuevo'),
+            ('solicitar_membresia_interes', 'Interés Tarjeta Salud'),
+        ]
+
+        for field, label in fields_order:
+            if field in data:
+                raw_value = data[field]
+                if raw_value and str(raw_value).strip():
+                    value = str(raw_value).strip()
+                else:
+                    if field in defaults:
+                        value = defaults[field]
+                    else:
+                        continue
+
+                if field in ('solicitar_es_paciente_nuevo', 'solicitar_membresia_interes'):
+                    value = 'no' if str(value).lower() in ['no', 'No', 'NO', 'n'] else 'Si'
+
+                lines.append(f"• {label}: {value}")
+
+        if len(lines) == 1:
+            lines.append("• Sin información adicional")
+
+        return "\n".join(lines)
 
     @staticmethod
     def get_default_stage(env):
@@ -442,15 +491,31 @@ class ChatBotUtils:
 
     @staticmethod
     def generate_response(data):
-        """Generar respuesta para el bot"""
-        return (
-            "¡Tu solicitud ha sido registrada exitosamente!\n\n"
-            f"• Paciente: {data.get('solicitar_name', 'N/A')}\n"
-            f"• Servicio: {data.get('solicitar_servicio', 'N/A')}\n"
-            f"• Preferencia: {data.get('solicitar_fecha_preferida', 'lo antes posible')} por la {data.get('solicitar_hora_preferida', 'cualquier hora')}\n\n"
-            "En breve un ejecutivo te contactará.\n"
-            "¡Gracias por confiar en nosotros!"
-        )
+        """Generar respuesta para el bot, omitiendo campos que no están presentes."""
+        lines = ["¡Tu solicitud ha sido registrada exitosamente!\n"]
+
+        # Solo agregar línea si el campo existe y no es None/vacío (según tu criterio)
+        if data.get('solicitar_name'):
+            lines.append(f"• Paciente: {data['solicitar_name']}")
+
+        if data.get('solicitar_servicio'):
+            lines.append(f"• Servicio: {data['solicitar_servicio']}")
+
+        # Manejo especial para fecha y hora preferida (pueden venir por separado)
+        fecha = data.get('solicitar_fecha_preferida')
+        hora = data.get('solicitar_hora_preferida')
+        if fecha or hora:
+            pref = f"• Preferencia: {fecha if fecha else 'lo antes posible'}"
+            if hora:
+                pref += f" por la {hora}"
+            else:
+                pref += " a cualquier hora"
+            lines.append(pref)
+
+        # Líneas fijas finales
+        lines.append("\nEn breve un ejecutivo te contactará.\n¡Gracias por confiar en nosotros!")
+
+        return "\n".join(lines)
 
     @staticmethod   
     def validar_valor(valor, tipo_dato, paso=None):

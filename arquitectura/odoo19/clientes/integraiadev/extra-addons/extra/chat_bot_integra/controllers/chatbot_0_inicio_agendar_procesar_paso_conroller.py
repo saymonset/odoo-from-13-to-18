@@ -57,7 +57,7 @@ class InicioAgendarController(http.Controller):
     def inicio_agendar(self, **kw):
         """
         Endpoint para iniciar proceso de agendar.
-        Recibe: {"session_id": "...", "name_flow": "..."}
+        Recibe: {"session_id": "...", "name_flow": "...",  "equipo_asignado": "..."}
         Devuelve: {
             "success": true,
             "session_id": "...",
@@ -100,6 +100,7 @@ class InicioAgendarController(http.Controller):
             # Validar campos requeridos
             session_id = data.get('session_id')
             name_flow = data.get('name_flow')
+            equipo_asignado = data.get('equipo_asignado')
 
             if not session_id:
                 return Response(
@@ -141,7 +142,7 @@ class InicioAgendarController(http.Controller):
             # Inicializar el flujo en la sesión
             env = request.env(user=2)  # admin
             session_state = env['chatbot.session'].sudo()
-            session_state.iniciar_flujo(session_id, name_flow, steps)  
+            session_state.iniciar_flujo(session_id, name_flow, steps, equipo_asignado)  
 
             # Construir respuesta
             respuesta = {
