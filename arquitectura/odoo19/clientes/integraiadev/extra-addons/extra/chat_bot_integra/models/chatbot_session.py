@@ -142,7 +142,15 @@ class SessionState(models.Model):
             return {
                 'success': False,
                 'error': resultado,
-                'paso_actual': paso_actual
+                'text': resultado,
+                'valor': resultado,
+                'content': resultado,
+                'paso_actual': 'ERROR',
+                'session_id': session_id,
+                'tipo_dato': paso_actual.get('tipo_dato'),
+                'mensaje_prompt': paso_actual.get('mensaje_prompt'),
+                'es_requerido': paso_actual.get('es_requerido'),
+                'datos_paciente': paso_actual.get('datos_paciente', {})
             }
 
         estado_actual = registro.estado or {}
@@ -174,6 +182,8 @@ class SessionState(models.Model):
 
                 # Filtrar nuevos_pasos para eliminar aquellos cuyos campo_destino ya fueron auto‑rellenados
                 nuevos_pasos = [p for p in nuevos_pasos if p.get('campo_destino') not in auto_map]
+            else:    
+                estado_actual['datos_paciente']['solicitar_es_paciente_nuevo'] = 'si'
 
         # Determinar el siguiente paso
         if nuevos_pasos:

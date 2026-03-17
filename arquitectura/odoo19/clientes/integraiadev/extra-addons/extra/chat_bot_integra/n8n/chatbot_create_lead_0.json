@@ -21,8 +21,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -2352,
-        416
+        -1232,
+        -288
       ],
       "id": "f1ee49b8-0485-4a43-928c-04fcb8ebbead",
       "name": "When clicking ‘Execute workflow’"
@@ -449,8 +449,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1008,
-        -512
+        -800,
+        -128
       ],
       "id": "c08b1384-0745-4367-85f8-b6d57d56cc1e",
       "name": "Enviar_mensaje_de_IA",
@@ -1262,7 +1262,7 @@
         "url": "https://integraiadev.integraia.lat/chat_bot_integra/inicioagendar",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"session_id\": \"{{ $json.session_id }}\",\n   \"name_flow\": \"flujoprueba\"\n \n} ",
+        "jsonBody": "={\n  \"session_id\": \"{{ $json.session_id }}\",\n   \"name_flow\": \"flujoprueba\",\n   \"equipo_asignado\": \"{{$json.equipo_asignado|| \"\"}}\"\n \n} ",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1277,7 +1277,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst nuevosItems = [];\n\nfor (const item of items) {\n  try {\n    let str = item.json.output;\n\n    // Reemplazar escapes Unicode compuestos del estilo \\u{1F6E0\\uFE0F}\n    str = str.replace(/\\\\u\\{([^}]+)\\}/g, (match, inner) => {\n      const parts = inner.split(/\\\\u/);\n      let result = '';\n      for (let part of parts) {\n        if (part === '') continue;\n        result += String.fromCodePoint(parseInt(part, 16));\n      }\n      return result;\n    });\n\n    // Ahora parsear el JSON resultante\n    const datosParseados = JSON.parse(str);\n    nuevosItems.push({ json: datosParseados });\n  } catch (e) {\n    // Si falla, podemos devolver el item original con información del error\n    nuevosItems.push({\n      json: {\n        error: e.message,\n        original: item.json.output\n      }\n    });\n  }\n}\n\nreturn nuevosItems;"
+        "jsCode": "const items = $input.all();\nconst nuevosItems = [];\n\nfor (const item of items) {\n  try {\n    let str = item.json.output;\n\n    // Reemplazar escapes Unicode compuestos del estilo \\u{1F6E0\\uFE0F}\n    str = str.replace(/\\\\u\\{([^}]+)\\}/g, (match, inner) => {\n      const parts = inner.split(/\\\\u/);\n      let result = '';\n      for (let part of parts) {\n        if (part === '') continue;\n        result += String.fromCodePoint(parseInt(part, 16));\n      }\n      return result;\n    });\n\n    // Parsear el JSON principal\n    const datosParseados = JSON.parse(str);\n\n    // Verificar si existe la propiedad \"output\" y si contiene el patrón equipo_asignado: \"valor\"\n    if (datosParseados.output && typeof datosParseados.output === 'string') {\n      const match = datosParseados.output.match(/^\\s*equipo_asignado:\\s*\"([^\"]*)\"\\s*$/);\n      if (match) {\n        // Agregar la nueva propiedad \"equipo_asignado\" con el valor extraído\n        datosParseados.equipo_asignado = match[1];\n      }\n    }\n\n    // Agregar el objeto enriquecido a la salida\n    nuevosItems.push({ json: datosParseados });\n\n  } catch (e) {\n    // Si falla, devolver información del error\n    nuevosItems.push({\n      json: {\n        error: e.message,\n        original: item.json.output\n      }\n    });\n  }\n}\n\nreturn nuevosItems;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1440,6 +1440,195 @@
       ],
       "id": "60003be4-db10-4a73-92ae-b96a6e9c264d",
       "name": "extraer_error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "37919165-cf06-468c-8339-5cb3cfe30d54",
+              "leftValue": "={{ $json.paso_actual }}",
+              "rightValue": "COMPLETADO",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1072,
+        -512
+      ],
+      "id": "ae0e54a7-c928-4b80-9f85-4f85433dafd9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://integraiadev.integraia.lat/chat_bot_integra/capturar_lead_http",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "solicitar_vat",
+              "value": "={{$json.datos_paciente?.solicitar_vat || '' }}"
+            },
+            {
+              "name": "solicitar_phone",
+              "value": "={{ $json.datos_paciente?.solicitar_phone || '' }}"
+            },
+            {
+              "name": "solicitar_name",
+              "value": "={{ $json.datos_paciente?.solicitar_name || '' }}"
+            },
+            {
+              "name": "solicitar_birthdate",
+              "value": "={{  $json.datos_paciente?.solicitar_birthdate || '' }}"
+            },
+            {
+              "name": "plataforma",
+              "value": "={{ $json.tool_input?.plataforma || $json.platform || 'whatsapp' }}"
+            },
+            {
+              "name": "solicitar_fecha_preferida",
+              "value": "={{  $json.datos_paciente?.solicitar_fecha_preferida || '' }}"
+            },
+            {
+              "name": "solicitar_hora_preferida",
+              "value": "={{  $json.datos_paciente?.solicitar_hora_preferida || '' }}"
+            },
+            {
+              "name": "solicitar_servicio",
+              "value": "={{ $json.datos_paciente?.solicitar_servicio || '' }}"
+            },
+            {
+              "name": "solicitar_medio_pago",
+              "value": "={{ $json.datos_paciente?.solicitar_medio_pago || '' }}"
+            },
+            {
+              "name": "solicitar_es_paciente_nuevo",
+              "value": "={{$json.datos_paciente?.solicitar_es_paciente_nuevo || '' }}"
+            },
+            {
+              "name": "solicitar_membresia_interes",
+              "value": "={{ $json.datos_paciente?.solicitar_membresia_interes || '' }}"
+            },
+            {
+              "name": "solicitar_foto_vat",
+              "value": "={{  $json.datos_paciente?.solicitar_foto_vat || '' }}"
+            },
+            {
+              "name": "solicitar_imagenes_adicionales",
+              "value": "={{ (Array.isArray($json.datos_paciente.solicitar_imagenes_adicionales) ? $json.estado_actual.datos_paciente.solicitar_imagenes_adicionales.join(',') : '') }}"
+            },
+            {
+              "name": "session_id",
+              "value": "={{ $json.session_id || ''}}"
+            },
+            {
+              "name": "equipo_asignado",
+              "value": "={{ $json.datos_paciente.equipo_asignado || ''}}"
+            },
+            {
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $json.account_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -800,
+        -784
+      ],
+      "id": "f03f07ec-c9ab-4a9e-8ac9-573e418a7c32",
+      "name": "capturar_lead_http"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23f4ee57-82f1-4449-9f14-e2819dff45a8",
+              "name": "session_id",
+              "value": "={{ $json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "49ed66be-9fb7-4185-90d6-6b56f855b3ff",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "dcb3919a-97fe-46ca-94c9-b4cbca5711e3",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f2bccaf3-7852-4fef-bef7-74cec204c2d6",
+              "name": "platform",
+              "value": "={{ $json.platform }}",
+              "type": "string"
+            },
+            {
+              "id": "bfd1b011-202e-42ef-a169-da5bd6a1e62a",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "8b48f9d0-82dc-4b1d-976c-d5f1e168f538",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "b82d269c-e38c-4898-a03e-7d89cfe9f680",
+              "name": "valor",
+              "value": "={{ $json.valor }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -768,
+        -400
+      ],
+      "id": "9870d10d-e08c-4407-b978-5fa36745e780",
+      "name": "continuar"
     }
   ],
   "pinData": {
@@ -1450,19 +1639,20 @@
           "conversation_id": "",
           "account_id": "",
           "platform": "Channel::Whatsapp",
-          "modo": "COMPLETADO",
-          "paso": "COMPLETADO",
+          "modo": "FLUJO",
+          "paso": "solicitar_birthdate",
           "valido": true,
-          "valor": "¡Gracias por completar tus datos! Pronto te contactará un asesor. ¿Hay algo más en lo que pueda ayudarte?",
-          "text": "¡Gracias por completar tus datos! Pronto te contactará un asesor. ¿Hay algo más en lo que pueda ayudarte?",
-          "content": "¡Gracias por completar tus datos! Pronto te contactará un asesor. ¿Hay algo más en lo que pueda ayudarte?",
-          "timestamp_actividad": "2026-03-13T09:03:02.439-04:00",
-          "datos_paciente": {
-            "solicitar_vat": "10169949",
-            "solicitar_name": "Ratoncito Perez",
-            "solicitar_phone": "+584142711347",
-            "solicitar_birthdate": "1971-03-01"
-          }
+          "valor": "Fecha inválida. Use formato DD/MM/YYYY o YYYY-MM-DD",
+          "text": "Fecha inválida. Use formato DD/MM/YYYY o YYYY-MM-DD",
+          "content": "Fecha inválida. Use formato DD/MM/YYYY o YYYY-MM-DD",
+          "timestamp_actividad": "2026-03-17T09:53:30.768-04:00",
+          "datos_paciente": {},
+          "success": false,
+          "error": "Fecha inválida. Use formato DD/MM/YYYY o YYYY-MM-DD",
+          "paso_actual": "ERROR",
+          "tipo_dato": "date",
+          "mensaje_prompt": false,
+          "es_requerido": true
         }
       }
     ]
@@ -1483,7 +1673,7 @@
       "main": [
         [
           {
-            "node": "capturar_lead_http1",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -1806,6 +1996,35 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "capturar_lead_http",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "continuar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1813,7 +2032,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "78c88354-f231-4b27-b239-2f29a655e25b",
+  "versionId": "e77957d7-0d49-4fc3-b2c5-e51f30d981f8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ac8b8e9b824b3711008329bf41bf68736c3261debaa6dcb0eaceede9a0a7edac"
