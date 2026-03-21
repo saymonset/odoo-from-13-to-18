@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree view for chatbot.paso -->
+        <record id="view_chatbot_paso_list" model="ir.ui.view">
+            <field name="name">chatbot.paso.list</field>
+            <field name="model">chatbot.paso</field>
+            <field name="arch" type="xml">
+                <list string="Pasos de Chatbot" editable="top">
+                    <field name="flujo_id"/>
+                    <field name="secuencia"/>
+                    <field name="nombre_interno"/>
+                    <field name="nombre_mostrar"/>
+                    <field name="tipo_dato"/>
+                    <field name="campo_destino"/>
+                    <field name="es_requerido"/>
+                    <field name="es_paso_telefono"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form view for chatbot.paso -->
+        <record id="view_chatbot_paso_form" model="ir.ui.view">
+            <field name="name">chatbot.paso.form</field>
+            <field name="model">chatbot.paso</field>
+            <field name="arch" type="xml">
+                <form string="Paso de Chatbot">
+                    <sheet>
+                        <field name="es_paso_telefono" invisible="1"/>
+                        <group>
+                            <field name="flujo_id" readonly="es_paso_telefono == True"/>
+                            <field name="secuencia" readonly="es_paso_telefono == True"/>
+                            <field name="nombre_interno" readonly="es_paso_telefono == True"/>
+                            <field name="tipo_dato" 
+                                readonly="es_paso_telefono == True"
+                                help="Selecciona el tipo de dato que el usuario debe ingresar. Ej: Texto, Número, Fecha, etc."/>
+                            <field name="campo_destino" readonly="es_paso_telefono == True"/>
+                            <field name="es_requerido" readonly="es_paso_telefono == True"/>
+                        </group>
+                        <group string="Mensajes">
+                            <field name="nombre_mostrar" 
+                                placeholder="Ej: Teléfono, Nombre completo, Correo electrónico"/>
+                            <field name="mensaje_prompt" 
+                                widget="textarea" 
+                                placeholder="Ej: Por favor, ingresa tu número de teléfono:"/>
+                            <field name="mensaje_error" 
+                                widget="textarea" 
+                                placeholder="Ej: Número inválido, intenta de nuevo."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_chatbot_paso" model="ir.actions.act_window">
+            <field name="name">Pasos de Chatbot</field>
+            <field name="res_model">chatbot.paso</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

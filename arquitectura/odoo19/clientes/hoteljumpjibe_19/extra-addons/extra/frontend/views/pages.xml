@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Page: Inicio (Replaces homepage) -->
+    <template id="homepage" name="Jump N Jibe Home" inherit_id="website.homepage" priority="99">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="oe_structure">
+                <!-- Hero Section -->
+                <section class="s_cover pt128 pb128 bg-caribbean-dark" style="background-image: url('/frontend/static/src/img/portada2025-02-25.jpg'); background-size: cover; background-position: center; min-height: 85vh; display: flex; align-items: center;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-8 offset-lg-2 text-center text-white" style="background-color: rgba(0,0,0,0.5); padding: 40px; border-radius: 12px;">
+                                <h1 class="display-3 font-weight-bold text-white">Hotel Jump'n Jibe</h1>
+                                <p class="lead text-white mt-3">Refugio auténtico en el corazón de El Yaque.</p>
+                                <a href="/habitaciones" class="btn btn-primary btn-lg mt-4" style="background-color: #007799; border-color: #007799;">Reservar ahora</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Bienvenidos -->
+                <section class="pt64 pb64 bg-caribbean-bg">
+                    <div class="container text-center">
+                        <h2 class="text-caribbean-dark font-weight-bold">Bienvenidos al Jump'n Jibe</h2>
+                        <p class="lead text-muted mt-3 mx-auto" style="max-width: 800px;">A solo unos pasos del mejor viento y las aguas más vibrantes para tu aventura extrema o tu descanso total. Vive una atmósfera relajada y auténtica donde la pasión por el mar nos une.</p>
+                    </div>
+                </section>
+                <!-- Destacados -->
+                <section class="pt64 pb64">
+                    <div class="container">
+                        <div class="row align-items-stretch">
+                            <div class="col-lg-4 mb-4">
+                                <div class="card h-100 bg-caribbean-light border-0 text-center p-5 shadow-sm">
+                                    <h3 class="text-caribbean-dark">
+                                        <i class="fa fa-map-marker text-caribbean-primary mb-3 d-block fa-2x" />
+                                        Frente al mar
+                                    </h3>
+                                    <p class="mt-3">A menos de 50 metros de la orilla. El mar Caribe te espera.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <div class="card h-100 bg-caribbean-light border-0 text-center p-5 shadow-sm">
+                                    <h3 class="text-caribbean-dark">
+                                        <i class="fa fa-flag text-caribbean-primary mb-3 d-block fa-2x" />
+                                        Windsurf
+                                    </h3>
+                                    <p class="mt-3">Las mejores condiciones para navegar 300 días al año con viento constante.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <div class="card h-100 bg-caribbean-light border-0 text-center p-5 shadow-sm">
+                                    <h3 class="text-caribbean-dark">
+                                        <i class="fa fa-coffee text-caribbean-primary mb-3 d-block fa-2x" />
+                                        Ambiente relajado
+                                    </h3>
+                                    <p class="mt-3">Un espacio donde el lujo es la libertad y la elegancia es la sencillez.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Llamado a la Acción -->
+                <section class="pt80 pb80 bg-caribbean-primary text-white text-center">
+                    <div class="container">
+                        <h2 class="text-white font-weight-bold">¿Listo para la aventura?</h2>
+                        <a href="/habitaciones" class="btn btn-light text-caribbean-primary btn-lg mt-4 font-weight-bold px-5 py-3">Ver nuestras habitaciones</a>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+    <!-- Page: Habitaciones -->
+    <record id="page_rooms" model="website.page">
+        <field name="url">/habitaciones</field>
+        <field name="is_published">True</field>
+        <field name="name">Habitaciones</field>
+        <field name="type">qweb</field>
+        <field name="key">frontend.page_rooms</field>
+        <field name="arch" type="xml">
+            <t t-name="frontend.page_rooms" name="Habitaciones">
+                <t t-call="website.layout">
+                    <div id="wrap" class="oe_structure">
+                        <section class="pt80 pb80 bg-caribbean-bg">
+                            <div class="container">
+                                <h2 class="text-center text-caribbean-dark mb-5 font-weight-bold">Nuestras habitaciones</h2>
+                                <div class="row">
+                                    <div class="col-lg-4 mb-5">
+                                        <div class="card" style="border: 1px solid #004b66; border-radius: 8px; overflow: hidden;">
+                                            <img src="/frontend/static/src/img/hab-grande-mar.jpg" class="card-img-top img img-fluid" alt="Habitación Standard" />
+                                            <div class="card-body bg-caribbean-bg">
+                                                <h5 class="card-title text-caribbean-dark">Habitación Standard</h5>
+                                                <p class="card-text">Ideal para parejas o viajeros solos. Comodidad a un paso del mar.</p>
+                                                <p class="card-text text-caribbean-primary font-weight-bold" style="font-weight: bold;">$120 por noche</p>
+                                                <a href="/contactus" class="btn btn-primary" style="background-color: #007799; border-color: #007799;">Reservar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 mb-5">
+                                        <div class="card" style="border: 1px solid #004b66; border-radius: 8px; overflow: hidden;">
+                                            <img src="/frontend/static/src/img/camavistamar.jpg" class="card-img-top img img-fluid" alt="Suite con Vista" />
+                                            <div class="card-body bg-caribbean-bg">
+                                                <h5 class="card-title text-caribbean-dark">Suite con Vista al Mar</h5>
+                                                <p class="card-text">Disfruta de increíbles amaneceres desde la comodidad de tu cama.</p>
+                                                <p class="card-text text-caribbean-primary font-weight-bold" style="font-weight: bold;">$250 por noche</p>
+                                                <a href="/contactus" class="btn btn-primary" style="background-color: #007799; border-color: #007799;">Reservar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 mb-5">
+                                        <div class="card" style="border: 1px solid #004b66; border-radius: 8px; overflow: hidden;">
+                                            <img src="/frontend/static/src/img/cama0.jpg" class="card-img-top img img-fluid" alt="Habitación Familiar" />
+                                            <div class="card-body bg-caribbean-bg">
+                                                <h5 class="card-title text-caribbean-dark">Habitación Familiar</h5>
+                                                <p class="card-text">Espacio amplio para toda la familia con camas dobles y excelente estilo.</p>
+                                                <p class="card-text text-caribbean-primary font-weight-bold" style="font-weight: bold;">$180 por noche</p>
+                                                <a href="/contactus" class="btn btn-primary" style="background-color: #007799; border-color: #007799;">Reservar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </t>
+            </t>
+        </field>
+    </record>
+    <!-- Page: Ubicación -->
+    <record id="page_location" model="website.page">
+        <field name="url">/ubicacion</field>
+        <field name="is_published">True</field>
+        <field name="name">Ubicación</field>
+        <field name="type">qweb</field>
+        <field name="key">frontend.page_location</field>
+        <field name="arch" type="xml">
+            <t t-name="frontend.page_location" name="Ubicación">
+                <t t-call="website.layout">
+                    <div id="wrap" class="oe_structure">
+                        <section class="pt80 pb80 bg-caribbean-bg">
+                            <div class="container">
+                                <h2 class="text-center text-caribbean-dark mb-5 font-weight-bold">La mejor playa para windsurf y kitesurf</h2>
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6 mb-4">
+                                        <p class="lead" style="line-height: 1.8;">Playa El Yaque es mundialmente reconocida por sus vientos constantes. Estamos ubicados en la zona prime, rodeados de las mejores escuelas de vela y con un ambiente inmejorable para los amantes del mar.</p>
+                                        <p style="line-height: 1.8;">Nuestra ubicación estratégica te permite disfrutar del Mar Caribe desde el amanecer hasta el atardecer, ofreciendo condiciones perfectas tanto para principiantes como para expertos en deportes acuáticos.</p>
+                                    </div>
+                                    <div class="col-lg-6 mb-4 text-center">
+                                        <img src="/frontend/static/src/img/playa.jpg" class="img img-fluid rounded shadow-lg" alt="Playa El Yaque" />
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </t>
+            </t>
+        </field>
+    </record>
+    <!-- Page: Reseñas -->
+    <record id="page_reviews" model="website.page">
+        <field name="url">/resenas</field>
+        <field name="is_published">True</field>
+        <field name="name">Reseñas</field>
+        <field name="type">qweb</field>
+        <field name="key">frontend.page_reviews</field>
+        <field name="arch" type="xml">
+            <t t-name="frontend.page_reviews" name="Reseñas">
+                <t t-call="website.layout">
+                    <div id="wrap" class="oe_structure">
+                        <section class="pt80 pb80 bg-caribbean-bg">
+                            <div class="container">
+                                <h2 class="text-center text-caribbean-dark mb-5 font-weight-bold">Lo que dicen nuestros huéspedes</h2>
+                                <div class="row">
+                                    <div class="col-lg-6 mb-4 ms-auto me-auto">
+                                        <t t-call="frontend.s_testimonial_card" />
+                                    </div>
+                                    <div class="col-lg-6 mb-4 ms-auto me-auto">
+                                        <t t-call="frontend.s_testimonial_card" />
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </t>
+            </t>
+        </field>
+    </record>
+</odoo>
