@@ -7,8 +7,39 @@
   --caribbean-bg: #f2fafc;
 }
 
-* {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif !important;
+/* Aplica la fuente solo a elementos de texto y componentes estructurales,
+   sin afectar las fuentes de íconos */
+body,
+h1, h2, h3, h4, h5, h6,
+p, span, div:not([class*="fa"]):not([class*="icon"]),
+.btn, .navbar, .card, .lead,
+.nav-link, .dropdown-item, .form-control,
+.modal-title, .modal-body, .modal-footer {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Garantiza que los íconos mantengan su fuente original */
+.fa,
+.fas,
+.far,
+.fab,
+.fal,
+.fad,
+[class*=" fa-"],
+[class^="fa-"],
+.o_icon,
+.o_close,
+.modal .close,
+.modal-dialog .close,
+.btn-close,
+.close {
+  font-family: 'FontAwesome' !important;
+}
+
+/* Protege la fuente interna de Odoo */
+.o_icon,
+.o_icon_rtl {
+  font-family: 'odoo_icons' !important;
 }
 
 body {
@@ -25,6 +56,54 @@ body {
 .navbar, header#top {
   background-color: var(--caribbean-dark) !important;
 }
+
+/* --- Estilos para los enlaces del menú principal --- */
+.navbar a,
+.navbar .nav-link,
+.navbar .dropdown-toggle {
+  color: #f8f9fa !important;
+  transition: color 0.2s ease;
+}
+
+.navbar a:hover,
+.navbar .nav-link:hover,
+.navbar .dropdown-toggle:hover {
+  color: #ffffff !important;
+  text-decoration: none;
+}
+
+/* --- Estilos para el menú desplegable (submenú) --- */
+.navbar .dropdown-menu {
+  background-color: #005f7a !important; /* un poco más claro que el navbar, pero sigue siendo oscuro */
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Items del submenú */
+.navbar .dropdown-item {
+  color: #f8f9fa !important;
+  background-color: transparent !important;
+  padding: 0.5rem 1.5rem;
+  transition: background-color 0.2s;
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  background-color: rgba(255,255,255,0.15) !important;
+  color: #ffffff !important;
+  text-decoration: none;
+}
+
+/* Si hay submenús anidados, asegurar consistencia */
+.navbar .dropdown-submenu .dropdown-menu {
+  background-color: #005f7a !important;
+}
+
+/* Opcional: cambiar el color del icono del dropdown (la flecha) */
+.navbar .dropdown-toggle::after {
+  color: #f8f9fa;
+}
+/* --- Fin estilos menú --- */
 
 .card-highlight {
   background-color: var(--caribbean-light) !important;
