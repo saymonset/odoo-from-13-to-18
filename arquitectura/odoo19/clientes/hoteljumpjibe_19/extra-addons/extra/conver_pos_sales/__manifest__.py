@@ -30,6 +30,7 @@
         'views/res_currency_views.xml',
         'views/sale_order_tree_debug.xml',
         'views/sale_order_views.xml',
+        'views/cart_usd.xml',
         # 'views/invoice_report_templates.xml',  # Mantenlo comentado por ahora
     ],
     
