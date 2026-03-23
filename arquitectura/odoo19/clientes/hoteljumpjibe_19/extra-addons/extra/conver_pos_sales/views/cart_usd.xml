@@ -3,10 +3,8 @@
     <!-- ======================== 1. LISTADO DE PRODUCTOS ======================== -->
     <template id="products_item_price_usd" inherit_id="website_sale.products_item" name="Product Grid Price with USD">
         <xpath expr="//div[hasclass('product_price')]" position="after">
-            <t t-set="usd_factor" t-value="website.get_conversion_factor_ves_to_usd()"/>
-            <t t-set="usd_currency" t-value="website.env.ref('base.USD')"/>
             <div class="product_price_usd text-muted small mt-1">
-                USD: <span t-out="(product.price or product.list_price) * usd_factor" t-options="{'widget': 'monetary', 'display_currency': usd_currency}"/>
+                USD: <span t-out="(product.price or product.list_price) * website.get_conversion_factor_ves_to_usd()" t-options="{'widget': 'monetary', 'display_currency': website.env.ref('base.USD')}"/>
             </div>
         </xpath>
     </template>
@@ -14,10 +12,8 @@
     <!-- ======================== 2. PÁGINA DE DETALLE DEL PRODUCTO ======================== -->
     <template id="product_price_usd" inherit_id="website_sale.product_price" name="Product Detail Price with USD">
         <xpath expr="//div[@name='product_price_container']" position="after">
-            <t t-set="usd_factor" t-value="website.get_conversion_factor_ves_to_usd()"/>
-            <t t-set="usd_currency" t-value="website.env.ref('base.USD')"/>
             <div class="text-muted small mt-1">
-                USD: <span t-out="combination_info['price'] * usd_factor" t-options="{'widget': 'monetary', 'display_currency': usd_currency}"/>
+                USD: <span t-out="combination_info['price'] * website.get_conversion_factor_ves_to_usd()" t-options="{'widget': 'monetary', 'display_currency': website.env.ref('base.USD')}"/>
             </div>
         </xpath>
     </template>
@@ -40,7 +36,7 @@
             <td class="td-price-usd pe-0 pt-3 text-end">
                 <small class="text-muted">USD</small><br/>
                 <span t-out="line.price_usd_bcv * line.product_uom_qty" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_aux}"/>
-                </td>
+              </td>
         </xpath>
     </template>
 
