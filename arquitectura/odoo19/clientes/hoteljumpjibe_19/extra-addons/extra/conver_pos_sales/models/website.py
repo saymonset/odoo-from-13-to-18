@@ -45,6 +45,8 @@ class Website(models.Model):
     def get_conversion_factor_ves_to_usd(self):
         """Retorna el factor para convertir VES a USD (precio_VES / factor = precio_USD)"""
         # Si la tasa BCV es 1 USD = X VES, entonces precio_USD = precio_VES / X
+
+
         rate = self.get_bcv_rate()
         if rate:
             return 1.0 / rate

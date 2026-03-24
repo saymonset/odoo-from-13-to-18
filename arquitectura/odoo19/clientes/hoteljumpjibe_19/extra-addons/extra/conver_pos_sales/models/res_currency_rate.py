@@ -213,8 +213,6 @@ class ResCurrencyRate(models.Model):
     bcv_rate_value = fields.Float(
         'Tasa BCV (1 USD = X VES)',
         digits=(12, 4),
-        compute='_compute_bcv_rate',
-        store=True,
         help="Valor original publicado por BCV (1 USD = este valor en VES)"
     )
 
@@ -228,34 +226,4 @@ class ResCurrencyRate(models.Model):
         for rec in self:
             rec.is_bcv_editable = (rec.currency_id.name == 'VES')
 
-    @api.depends('rate', 'currency_id', 'company_id', 'name')
-    def _compute_bcv_rate(self):
-        for record in self:
-            if record.currency_id.name != 'VES' or not record.rate:
-                record.bcv_rate_value = 0.0
-                continue
-
-            base_currency = record.company_id.currency_id
-
-            if base_currency.name == 'USD':
-                record.bcv_rate_value = 1.0 / record.rate
-            else:
-                usd = self.env['res.currency'].sudo().with_context(active_test=False).search([
-                    ('name', '=', 'USD')
-                ], limit=1)
-
-                if not usd:
-                    record.bcv_rate_value = 0.0
-                    continue
-
-                usd_rate = self.search([
-                    ('currency_id', '=', usd.id),
-                    ('name', '=', record.name),
-                    ('company_id', '=', record.company_id.id),
-                ], limit=1)
-
-                if usd_rate and usd_rate.rate:
-                    record.bcv_rate_value = usd_rate.rate / record.rate
-                else:
-                    _logger.warning(f"Sin tasa USD para {record.name} en {record.company_id.name}")
-                    record.bcv_rate_value = 0.0
+   
