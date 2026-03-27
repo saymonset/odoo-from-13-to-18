@@ -2,19 +2,21 @@
 import { Component, useState, onWillStart, onMounted, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
+import { useService } from "@web/core/utils/hooks";
 
 export class PaymentProofComponent extends Component {
     static template = "conver_pos_sales.PaymentProofComponent";
 
     setup() {
+        this.notification = useService("notification");
         this.state = useState({
             showSection: false,
             transferProviderId: null,
             fileUploading: false,
             uploadError: null,
+            uploadSuccess: false,
         });
 
-        // Obtener el ID del proveedor de pago que es transferencia bancaria
         onWillStart(async () => {
             try {
                 const providerId = await rpc("/payment_proof/get_transfer_provider_id");
@@ -25,7 +27,6 @@ export class PaymentProofComponent extends Component {
             }
         });
 
-        // Escuchar cambios en la selección del método de pago
         onMounted(() => {
             console.log("✅ Componente montado");
             this._bindPaymentMethodChange();
@@ -39,7 +40,6 @@ export class PaymentProofComponent extends Component {
     }
 
     _bindPaymentMethodChange() {
-        // Buscar el contenedor de métodos de pago. Intentar varios selectores.
         let radioContainer = document.querySelector("div[id='payment_method']");
         if (!radioContainer) {
             radioContainer = document.querySelector(".o_payment_methods");
@@ -51,12 +51,9 @@ export class PaymentProofComponent extends Component {
         console.log("🔎 Contenedor de métodos de pago encontrado:", radioContainer);
 
         if (radioContainer) {
-            // Escuchar cambios en el contenedor (delegación)
             radioContainer.addEventListener("change", this._onPaymentMethodChange.bind(this));
-            // Llamar una vez para establecer el estado inicial
             this._onPaymentMethodChange();
         } else {
-            // Si no se encuentra, usar MutationObserver para esperar a que aparezca
             console.warn("⚠️ No se encontró contenedor de métodos de pago, observando cambios en body");
             const targetNode = document.body;
             const config = { childList: true, subtree: true };
@@ -96,13 +93,11 @@ export class PaymentProofComponent extends Component {
             return;
         }
 
-        // Intentar obtener el ID del proveedor desde el radio seleccionado
         let providerId = selectedRadio.getAttribute("data-payment-option-id") ||
                          selectedRadio.getAttribute("data-provider-id") ||
                          selectedRadio.getAttribute("data-id") ||
                          selectedRadio.value;
 
-        // También obtener el texto para fallback
         let paymentText = "";
         const label = selectedRadio.closest('label') || selectedRadio.parentElement.querySelector('label, span');
         if (label) paymentText = label.innerText.trim();
@@ -112,12 +107,10 @@ export class PaymentProofComponent extends Component {
 
         let shouldShow = false;
 
-        // Primero comparar por ID si existe
         if (providerId && this.state.transferProviderId && String(providerId) === String(this.state.transferProviderId)) {
             shouldShow = true;
             console.log("✅ Match por ID");
         }
-        // Si no, comparar por texto (en inglés o español)
         else if (paymentText) {
             const lowerText = paymentText.toLowerCase();
             if (lowerText.includes("wire transfer") || lowerText.includes("transferencia bancaria") || lowerText.includes("transferencia")) {
@@ -137,6 +130,7 @@ export class PaymentProofComponent extends Component {
     async uploadFile(file) {
         this.state.fileUploading = true;
         this.state.uploadError = null;
+        this.state.uploadSuccess = false;
         try {
             const formData = new FormData();
             formData.append("payment_proof_file", file);
@@ -146,10 +140,14 @@ export class PaymentProofComponent extends Component {
                 credentials: "same-origin",
             });
             if (!response.ok) throw new Error("Error al subir el archivo");
-            alert("Comprobante adjuntado correctamente.");
+            this.notification.add("Comprobante adjuntado correctamente.", { type: "success" });
+            this.state.uploadSuccess = true;
+            // Limpiar input para permitir nueva subida si se desea
+            const fileInput = document.getElementById("payment_proof_file");
+            if (fileInput) fileInput.value = "";
         } catch (err) {
             this.state.uploadError = err.message;
-            alert("Error al adjuntar el comprobante. Intente nuevamente.");
+            this.notification.add("Error al adjuntar el comprobante. Intente nuevamente.", { type: "danger" });
         } finally {
             this.state.fileUploading = false;
         }
@@ -163,5 +161,4 @@ export class PaymentProofComponent extends Component {
     }
 }
 
-// Registrar el componente para que pueda ser usado en las vistas públicas
 registry.category("public_components").add("conver_pos_sales.PaymentProofComponent", PaymentProofComponent);

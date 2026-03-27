@@ -194,10 +194,12 @@ class BCVRateUpdate(models.Model):
             raise UserError(f"Error al actualizar tasa BCV: {str(e)}")
 
     def update_ves_rate_cron(self):
-        record = self.sudo().search([], limit=1)
-        if not record:
-            record = self.sudo().create({'name': 'Cron BCV'})
-        record.update_ves_rate_now()
+        # Crea un nuevo registro para esta ejecución del cron
+        new_record = self.sudo().create({
+            'name': 'Cron BCV - ' + str(fields.Datetime.now()),      # Puedes cambiar el nombre si quieres diferenciarlo
+            'status': 'pending',
+        })
+        new_record.update_ves_rate_now()
 
 
 class ResCurrencyRate(models.Model):
