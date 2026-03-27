@@ -44,6 +44,12 @@
         'web.assets_backend': [
             'conver_pos_sales/static/src/**/*',
         ],
+         "web.assets_frontend": [
+            'conver_pos_sales/static/src/css/payment_proof_component.css',
+            'conver_pos_sales/static/src/js/payment_proof_component.js',  
+            'conver_pos_sales/static/src/xml/payment_proof_component.xml'
+            
+        ],
     },
     
     'application': False,

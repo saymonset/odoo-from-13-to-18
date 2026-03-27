@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="conver_pos_sales.PaymentProofComponent" owl="1">
+        <div class="mt-3" t-if="state.showSection">
+            <div class="alert alert-info">
+                <strong>Instrucciones de pago:</strong><br/>
+                Realice su transferencia o pago móvil a:<br/>
+                Banco: ... / Teléfono: ... / Cédula: ...<br/>
+                Luego adjunte el comprobante.
+            </div>
+            <div class="form-group">
+                <label for="payment_proof_file">Comprobante de pago (imagen o PDF)</label>
+                <input type="file" id="payment_proof_file" accept="image/*,.pdf" t-on-change="_handleFileChange"/>
+                <div t-if="state.fileUploading" class="text-muted mt-1">
+                    <i class="fa fa-spinner fa-spin me-1"/> Subiendo...
+                </div>
+                <div t-if="state.uploadError" class="text-danger mt-1">
+                    <t t-esc="state.uploadError"/>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
