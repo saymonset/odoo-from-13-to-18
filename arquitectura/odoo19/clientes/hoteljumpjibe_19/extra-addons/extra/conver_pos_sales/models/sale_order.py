@@ -1,7 +1,14 @@
 from odoo import models, fields, api
+from odoo.http import request
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
+
+    payment_proof = fields.Binary('Comprobante de pago', attachment=True)
+    payment_proof_filename = fields.Char('Nombre del archivo')
 
     currency_aux = fields.Many2one(
         'res.currency',
@@ -24,14 +31,61 @@ class SaleOrder(models.Model):
 
     @api.depends('currency_id')
     def _compute_currency_aux(self):
-        #usd = self.env['res.currency'].search([('name', '=', 'USD')], limit=1)
         usd = self.env.ref('base.USD', raise_if_not_found=False)
-        if not usd:
-            # Podemos usar _logger para advertencia o asignar None
-            # y en el campo amount_total_usd manejar el caso.
-            # Por simplicidad, puedes lanzar un UserError o simplemente no asignar.
-            # Aquí elegimos asignar None y luego en amount_total_usd poner 0 si currency_aux es None.
-            usd = None
-        
         for order in self:
             order.currency_aux = usd
+
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        """Copia automáticamente el comprobante de pago de la orden de venta a la factura"""
+        invoices = super()._create_invoices(grouped=grouped, final=final, date=date)
+
+        for order in self:
+            attachments = self.env['ir.attachment'].sudo().search([
+                ('res_model', '=', 'sale.order'),
+                ('res_id', '=', order.id),
+                ('description', '=', 'Comprobante de pago - Transferencia / Pago Móvil'),
+            ])
+
+            for invoice in invoices:
+                for att in attachments:
+                    self.env['ir.attachment'].sudo().create({
+                        'name': att.name,
+                        'type': att.type,
+                        'datas': att.datas,
+                        'mimetype': att.mimetype,
+                        'res_model': 'account.move',
+                        'res_id': invoice.id,
+                        'description': 'Comprobante de pago - Transferencia / Pago Móvil',
+                    })
+                    _logger.info(f"Comprobante copiado a factura {invoice.name} desde orden {order.name}")
+
+        return invoices
+
+    def action_confirm(self):
+        """Intentar crear el attachment si viene del website (por si no se creó antes)"""
+        res = super().action_confirm()
+
+        try:
+            if request and hasattr(request, 'session') and 'payment_proof' in request.session:
+                proof = request.session.pop('payment_proof')
+                order = self
+
+                self.env['ir.attachment'].sudo().create({
+                    'name': proof['filename'],
+                    'type': 'binary',
+                    'datas': proof['data'],
+                    'res_model': 'sale.order',
+                    'res_id': order.id,
+                    'mimetype': proof.get('mimetype'),
+                    'description': 'Comprobante de pago - Transferencia / Pago Móvil',
+                })
+                _logger.info(f"✅ Attachment creado en action_confirm para orden {order.name}")
+
+                order.sudo().write({
+                    'payment_proof': proof['data'],
+                    'payment_proof_filename': proof['filename'],
+                })
+        except Exception:
+            pass  # Ignorar si no hay request (caso backend)
+
+        return res

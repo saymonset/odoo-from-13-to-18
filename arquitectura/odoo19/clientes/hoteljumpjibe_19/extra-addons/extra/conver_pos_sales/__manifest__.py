@@ -17,13 +17,14 @@
         'sale',
         'account',
         'point_of_sale',
+        'website_sale', 
+        'payment'
     ],
 
     'external_dependencies': {
         'python': ['requests', 'beautifulsoup4'],
     },
     
-    # SOLO archivos XML y CSV
     'data': [
         'security/ir.model.access.csv',
         'data/cron_data.xml',
@@ -31,7 +32,9 @@
         'views/sale_order_tree_debug.xml',
         'views/sale_order_views.xml',
         'views/cart_usd.xml',
-        # 'views/invoice_report_templates.xml',  # Mantenlo comentado por ahora
+        'views/payment_attachment_templates.xml',
+        'views/payment_provider_views.xml',
+        # 'views/invoice_report_templates.xml',
     ],
     
     'assets': {
