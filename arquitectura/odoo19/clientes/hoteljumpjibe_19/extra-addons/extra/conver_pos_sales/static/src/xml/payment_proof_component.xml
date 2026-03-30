@@ -69,8 +69,9 @@
                         <div class="row g-3">
                             <div class="col-md-4 mb-3">
                                 <label for="amount_vef" class="form-label">Monto en bolívares</label>
-                                <input type="number" step="0.01" class="form-control" id="amount_vef"
-                                    t-att-value="state.amount_vef" t-on-change="_onAmountVefChange"/>
+                                <!-- Cambiado a type="text" para manejar comas/puntos -->
+                                <input type="text" class="form-control" id="amount_vef"
+                                    t-att-value="state.amount_vef" t-on-input="_onAmountVefInput"/>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="exchange_rate" class="form-label">Tasa de cambio (BCV)</label>
@@ -82,8 +83,9 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="amount_usd" class="form-label">Monto USD</label>
-                                <input type="number" step="0.01" class="form-control" id="amount_usd"
-                                    t-att-value="state.amount_usd" t-on-change="_onAmountUsdChange"/>
+                                <!-- Cambiado a type="text" para manejar comas/puntos -->
+                                <input type="text" class="form-control" id="amount_usd"
+                                    t-att-value="state.amount_usd" t-on-input="_onAmountUsdInput"/>
                             </div>
                         </div>
 

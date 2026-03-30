@@ -91,20 +91,41 @@ export class PaymentProofComponent extends Component {
         });
     }
 
+    // Normaliza números: reemplaza coma por punto y elimina caracteres no numéricos excepto punto y signo menos
+    _normalizeNumber(value) {
+        if (typeof value !== 'string') value = String(value);
+        // Reemplazar coma por punto y eliminar cualquier caracter no numérico excepto punto y signo menos
+        let cleaned = value.replace(',', '.').replace(/[^\d.-]/g, '');
+        // Si hay múltiples puntos, solo conservar el primero
+        const parts = cleaned.split('.');
+        if (parts.length > 2) {
+            cleaned = parts[0] + '.' + parts.slice(1).join('');
+        }
+        const num = parseFloat(cleaned);
+        return isNaN(num) ? 0 : num;
+    }
+
+    // Redondeo a 2 decimales
+    _round(value) {
+        return Math.round(value * 100) / 100;
+    }
+
     _updateField(event) {
         const field = event.currentTarget.dataset.field;
         let value = event.target.value;
         this.state[field] = value;
     }
 
-    _onAmountVefChange(event) {
-        console.log("=== _onAmountVefChange ===");
-        let value = parseFloat(event.target.value) || 0;
-        console.log("Nuevo valor en Bs:", value);
+    _onAmountVefInput(event) {
+        console.log("=== _onAmountVefInput ===");
+        let rawValue = event.target.value;
+        let value = this._normalizeNumber(rawValue);
+        console.log("Valor normalizado en Bs:", value);
         this.state.amount_vef = value;
         if (this.state.exchange_rate > 0) {
-            this.state.amount_usd = value / this.state.exchange_rate;
-            console.log("USD calculado:", this.state.amount_usd);
+            let usd = value / this.state.exchange_rate;
+            this.state.amount_usd = this._round(usd);
+            console.log("USD calculado (redondeado):", this.state.amount_usd);
         } else {
             this.state.amount_usd = 0;
             console.warn("exchange_rate es 0 o negativo, no se puede convertir");
@@ -112,14 +133,16 @@ export class PaymentProofComponent extends Component {
         this._validateAmounts();
     }
 
-    _onAmountUsdChange(event) {
-        console.log("=== _onAmountUsdChange ===");
-        let value = parseFloat(event.target.value) || 0;
-        console.log("Nuevo valor en USD:", value);
+    _onAmountUsdInput(event) {
+        console.log("=== _onAmountUsdInput ===");
+        let rawValue = event.target.value;
+        let value = this._normalizeNumber(rawValue);
+        console.log("Valor normalizado en USD:", value);
         this.state.amount_usd = value;
         if (this.state.exchange_rate > 0) {
-            this.state.amount_vef = value * this.state.exchange_rate;
-            console.log("Bs calculado:", this.state.amount_vef);
+            let vef = value * this.state.exchange_rate;
+            this.state.amount_vef = this._round(vef);
+            console.log("Bs calculado (redondeado):", this.state.amount_vef);
         } else {
             this.state.amount_vef = 0;
             console.warn("exchange_rate es 0 o negativo, no se puede convertir");
