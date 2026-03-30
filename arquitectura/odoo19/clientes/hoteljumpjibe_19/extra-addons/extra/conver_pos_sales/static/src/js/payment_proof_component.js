@@ -15,6 +15,7 @@ export class PaymentProofComponent extends Component {
             fileUploading: false,
             uploadError: null,
             uploadSuccess: false,
+            loading: true,      
 
             // Nuevos campos
             payment_date: new Date().toISOString().slice(0,10), // hoy por defecto
@@ -25,17 +26,32 @@ export class PaymentProofComponent extends Component {
             amount_vef: 0,
             exchange_rate: 0,
             amount_usd: 0,
+            rate_date: '',
             bankList: [],   // lista de bancos para el select
         });
          onWillStart(async () => {
+            this.state.loading = true;
             try {
                 const providerId = await rpc("/payment_proof/get_transfer_provider_id");
                 this.state.transferProviderId = providerId;
                 // Obtener lista de bancos
                 const banks = await rpc("/payment_proof/get_bank_list");
                 this.state.bankList = banks;
+                // Obtener total de la orden y tasa BCV
+                const orderData = await rpc("/payment_proof/get_order_total_and_rate");
+                if (orderData.error) {
+                    this.notification.add(orderData.error, { type: "warning" });
+                } else {
+                    this.state.amount_vef = orderData.amount_vef;
+                    this.state.exchange_rate = orderData.exchange_rate;
+                    this.state.amount_usd = orderData.amount_usd;
+                    this.state.rate_date = orderData.rate_date;
+                }
             } catch (err) {
                 console.error("Error inicial:", err);
+                this.notification.add("Error al cargar datos de la orden", { type: "danger" });
+            }finally {
+                this.state.loading = false;
             }
         });
         onMounted(() => {
@@ -56,13 +72,9 @@ export class PaymentProofComponent extends Component {
         let value = event.target.value;
         // Conversiones para números
         if (['amount_vef', 'exchange_rate', 'amount_usd'].includes(field)) {
-            value = parseFloat(value) || 0;
+            return;
         }
         this.state[field] = value;
-        // Si cambia monto en VEF o tasa, recalcular automáticamente el monto USD
-        if (field === 'amount_vef' || field === 'exchange_rate') {
-            this.state.amount_usd = this.state.amount_vef / (this.state.exchange_rate || 1);
-        }
     }
 
     _bindPaymentMethodChange() {

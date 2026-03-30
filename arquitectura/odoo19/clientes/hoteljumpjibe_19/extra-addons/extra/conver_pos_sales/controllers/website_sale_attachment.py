@@ -9,7 +9,63 @@ _logger = logging.getLogger(__name__)
 class WebsiteSaleAttachment(WebsiteSale):
 
     # -------------------------------------------------------------------------
-    # Ruta existente modificada para aceptar campos adicionales
+    # Endpoint JSON: obtener total de orden + tasa BCV + equivalente USD
+    # -------------------------------------------------------------------------
+    @http.route('/payment_proof/get_order_total_and_rate', type='json', auth='public', csrf=False)
+    def get_order_total_and_rate(self):
+        """Devuelve el total de la orden actual en VES, la tasa BCV y el equivalente en USD"""
+        _logger.info("=== get_order_total_and_rate called ===")
+        try:
+            # Obtener la orden desde la sesión
+            sale_order_id = request.session.get('sale_order_id') or request.session.get('sale_last_order_id')
+            if not sale_order_id:
+                _logger.warning("No hay sale_order_id en sesión")
+                return {'error': 'No hay orden activa'}
+
+            order = request.env['sale.order'].sudo().browse(int(sale_order_id)).exists()
+            if not order:
+                _logger.warning(f"No se encontró la orden con ID {sale_order_id}")
+                return {'error': 'No se encontró la orden'}
+
+            amount_vef = order.amount_total
+            _logger.info(f"Monto en VES: {amount_vef}")
+
+            # Consultar directamente la tasa BCV
+            Rate = request.env['res.currency.rate']
+            rate_record = Rate.sudo().search([
+                ('currency_id.name', '=', 'VES'),
+                ('is_bcv_rate', '=', True),
+                ('company_id', '=', request.env.company.id),
+            ], order='name desc', limit=1)
+
+            if rate_record and rate_record.bcv_rate_value and rate_record.bcv_rate_value > 0:
+                exchange_rate = rate_record.bcv_rate_value
+                # Formatear fecha
+                fecha = rate_record.name
+                fecha_formateada = fecha.strftime('%d/%m/%Y') if fecha else ''
+                amount_usd = amount_vef / exchange_rate
+                _logger.info(f"Tasa encontrada: {exchange_rate}, USD: {amount_usd}")
+                return {
+                    'amount_vef': amount_vef,
+                    'exchange_rate': exchange_rate,
+                    'rate_date': fecha_formateada,
+                    'amount_usd': amount_usd,
+                }
+            else:
+                _logger.warning("No se encontró tasa BCV válida (is_bcv_rate=True y bcv_rate_value>0)")
+                return {
+                    'amount_vef': amount_vef,
+                    'exchange_rate': 0.0,
+                    'rate_date': '',
+                    'amount_usd': 0.0,
+                    'error': 'Tasa BCV no disponible temporalmente'
+                }
+        except Exception as e:
+            _logger.error(f"Error en get_order_total_and_rate: {str(e)}", exc_info=True)
+            return {'error': f'Error interno: {str(e)}'}
+        
+    # -------------------------------------------------------------------------
+    # Ruta para subir comprobante (POST)
     # -------------------------------------------------------------------------
     @http.route(['/shop/upload_payment_proof'], type='http', methods=['POST'], auth='public', website=True, csrf=False)
     def upload_payment_proof(self, **post):
@@ -78,21 +134,21 @@ class WebsiteSaleAttachment(WebsiteSale):
         return request.make_response('OK')
 
     # -------------------------------------------------------------------------
-    # Ruta JSON para obtener el ID del proveedor de transferencia bancaria
+    # Endpoint JSON: ID del proveedor de transferencia bancaria
     # -------------------------------------------------------------------------
-    @http.route('/payment_proof/get_transfer_provider_id', type='json', auth='public', methods=['GET'])
+    @http.route('/payment_proof/get_transfer_provider_id', type='json', auth='public', csrf=False)
     def get_transfer_provider_id(self):
         """Devuelve el ID del proveedor de pago marcado como transferencia bancaria"""
         provider = request.env['payment.provider'].sudo().search([('is_wire_transfer', '=', True)], limit=1)
+        _logger.info(f"Transfer provider ID: {provider.id if provider else 0}")
         return provider.id if provider else 0
 
     # -------------------------------------------------------------------------
-    # Ruta JSON para obtener la lista de bancos de Venezuela (estática o externa)
+    # Endpoint JSON: lista de bancos venezolanos
     # -------------------------------------------------------------------------
-    @http.route('/payment_proof/get_bank_list', type='json', auth='public', methods=['GET'])
+    @http.route('/payment_proof/get_bank_list', type='json', auth='public', csrf=False)
     def get_bank_list(self):
         """Lista de bancos venezolanos. Puede ampliarse consultando una API externa."""
-        # Lista estática de bancos comunes en Venezuela
         banks = [
             {'id': 'banco_de_venezuela', 'name': 'Banco de Venezuela'},
             {'id': 'banesco', 'name': 'Banesco Banco Universal'},
@@ -108,10 +164,11 @@ class WebsiteSaleAttachment(WebsiteSale):
             {'id': 'plaza', 'name': 'Banco Plaza'},
             {'id': 'activo', 'name': 'Banco Activo'},
         ]
+        _logger.info(f"Devolviendo {len(banks)} bancos")
         return banks
 
     # -------------------------------------------------------------------------
-    # Hook existente: _process_payment (no se modifica, pero se mantiene)
+    # Hook _process_payment (mantenido original)
     # -------------------------------------------------------------------------
     def _process_payment(self, **kwargs):
         """Procesa el pago y recupera los datos de sesión si aún no se han guardado"""
