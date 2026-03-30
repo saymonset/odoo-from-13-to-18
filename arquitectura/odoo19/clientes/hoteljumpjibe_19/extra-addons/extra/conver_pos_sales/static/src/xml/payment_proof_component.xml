@@ -8,9 +8,75 @@
                 Banco: ... / Teléfono: ... / Cédula: ...<br/>
                 Luego adjunte el comprobante.
             </div>
-            <div class="form-group">
-                <label for="payment_proof_file">Comprobante de pago (imagen o PDF)</label>
-                <input type="file" id="payment_proof_file" accept="image/*,.pdf" t-on-change="_handleFileChange"/>
+
+            <!-- Campos en fila con gutter -->
+            <div class="row g-3">
+                <div class="col-md-6 mb-3">
+                    <label for="payment_date" class="form-label">Fecha de pago</label>
+                    <input type="date" class="form-control" id="payment_date"
+                           t-att-value="state.payment_date" t-on-change="_updateField" data-field="payment_date"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="payment_method" class="form-label">Forma de pago</label>
+                    <select class="form-control" id="payment_method"
+                            t-on-change="_updateField" data-field="payment_method">
+                        <option value="movil" t-att-selected="state.payment_method == 'movil'">Pago móvil</option>
+                        <option value="transfer" t-att-selected="state.payment_method == 'transfer'">Transferencia</option>
+                        <option value="other" t-att-selected="state.payment_method == 'other'">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 mb-3">
+                    <label for="bank_origin" class="form-label">Banco origen</label>
+                    <select class="form-control" id="bank_origin"
+                            t-on-change="_updateField" data-field="bank_origin">
+                        <option value="">Seleccione un banco</option>
+                        <t t-foreach="state.bankList" t-as="bank" t-key="bank.id">
+                            <option t-att-value="bank.id" t-att-selected="state.bank_origin == bank.id">
+                                <t t-esc="bank.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="bank_destination" class="form-label">Banco destino</label>
+                    <input type="text" class="form-control" id="bank_destination"
+                           t-att-value="state.bank_destination" t-on-change="_updateField" data-field="bank_destination"/>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 mb-3">
+                    <label for="reference" class="form-label">Referencia</label>
+                    <input type="text" class="form-control" id="reference"
+                           t-att-value="state.reference" t-on-change="_updateField" data-field="reference"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="amount_vef" class="form-label">Monto en bolívares</label>
+                    <input type="number" step="0.01" class="form-control" id="amount_vef"
+                           t-att-value="state.amount_vef" t-on-change="_updateField" data-field="amount_vef"/>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 mb-3">
+                    <label for="exchange_rate" class="form-label">Tasa de cambio (BCV)</label>
+                    <input type="number" step="0.0001" class="form-control" id="exchange_rate"
+                           t-att-value="state.exchange_rate" t-on-change="_updateField" data-field="exchange_rate"/>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="amount_usd" class="form-label">Monto USD</label>
+                    <input type="number" step="0.01" class="form-control" id="amount_usd"
+                           t-att-value="state.amount_usd" t-on-change="_updateField" data-field="amount_usd"/>
+                </div>
+            </div>
+
+            <!-- Campo de archivo -->
+            <div class="mb-3">
+                <label for="payment_proof_file" class="form-label">Comprobante de pago (imagen o PDF)</label>
+                <input type="file" id="payment_proof_file" accept="image/*,.pdf" class="form-control" t-on-change="_handleFileChange"/>
                 <div t-if="state.fileUploading" class="text-muted mt-1">
                     <i class="fa fa-spinner fa-spin me-1"/> Subiendo...
                 </div>

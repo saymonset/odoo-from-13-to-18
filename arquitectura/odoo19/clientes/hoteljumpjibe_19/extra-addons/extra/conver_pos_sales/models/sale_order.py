@@ -10,6 +10,20 @@ class SaleOrder(models.Model):
     payment_proof = fields.Binary('Comprobante de pago', attachment=True)
     payment_proof_filename = fields.Char('Nombre del archivo')
 
+        # Nuevos campos
+    payment_date = fields.Date('Fecha de pago')
+    payment_method = fields.Selection([
+        ('transfer', 'Transferencia'),
+        ('movil', 'Pago móvil'),
+        ('other', 'Otro'),
+    ], string='Forma de pago', default='movil')
+    bank_origin = fields.Char('Banco origen')
+    bank_destination = fields.Char('Banco destino', default='N/A')
+    reference = fields.Char('Referencia')
+    amount_vef = fields.Float('Monto en bolívares')
+    exchange_rate = fields.Float('Tasa de cambio')
+    amount_usd = fields.Float('Monto USD')
+
     currency_aux = fields.Many2one(
         'res.currency',
         string='Moneda Auxiliar USD',
@@ -66,26 +80,45 @@ class SaleOrder(models.Model):
         res = super().action_confirm()
 
         try:
-            if request and hasattr(request, 'session') and 'payment_proof' in request.session:
-                proof = request.session.pop('payment_proof')
-                order = self
+            if request and hasattr(request, 'session'):
+                # Manejar comprobante (ya existente)
+                if 'payment_proof' in request.session:
+                    proof = request.session.pop('payment_proof')
+                    order = self
 
-                self.env['ir.attachment'].sudo().create({
-                    'name': proof['filename'],
-                    'type': 'binary',
-                    'datas': proof['data'],
-                    'res_model': 'sale.order',
-                    'res_id': order.id,
-                    'mimetype': proof.get('mimetype'),
-                    'description': 'Comprobante de pago - Transferencia / Pago Móvil',
-                })
-                _logger.info(f"✅ Attachment creado en action_confirm para orden {order.name}")
+                    self.env['ir.attachment'].sudo().create({
+                        'name': proof['filename'],
+                        'type': 'binary',
+                        'datas': proof['data'],
+                        'res_model': 'sale.order',
+                        'res_id': order.id,
+                        'mimetype': proof.get('mimetype'),
+                        'description': 'Comprobante de pago - Transferencia / Pago Móvil',
+                    })
+                    _logger.info(f"✅ Attachment creado en action_confirm para orden {order.name}")
 
-                order.sudo().write({
-                    'payment_proof': proof['data'],
-                    'payment_proof_filename': proof['filename'],
-                })
-        except Exception:
-            pass  # Ignorar si no hay request (caso backend)
+                    order.sudo().write({
+                        'payment_proof': proof['data'],
+                        'payment_proof_filename': proof['filename'],
+                    })
+
+                # ⚠️ NUEVO: Manejar datos de pago adicionales
+                if 'payment_data' in request.session:
+                    payment_data = request.session.pop('payment_data')
+                    order = self
+                    order.sudo().write({
+                        'payment_date': payment_data.get('payment_date'),
+                        'payment_method': payment_data.get('payment_method'),
+                        'bank_origin': payment_data.get('bank_origin'),
+                        'bank_destination': payment_data.get('bank_destination', 'N/A'),
+                        'reference': payment_data.get('reference'),
+                        'amount_vef': payment_data.get('amount_vef', 0),
+                        'exchange_rate': payment_data.get('exchange_rate', 0),
+                        'amount_usd': payment_data.get('amount_usd', 0),
+                    })
+                    _logger.info(f"✅ Datos de pago adicionales guardados en action_confirm para orden {order.name}")
+
+        except Exception as e:
+            _logger.exception("Error en action_confirm guardando datos de sesión: %s", e)
 
         return res

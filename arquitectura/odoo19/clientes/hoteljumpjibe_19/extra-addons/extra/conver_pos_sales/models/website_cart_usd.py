@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-
+from datetime import datetime
 class Website(models.Model):
     _inherit = 'website'
 
@@ -51,3 +51,29 @@ class Website(models.Model):
         if rate:
             return 1.0 / rate
         return 1.0
+    
+    def get_bcv_rate_info(self):
+        """Retorna un dict con la tasa BCV (1 USD = X VES) y su fecha formateada"""
+        rate_record = self.env['res.currency.rate'].search([
+            ('currency_id.name', '=', 'VES'),
+            ('is_bcv_rate', '=', True),
+            ('company_id', '=', self.env.company.id),
+        ], order='name desc', limit=1)
+
+        if rate_record and rate_record.bcv_rate_value:
+            # rate_record.name es un objeto date (ej: datetime.date(2026, 3, 30))
+            fecha = rate_record.name
+            # Formatear a dd/MM/yyyy
+            fecha_formateada = fecha.strftime('%d/%m/%Y') if fecha else ''
+            return {
+                'rate': rate_record.bcv_rate_value,
+                'date': rate_record.name,
+                'date_formatted': fecha_formateada,
+                'rate_display': f"1 USD = {rate_record.bcv_rate_value:,.4f} VES",
+            }
+        return {
+            'rate': 1.0,
+            'date': None,
+            'date_formatted': '',
+            'rate_display': 'Tasa no disponible',
+        }

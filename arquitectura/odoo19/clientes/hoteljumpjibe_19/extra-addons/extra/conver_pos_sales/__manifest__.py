@@ -31,7 +31,7 @@
         'views/res_currency_views.xml',
         'views/sale_order_tree_debug.xml',
         'views/sale_order_views.xml',
-        'views/cart_usd.xml',
+        'views/website_cart_usd.xml',
         'views/payment_attachment_templates.xml',
         'views/payment_provider_views.xml',
         # 'views/invoice_report_templates.xml',

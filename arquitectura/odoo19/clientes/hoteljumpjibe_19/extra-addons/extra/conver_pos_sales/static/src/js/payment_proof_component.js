@@ -15,18 +15,29 @@ export class PaymentProofComponent extends Component {
             fileUploading: false,
             uploadError: null,
             uploadSuccess: false,
-        });
 
-        onWillStart(async () => {
+            // Nuevos campos
+            payment_date: new Date().toISOString().slice(0,10), // hoy por defecto
+            payment_method: 'movil',
+            bank_origin: '',
+            bank_destination: 'N/A',
+            reference: '',
+            amount_vef: 0,
+            exchange_rate: 0,
+            amount_usd: 0,
+            bankList: [],   // lista de bancos para el select
+        });
+         onWillStart(async () => {
             try {
                 const providerId = await rpc("/payment_proof/get_transfer_provider_id");
-                console.log("🔍 Provider ID obtenido del backend:", providerId);
                 this.state.transferProviderId = providerId;
+                // Obtener lista de bancos
+                const banks = await rpc("/payment_proof/get_bank_list");
+                this.state.bankList = banks;
             } catch (err) {
-                console.error("❌ Error fetching transfer provider:", err);
+                console.error("Error inicial:", err);
             }
         });
-
         onMounted(() => {
             console.log("✅ Componente montado");
             this._bindPaymentMethodChange();
@@ -37,6 +48,21 @@ export class PaymentProofComponent extends Component {
             this._unbindPaymentMethodChange();
             if (this.observer) this.observer.disconnect();
         });
+    }
+
+    // Método para actualizar campos del formulario
+    _updateField(event) {
+        const field = event.currentTarget.dataset.field;
+        let value = event.target.value;
+        // Conversiones para números
+        if (['amount_vef', 'exchange_rate', 'amount_usd'].includes(field)) {
+            value = parseFloat(value) || 0;
+        }
+        this.state[field] = value;
+        // Si cambia monto en VEF o tasa, recalcular automáticamente el monto USD
+        if (field === 'amount_vef' || field === 'exchange_rate') {
+            this.state.amount_usd = this.state.amount_vef / (this.state.exchange_rate || 1);
+        }
     }
 
     _bindPaymentMethodChange() {
@@ -134,6 +160,14 @@ export class PaymentProofComponent extends Component {
         try {
             const formData = new FormData();
             formData.append("payment_proof_file", file);
+            formData.append("payment_date", this.state.payment_date);
+            formData.append("payment_method", this.state.payment_method);
+            formData.append("bank_origin", this.state.bank_origin);
+            formData.append("bank_destination", this.state.bank_destination);
+            formData.append("reference", this.state.reference);
+            formData.append("amount_vef", this.state.amount_vef);
+            formData.append("exchange_rate", this.state.exchange_rate);
+            formData.append("amount_usd", this.state.amount_usd);
             const response = await fetch("/shop/upload_payment_proof", {
                 method: "POST",
                 body: formData,
