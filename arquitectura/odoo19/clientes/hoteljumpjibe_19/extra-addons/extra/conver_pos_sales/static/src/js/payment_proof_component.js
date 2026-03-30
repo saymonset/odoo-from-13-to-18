@@ -17,8 +17,7 @@ export class PaymentProofComponent extends Component {
             uploadSuccess: false,
             loading: true,      
 
-            // Nuevos campos
-            payment_date: new Date().toISOString().slice(0,10), // hoy por defecto
+            payment_date: new Date().toISOString().slice(0,10),
             payment_method: 'movil',
             bank_origin: '',
             bank_destination: 'N/A',
@@ -26,34 +25,60 @@ export class PaymentProofComponent extends Component {
             amount_vef: 0,
             exchange_rate: 0,
             amount_usd: 0,
+            original_amount_vef: 0,
+            original_amount_usd: 0,
+            is_valid_amount: false,
             rate_date: '',
-            bankList: [],   // lista de bancos para el select
+            bankList: [],
         });
-         onWillStart(async () => {
+         
+        onWillStart(async () => {
             this.state.loading = true;
             try {
                 const providerId = await rpc("/payment_proof/get_transfer_provider_id");
                 this.state.transferProviderId = providerId;
-                // Obtener lista de bancos
                 const banks = await rpc("/payment_proof/get_bank_list");
                 this.state.bankList = banks;
-                // Obtener total de la orden y tasa BCV
-                const orderData = await rpc("/payment_proof/get_order_total_and_rate");
-                if (orderData.error) {
-                    this.notification.add(orderData.error, { type: "warning" });
+                
+                const origVefSpan = document.getElementById('original_amount_vef');
+                const origUsdSpan = document.getElementById('original_amount_usd');
+                const rateSpan = document.getElementById('bcv_exchange_rate');
+                const rateDateSpan = document.getElementById('bcv_rate_date');
+
+                console.log("=== Spans encontrados ===");
+                console.log("origVefSpan:", origVefSpan?.innerText);
+                console.log("origUsdSpan:", origUsdSpan?.innerText);
+                console.log("rateSpan:", rateSpan?.innerText);
+                console.log("rateDateSpan:", rateDateSpan?.innerText);
+
+                if (origVefSpan && origUsdSpan && rateSpan) {
+                    this.state.original_amount_vef = parseFloat(origVefSpan.innerText) || 0;
+                    this.state.original_amount_usd = parseFloat(origUsdSpan.innerText) || 0;
+                    this.state.exchange_rate = parseFloat(rateSpan.innerText) || 0;
+                    this.state.rate_date = rateDateSpan ? rateDateSpan.innerText : '';
+                    this.state.amount_vef = this.state.original_amount_vef;
+                    this.state.amount_usd = this.state.original_amount_usd;
+                    console.log("Valores asignados al estado:", {
+                        original_amount_vef: this.state.original_amount_vef,
+                        original_amount_usd: this.state.original_amount_usd,
+                        exchange_rate: this.state.exchange_rate,
+                        rate_date: this.state.rate_date,
+                        amount_vef: this.state.amount_vef,
+                        amount_usd: this.state.amount_usd,
+                    });
+                    this._validateAmounts();
                 } else {
-                    this.state.amount_vef = orderData.amount_vef;
-                    this.state.exchange_rate = orderData.exchange_rate;
-                    this.state.amount_usd = orderData.amount_usd;
-                    this.state.rate_date = orderData.rate_date;
+                    console.warn("No se encontraron los spans con los valores originales");
+                    this.notification.add("No se pudieron cargar los montos de la orden.", { type: "warning" });
                 }
             } catch (err) {
                 console.error("Error inicial:", err);
                 this.notification.add("Error al cargar datos de la orden", { type: "danger" });
-            }finally {
+            } finally {
                 this.state.loading = false;
             }
         });
+        
         onMounted(() => {
             console.log("✅ Componente montado");
             this._bindPaymentMethodChange();
@@ -66,15 +91,72 @@ export class PaymentProofComponent extends Component {
         });
     }
 
-    // Método para actualizar campos del formulario
     _updateField(event) {
         const field = event.currentTarget.dataset.field;
         let value = event.target.value;
-        // Conversiones para números
-        if (['amount_vef', 'exchange_rate', 'amount_usd'].includes(field)) {
-            return;
-        }
         this.state[field] = value;
+    }
+
+    _onAmountVefChange(event) {
+        console.log("=== _onAmountVefChange ===");
+        let value = parseFloat(event.target.value) || 0;
+        console.log("Nuevo valor en Bs:", value);
+        this.state.amount_vef = value;
+        if (this.state.exchange_rate > 0) {
+            this.state.amount_usd = value / this.state.exchange_rate;
+            console.log("USD calculado:", this.state.amount_usd);
+        } else {
+            this.state.amount_usd = 0;
+            console.warn("exchange_rate es 0 o negativo, no se puede convertir");
+        }
+        this._validateAmounts();
+    }
+
+    _onAmountUsdChange(event) {
+        console.log("=== _onAmountUsdChange ===");
+        let value = parseFloat(event.target.value) || 0;
+        console.log("Nuevo valor en USD:", value);
+        this.state.amount_usd = value;
+        if (this.state.exchange_rate > 0) {
+            this.state.amount_vef = value * this.state.exchange_rate;
+            console.log("Bs calculado:", this.state.amount_vef);
+        } else {
+            this.state.amount_vef = 0;
+            console.warn("exchange_rate es 0 o negativo, no se puede convertir");
+        }
+        this._validateAmounts();
+    }
+
+    _validateAmounts() {
+        console.log("=== _validateAmounts ===");
+        console.log("amount_vef actual:", this.state.amount_vef);
+        console.log("original_amount_vef:", this.state.original_amount_vef);
+        const diff = Math.abs(this.state.amount_vef - this.state.original_amount_vef);
+        const isValid = diff < 0.01;
+        console.log("Diferencia:", diff, "¿Es válido?", isValid);
+        this.state.is_valid_amount = isValid;
+        this._togglePaymentButton(isValid);
+    }
+
+    _togglePaymentButton(enable) {
+        console.log("=== _togglePaymentButton, enable =", enable);
+        const paymentButton = document.querySelector('button[name="o_payment_submit_button"]') ||
+                              document.querySelector('.o_payment_btn') ||
+                              document.querySelector('#o_payment_form button[type="submit"]');
+        console.log("Botón encontrado:", paymentButton);
+        if (paymentButton) {
+            if (enable) {
+                paymentButton.removeAttribute('disabled');
+                paymentButton.classList.remove('disabled');
+                console.log("Botón habilitado");
+            } else {
+                paymentButton.setAttribute('disabled', 'disabled');
+                paymentButton.classList.add('disabled');
+                console.log("Botón deshabilitado");
+            }
+        } else {
+            console.warn("No se encontró el botón de pago");
+        }
     }
 
     _bindPaymentMethodChange() {
@@ -188,7 +270,6 @@ export class PaymentProofComponent extends Component {
             if (!response.ok) throw new Error("Error al subir el archivo");
             this.notification.add("Comprobante adjuntado correctamente.", { type: "success" });
             this.state.uploadSuccess = true;
-            // Limpiar input para permitir nueva subida si se desea
             const fileInput = document.getElementById("payment_proof_file");
             if (fileInput) fileInput.value = "";
         } catch (err) {

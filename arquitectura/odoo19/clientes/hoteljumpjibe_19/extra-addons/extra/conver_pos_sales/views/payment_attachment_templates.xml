@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="payment_attachment_inherit" inherit_id="website_sale.payment" name="Payment Attachment">
         <xpath expr="//div[@id='payment_method']" position="after">

@@ -91,6 +91,14 @@
                     <span>Los precios en USD se calculan usando esta tasa oficial.</span>
                 </td>
             </tr>
+            <tr style="display:none;">
+                <td colspan="3">
+                    <span id="original_amount_vef" t-out="website_sale_order.amount_total"/>
+                    <span id="original_amount_usd" t-out="website_sale_order.amount_total_usd"/>
+                    <span id="bcv_exchange_rate" t-out="website.get_bcv_rate_info().get('rate', 0)"/>
+                    <span id="bcv_rate_date" t-out="website.get_bcv_rate_info().get('date_formatted', '')"/>
+                </td>
+            </tr>
         </xpath>
     </template>
 
