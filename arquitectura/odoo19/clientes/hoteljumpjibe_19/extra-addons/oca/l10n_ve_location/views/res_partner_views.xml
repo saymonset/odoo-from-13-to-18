@@ -1,0 +1,80 @@
+<odoo>
+	<data>
+		<record id="view_form_res_partner_inherited" model="ir.ui.view">
+			<field name="name">Extension de cliente</field>
+			<field name="model">res.partner</field>
+			<field name="inherit_id" ref="base.view_partner_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//form/sheet/group[1]/group[1]/div[@class='o_address_format']" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</xpath>
+				<xpath expr="//form/sheet/group[1]/group[1]/div[@class='o_address_format']" position="after">
+					<div class='' name='l10n_ve_address_format'>
+						<field name="street" placeholder='Calle'/>
+						<field name="street2" placeholder='Calle 2'/>
+						<div class="o_row">
+							<field name="country_id" placeholder="País" class="o_col"/>
+							<field name="zip" placeholder="C.P" class="o_col"/>
+						</div>
+						<div class="o_row">
+							<field name="state_id" placeholder="Estado"/>
+							<field name="city_id" placeholder="Ciudad" domain="[('state_id', '=', state_id)]" required='1'/>	
+						</div>
+						<field name="city" invisible='1'/>
+						<div class="o_row">
+							<field 
+								name="municipality" 
+								class="o_address_state" 
+								placeholder="Municipality"
+								domain="[('state_id', '=', state_id)]"
+								required="1"
+							/>
+							<field 
+								name="parish_id" 
+								class="o_address_state"
+								placeholder="Parroquia"
+								required="1"
+							/>
+						</div>
+					</div>
+				</xpath>
+
+				<xpath expr="//sheet/notebook/page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='city']" position="replace">
+					<field name="city_id" placeholder="Ciudad" domain="[('state_id', '=', state_id)]" />
+					<field name="city" invisible="1" />
+				</xpath>
+				<xpath expr="//sheet/notebook/page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='street2']" position="after">
+					<field 
+						name="municipality" 
+						class="o_address_state" 
+						placeholder="Municipality"
+						domain="[('state_id', '=', state_id)]"
+						required="type not in ['contact']"
+					/>
+					<field 
+						name="parish_id" 
+						class="o_address_state"
+						placeholder="Parish"
+						required="type not in ['contact']"
+					/>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='country_id']" position="attributes">
+						<attribute name="required">type not in ['contact']</attribute>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='street']" position="attributes">
+						<attribute name="required">type not in ['contact']</attribute>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='zip']" position="attributes">
+						<attribute name="required">type not in ['contact']</attribute>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='state_id']" position="attributes">
+						<attribute name="required">type not in ['contact']</attribute>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='city_id']" position="attributes">
+						<attribute name="required">type not in ['contact']</attribute>
+				</xpath>
+			</field>
+			
+		</record>
+	</data>
+</odoo>

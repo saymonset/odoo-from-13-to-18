@@ -1,0 +1,45 @@
+<odoo>
+<!--    view for picking invoice wizard-->
+    <record id="picking_invoice_wizard_view_form" model="ir.ui.view">
+        <field name="name">picking.invoice.wizard.view.form</field>
+        <field name="model">picking.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Invoice For Multiple Picking">
+                <sheet>
+                    <p>Invoice will generate for selected picking</p>
+                    <group>
+                        <group>
+                            <field name="invoice_type_selection" widget='radio'/>
+                        </group>
+                        <field name="pickings_ids">
+                            <list>
+                                <field name='guide_number'/>
+                                <field name='partner_id'/>
+                                <field name='state_guide_dispatch'/>
+                                <field name='transfer_reason_id'/>
+                                <field name='pricelist_id'/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="picking_selection_invoice" string="Create Invoice"
+                            type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn btn-default"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window
+            id="action_picking_multi_invoice"
+            name="Create Invoices"
+            res_model="picking.invoice.wizard"
+            binding_model="stock.picking"
+            binding_views="list"
+            view_mode="form"
+            target="new"
+    />
+
+</odoo>
