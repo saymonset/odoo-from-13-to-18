@@ -1,4 +1,3 @@
-from odoo.tools.float_utils import float_round
 from odoo import api, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools.misc import formatLang
@@ -12,20 +11,65 @@ class AccountTax(models.Model):
     _inherit = "account.tax"
 
     @api.model
+    def _round_base_lines_tax_details(self, base_lines, company_id, tax_lines=None):
+        """
+        Sobrescritura para asegurar que las monedas sean singletons antes de redondear.
+        Odoo 19: ahora acepta el parámetro tax_lines.
+        """
+        for line in base_lines:
+            currency = line.get('currency_id')
+            if currency:
+                if len(currency) > 1:
+                    line['currency_id'] = currency[0]
+                elif not currency:
+                    line['currency_id'] = company_id.currency_id
+        
+        # También validar tax_lines si se proporcionan
+        if tax_lines:
+            for line in tax_lines:
+                currency = line.get('currency_id')
+                if currency:
+                    if len(currency) > 1:
+                        line['currency_id'] = currency[0]
+                    elif not currency:
+                        line['currency_id'] = company_id.currency_id
+        
+        # Llamar al método padre con los parámetros correctos
+        if tax_lines is not None:
+            return super()._round_base_lines_tax_details(base_lines, company_id, tax_lines=tax_lines)
+        else:
+            return super()._round_base_lines_tax_details(base_lines, company_id)
+
+    @api.model
     def _get_tax_totals_summary(
         self, base_lines, currency, company, cash_rounding=None
     ):
         
+        # Validar que currency sea singleton
+        if currency and len(currency) > 1:
+            currency = currency[0]
+        elif not currency:
+            currency = company.currency_id
         
-        
-
         ## Base currency
         res = super()._get_tax_totals_summary(
             base_lines, currency, company, cash_rounding
         )
 
-        #only ves currency
-        ves_currency = self.env.ref('base.VEF')
+        # Obtener VES currency de forma segura
+        try:
+            ves_currency = self.env.ref('base.VEF', raise_if_not_found=False)
+            if not ves_currency:
+                ves_currency = self.env.ref('base.VES', raise_if_not_found=False)
+            if not ves_currency:
+                ves_currency = self.env.company.currency_id
+                _logger.warning("No se encontró moneda VEF/VES, usando moneda de la compañía")
+        except Exception as e:
+            ves_currency = self.env.company.currency_id
+            _logger.warning("Error obteniendo moneda VEF/VES: %s", e)
+        
+        if ves_currency and len(ves_currency) > 1:
+            ves_currency = ves_currency[0]
         
         active_model = self.env.context.get('active_model')
         active_id = self.env.context.get('active_id')
@@ -52,14 +96,21 @@ class AccountTax(models.Model):
 
         if not record:
             return res
-        currency_id = self.env.company.currency_id or False
-        foreign_currency_id = self.env.company.foreign_currency_id or False
+        
+        # Obtener monedas de forma segura
+        currency_id = self.env.company.currency_id
+        foreign_currency_id = self.env.company.foreign_currency_id if hasattr(self.env.company, 'foreign_currency_id') else None
+        
+        if not foreign_currency_id:
+            foreign_currency_id = currency_id
+        
         company_rate = 1.0
-        has_discount= False
+        has_discount = False
+        
         if active_model == "account.move" and record.move_type in ("out_invoice", "in_invoice", "out_refund", "in_refund"):
-            company_rate = record.company_currency_rate
+            company_rate = record.company_currency_rate if hasattr(record, 'company_currency_rate') else 1.0
             currency_id = record.currency_id
-            foreign_currency_id =record.foreign_currency_id
+            foreign_currency_id = record.foreign_currency_id if hasattr(record, 'foreign_currency_id') else currency_id
             has_discount = any(
                 line.discount > 0
                 for line in record.invoice_line_ids
@@ -69,13 +120,15 @@ class AccountTax(models.Model):
                 currency_id = record.company_id.currency_id
             else:
                 currency_id = self.env.company.currency_id
-            foreign_currency_id = self.env.company.foreign_currency_id
-
-        # FIXME: Evaluar escenarios en los que hay descuentos.
-        res_without_discount = res.copy()
-        #? QUESTION do i need to put the amount without discount?
+            foreign_currency_id = self.env.company.foreign_currency_id if hasattr(self.env.company, 'foreign_currency_id') else currency_id
         
-        #total amount discount 
+        # Asegurar que todas las monedas son singletons
+        if currency_id and len(currency_id) > 1:
+            currency_id = currency_id[0]
+        if foreign_currency_id and len(foreign_currency_id) > 1:
+            foreign_currency_id = foreign_currency_id[0]
+        
+        res_without_discount = res.copy()
         
         formatted_total_discount = 0.0
         formatted_total_discount_ves = 0.0
@@ -86,30 +139,13 @@ class AccountTax(models.Model):
                 for line in base_lines
             ])
             total_discount_amount_ves = total_discount_amount * exchange_rate
-            formatted_total_discount = formatLang(
-                env=self.env,
-                value=total_discount_amount,
-                currency_obj=currency_id
-            )
-            #discount only en VEF
-            formatted_total_discount_ves = formatLang(
-                env=self.env,
-                value=total_discount_amount_ves,
-                currency_obj=ves_currency
-            )
+            
+            from odoo.tools.float_utils import float_round
+            formatted_total_discount = float_round(total_discount_amount, precision_digits=2)
+            formatted_total_discount_ves = float_round(total_discount_amount_ves, precision_digits=2)
+        
         foreign_lines = []
-        #has_discount = not currency.is_zero(sum([line["discount"] for line in base_lines]))
-        # if has_discount:
-        #     base_without_discount = [line.copy() for line in base_lines if line]
-        #     for base_line in base_without_discount:
-        #         base_line["discount"] = 0
-
-        #     res_without_discount = super()._get_tax_totals_summary(
-        #         base_lines,
-        #         currency,
-        #         company,
-        #         cash_rounding
-        #     )
+        
         if record._name == 'account.move':
             foreign_lines, _foreign_tax_lines = record._get_rounded_foreign_base_and_tax_lines()
         elif record._name in ('sale.order','purchase.order'):
@@ -117,207 +153,193 @@ class AccountTax(models.Model):
             foreign_lines = [line._prepare_foreign_base_line_for_taxes_computation() for line in record.order_line]
             
             self._add_tax_details_in_base_lines(foreign_lines, company_id)
+            # Llamar a nuestro método sobrescrito en lugar del original
             self._round_base_lines_tax_details(foreign_lines, company_id)
+        
+        # Asegurar que foreign_currency_id sea singleton
+        if foreign_currency_id and len(foreign_currency_id) > 1:
+            foreign_currency_id = foreign_currency_id[0]
+        
         foreign_res = super()._get_tax_totals_summary(
             foreign_lines,
             foreign_currency_id,
             company,
             cash_rounding
         )
-        #amounts in foreign currency
-        res['foreign_currency_id'] = foreign_res['currency_id']
-        res['ves_currency_id'] = self.env.ref('base.VEF').id
-        res['base_amount_foreign_currency'] = foreign_res['base_amount_currency']
-        res['tax_amount_foreign_currency'] = foreign_res['tax_amount_currency']
-        res['total_amount_foreign_currency'] = foreign_res['total_amount_currency']
-        #discount amount 
+        
+        def safe_format(value, currency_obj):
+            if not currency_obj:
+                return value
+            try:
+                if len(currency_obj) > 1:
+                    currency_obj = currency_obj[0]
+                return formatLang(
+                    env=self.env,
+                    value=value,
+                    currency_obj=currency_obj
+                )
+            except Exception:
+                return value
+        
+        # amounts in foreign currency
+        res['foreign_currency_id'] = foreign_res.get('currency_id', False)
+        if res['foreign_currency_id'] and len(res['foreign_currency_id']) > 1:
+            res['foreign_currency_id'] = res['foreign_currency_id'][0].id if hasattr(res['foreign_currency_id'][0], 'id') else False
+        
+        res['ves_currency_id'] = ves_currency.id if ves_currency else False
+        res['base_amount_foreign_currency'] = foreign_res.get('base_amount_currency', 0.0)
+        res['tax_amount_foreign_currency'] = foreign_res.get('tax_amount_currency', 0.0)
+        res['total_amount_foreign_currency'] = foreign_res.get('total_amount_currency', 0.0)
         res['formatted_total_discount'] = formatted_total_discount
         res['formatted_total_discount_ves'] = formatted_total_discount_ves
-        # Moneda Base
-        res['formatted_base_amount_currency'] = formatLang(
-            env=self.env,
-            value=res.get('base_amount_currency', 0.0),
-            currency_obj=currency_id
-        )
-        res['formatted_tax_amount_currency'] = formatLang(
-            env=self.env,
-            value=res.get('tax_amount_currency', 0.0),
-            currency_obj=currency_id
-        )
-        res['formatted_total_amount_currency'] = formatLang(
-            env=self.env,
-            value=res.get('total_amount_currency', 0.0),
-            currency_obj=currency_id
-        )
-
         
-
-        #only VES amounts
-        res['formatted_base_amount_currency_ves'] = formatLang(
-            env=self.env,
-            value=res.get('base_amount', 0.0),
-            currency_obj=ves_currency
+        # Moneda Base
+        res['formatted_base_amount_currency'] = safe_format(
+            res.get('base_amount_currency', 0.0),
+            currency_id
         )
-        res['formatted_tax_amount_currency_ves'] = formatLang(
-            env=self.env,
-            value=res.get('tax_amount', 0.0),
-            currency_obj=ves_currency
+        res['formatted_tax_amount_currency'] = safe_format(
+            res.get('tax_amount_currency', 0.0),
+            currency_id
         )
-        res['formatted_total_amount_currency_ves'] = formatLang(
-            env=self.env,
-            value=res.get('total_amount', 0.0),
-            currency_obj=ves_currency
+        res['formatted_total_amount_currency'] = safe_format(
+            res.get('total_amount_currency', 0.0),
+            currency_id
         )
-    
+        
+        # only VES amounts
+        res['formatted_base_amount_currency_ves'] = safe_format(
+            res.get('base_amount', 0.0),
+            ves_currency
+        )
+        res['formatted_tax_amount_currency_ves'] = safe_format(
+            res.get('tax_amount', 0.0),
+            ves_currency
+        )
+        res['formatted_total_amount_currency_ves'] = safe_format(
+            res.get('total_amount', 0.0),
+            ves_currency
+        )
+        
         # Foraneos
-        res['formatted_base_amount_foreign_currency'] = formatLang(
-            env=self.env,
-            value=res.get('base_amount_foreign_currency', 0.0),
-            currency_obj=foreign_currency_id
+        res['formatted_base_amount_foreign_currency'] = safe_format(
+            res.get('base_amount_foreign_currency', 0.0),
+            foreign_currency_id
         )
-        res['formatted_tax_amount_foreign_currency'] = formatLang(
-            env=self.env,
-            value=res.get('tax_amount_foreign_currency', 0.0),
-            currency_obj=foreign_currency_id
+        res['formatted_tax_amount_foreign_currency'] = safe_format(
+            res.get('tax_amount_foreign_currency', 0.0),
+            foreign_currency_id
         )
-        res['formatted_total_amount_foreign_currency'] = formatLang(
-            env=self.env,
-            value=res.get('total_amount_foreign_currency', 0.0),
-            currency_obj=foreign_currency_id
+        res['formatted_total_amount_foreign_currency'] = safe_format(
+            res.get('total_amount_foreign_currency', 0.0),
+            foreign_currency_id
         )
-
+        
+        # Procesar subtotales y grupos de impuestos
         for res_subtotal, foreign_subtotal in zip(res.get("subtotals", []), foreign_res.get("subtotals", [])):
             res_subtotal["tax_amount_foreign_currency"] = foreign_subtotal.get("tax_amount_currency", 0.0)
             res_subtotal["base_amount_foreign_currency"] = foreign_subtotal.get("base_amount_currency", 0.0)
             res_subtotal["total_amount_foreign_currency"] = foreign_subtotal.get("total_amount_currency", 0.0)
-
-            #Foraneo
-            res_subtotal['formatted_base_amount_foreign_currency'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('base_amount_foreign_currency', 0.0),
-                currency_obj=foreign_currency_id
-            )
-            res_subtotal['formatted_tax_amount_foreign_currency'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('tax_amount_foreign_currency', 0.0),
-                currency_obj=foreign_currency_id
-            )
-            res_subtotal['formatted_total_amount_foreign_currency'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('total_amount_foreign_currency', 0.0),
-                currency_obj=foreign_currency_id
-            )
-            #ONLY VES
-            res_subtotal['formatted_base_amount_currency_ves'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('base_amount', 0.0),
-                currency_obj=ves_currency
-            )
-            res_subtotal['formatted_tax_amount_currency_ves'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('tax_amount', 0.0),
-                currency_obj=ves_currency
-            )
-            res_subtotal['formatted_total_amount_currency_ves'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('total_amount', 0.0),
-                currency_obj=ves_currency
-            )
-            #Base sistema
-            res_subtotal['formatted_base_amount_currency'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('base_amount_currency', 0.0),
-                currency_obj=currency_id
-            )
-            res_subtotal['formatted_tax_amount_currency'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('tax_amount_currency', 0.0),
-                currency_obj=currency_id
-            )
-            res_subtotal['formatted_total_amount_currency'] = formatLang(
-                env=self.env,
-                value=res_subtotal.get('total_amount_currency', 0.0),
-                currency_obj=currency_id
-            )
-
-            #Amount discount
             
-
+            res_subtotal['formatted_base_amount_foreign_currency'] = safe_format(
+                res_subtotal.get('base_amount_foreign_currency', 0.0),
+                foreign_currency_id
+            )
+            res_subtotal['formatted_tax_amount_foreign_currency'] = safe_format(
+                res_subtotal.get('tax_amount_foreign_currency', 0.0),
+                foreign_currency_id
+            )
+            res_subtotal['formatted_total_amount_foreign_currency'] = safe_format(
+                res_subtotal.get('total_amount_foreign_currency', 0.0),
+                foreign_currency_id
+            )
+            res_subtotal['formatted_base_amount_currency_ves'] = safe_format(
+                res_subtotal.get('base_amount', 0.0),
+                ves_currency
+            )
+            res_subtotal['formatted_tax_amount_currency_ves'] = safe_format(
+                res_subtotal.get('tax_amount', 0.0),
+                ves_currency
+            )
+            res_subtotal['formatted_total_amount_currency_ves'] = safe_format(
+                res_subtotal.get('total_amount', 0.0),
+                ves_currency
+            )
+            res_subtotal['formatted_base_amount_currency'] = safe_format(
+                res_subtotal.get('base_amount_currency', 0.0),
+                currency_id
+            )
+            res_subtotal['formatted_tax_amount_currency'] = safe_format(
+                res_subtotal.get('tax_amount_currency', 0.0),
+                currency_id
+            )
+            res_subtotal['formatted_total_amount_currency'] = safe_format(
+                res_subtotal.get('total_amount_currency', 0.0),
+                currency_id
+            )
+            
             for res_tax_group, foreign_tax_group in zip(res_subtotal.get("tax_groups", []), foreign_subtotal.get("tax_groups", [])):
                 res_tax_group["tax_amount_foreign_currency"] = foreign_tax_group.get("tax_amount_currency", 0.0)
                 res_tax_group["base_amount_foreign_currency"] = foreign_tax_group.get("base_amount_currency", 0.0)
                 res_tax_group["display_base_amount_foreign_currency"] = foreign_tax_group.get("display_base_amount_currency", 0.0)
-                # Moneda base
-                res_tax_group['formatted_base_amount_currency'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('base_amount_currency', 0.0),
-                    currency_obj=currency_id
+                
+                res_tax_group['formatted_base_amount_currency'] = safe_format(
+                    res_tax_group.get('base_amount_currency', 0.0),
+                    currency_id
                 )
-                res_tax_group['formatted_tax_amount_currency'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('tax_amount_currency', 0.0),
-                    currency_obj=currency_id
+                res_tax_group['formatted_tax_amount_currency'] = safe_format(
+                    res_tax_group.get('tax_amount_currency', 0.0),
+                    currency_id
                 )
-                # Display
-                res_tax_group['formatted_display_base_amount_currency'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('display_base_amount_currency', 0.0),
-                    currency_obj=currency_id
+                res_tax_group['formatted_display_base_amount_currency'] = safe_format(
+                    res_tax_group.get('display_base_amount_currency', 0.0),
+                    currency_id
                 )
-                #ONLY VES
-                res_tax_group['formatted_base_amount_currency_ves'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('base_amount', 0.0),
-                    currency_obj=ves_currency
+                res_tax_group['formatted_base_amount_currency_ves'] = safe_format(
+                    res_tax_group.get('base_amount', 0.0),
+                    ves_currency
                 )
-                res_tax_group['formatted_tax_amount_currency_ves'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('tax_amount', 0.0),
-                    currency_obj=ves_currency
+                res_tax_group['formatted_tax_amount_currency_ves'] = safe_format(
+                    res_tax_group.get('tax_amount', 0.0),
+                    ves_currency
                 )
-                res_tax_group['formatted_total_amount_currency_ves'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('total_amount', 0.0),
-                    currency_obj=ves_currency
+                res_tax_group['formatted_total_amount_currency_ves'] = safe_format(
+                    res_tax_group.get('total_amount', 0.0),
+                    ves_currency
                 )
-                # Foranea
-                res_tax_group['formatted_base_amount_foreign_currency'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('base_amount_foreign_currency', 0.0),
-                    currency_obj=foreign_currency_id
+                res_tax_group['formatted_base_amount_foreign_currency'] = safe_format(
+                    res_tax_group.get('base_amount_foreign_currency', 0.0),
+                    foreign_currency_id
                 )
-                res_tax_group['formatted_tax_amount_foreign_currency'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('tax_amount_foreign_currency', 0.0),
-                    currency_obj=foreign_currency_id
+                res_tax_group['formatted_tax_amount_foreign_currency'] = safe_format(
+                    res_tax_group.get('tax_amount_foreign_currency', 0.0),
+                    foreign_currency_id
                 )
-                res_tax_group['formatted_display_base_amount_foreign_currency'] = formatLang(
-                    env=self.env,
-                    value=res_tax_group.get('display_base_amount_foreign_currency', 0.0),
-                    currency_obj=foreign_currency_id
+                res_tax_group['formatted_display_base_amount_foreign_currency'] = safe_format(
+                    res_tax_group.get('display_base_amount_foreign_currency', 0.0),
+                    foreign_currency_id
                 )
+        
         return res
     
     @api.model
     def _prepare_foreign_base_line_for_taxes_computation(self, record, **kwargs):
-        """ Convert any representation of a business object ('record') into a base line being a python
-        dictionary that will be used to use the generic helpers for the taxes computation.
-
-        The whole method is designed to ease the conversion from a business record.
-        For example, when passing either account.move.line, either sale.order.line or purchase.order.line,
-        providing explicitely a 'product_id' in kwargs is not necessary since all those records already have
-        an `product_id` field.
-
-        :param record:  A representation of a business object a.k.a a record or a dictionary.
-        :param kwargs:  The extra values to override some values that will be taken from the record.
-        :return:        A dictionary representing a base line.
+        """ Convert any representation of a business object into a base line
+        with validated currency.
         """
         def load(field, fallback, from_base_line=False):
             return self._get_base_line_field_value_from_record(record, field, kwargs, fallback, from_base_line=from_base_line)
 
         currency = (
             load('foreign_currency_id', None)
-            or self.env.company.foreign_currency_id)
+            or self.env.company.foreign_currency_id
+            or self.env.company.currency_id
+        )
+        
+        # Asegurar que currency sea singleton
+        if currency and len(currency) > 1:
+            currency = currency[0]
+        
         base_line = {
             **kwargs,
             'record': record,
@@ -349,7 +371,7 @@ class AccountTax(models.Model):
             'manual_total_excluded_currency': load('manual_total_excluded_currency', None, from_base_line=True),
             # Add a function allowing to filter out some taxes during the evaluation. Those taxes can't be removed from the base_line
             'filter_tax_function': load('filter_tax_function', None, from_base_line=True),
-            'manual_total_excluded' : load('manual_total_excluded', None, from_base_line=True),
+            'manual_total_excluded': load('manual_total_excluded', None, from_base_line=True),
             # ===== Accounting stuff =====
             'sign': load('sign', 1.0),
             'is_refund': load('is_refund', False),
@@ -359,7 +381,6 @@ class AccountTax(models.Model):
             'analytic_distribution': load('analytic_distribution', None),
         }
 
-        # --- Lógica extra inspirada en la función base ---
         extra_tax_data = self._import_base_line_extra_tax_data(base_line, load('extra_tax_data', {}) or {})
         base_line.update({
             'computation_key': load('computation_key', extra_tax_data.get('computation_key'), from_base_line=True),
@@ -368,7 +389,6 @@ class AccountTax(models.Model):
         if 'price_unit' in extra_tax_data:
             base_line['price_unit'] = extra_tax_data['price_unit']
 
-        # Propagar valores personalizados del record si es dict
         if record and isinstance(record, dict):
             for k, v in record.items():
                 if k.startswith('_') and k not in base_line:
