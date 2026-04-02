@@ -38,12 +38,20 @@ sudo snap install astral-uv --classic
 
 ```bash
   git clone -b 19.0 --single-branch --depth 1 https://github.com/odoo/odoo.git odoo
+
+  
 ```
 
 # Instalar version python con uv
 
 ```bash
 uv python install 3.12
+```
+
+#  Instalar viivakoodi para códigos de barras
+```bash
+uv pip install viivakoodi
+uv pip install python-barcode
 ```
 
 # colocar el enviroment

@@ -4,7 +4,7 @@
 ## Si es la primera vez que se ejecuta, iniciar bdcon esto
 # ir a consola
 # source .venv/bin/activate
-# ./odoo/odoo-bin -d dbhoteljumpjibe_19 -i base -c clientes/hoteljumpjibe_19/conf/odoo.cfg
+# ./odoo/odoo-bin -d dbhoteljumpjibe_19_delete -i base -c clientes/hoteljumpjibe_19/conf/odoo.cfg
 
 
 # Luego salir con ctrl+D y ejecutar este script
@@ -24,7 +24,7 @@ fi
 PORT=38069
 
 # Base de datos
-DB="dbhoteljumpjibe_19"
+DB="dbhoteljumpjibe_19_delete"
 
 # Ruta a odoo-bin
 ODOO_BIN="./odoo/odoo-bin"

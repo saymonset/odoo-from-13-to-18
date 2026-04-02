@@ -92,7 +92,6 @@ uv pip install -r odoo/requirements.txt
 CREATE ROLE hoteljumpjibe_19 WITH LOGIN PASSWORD '123456' CREATEDB;
  ALTER USER hoteljumpjibe_19 WITH SUPERUSER;
 ```
- 
 
 # En postgres creamos el usuario odoo19 con super usuario
 
@@ -152,7 +151,11 @@ source .venv/bin/activate
 ```
 # Inicializamos BD
 ```bash
-./odoo/odoo-bin -d dbhoteljumpjibe_19 -i base -c clientes/hoteljumpjibe_19/conf/odoo.cfg
+./odoo/odoo-bin -d dbhoteljumpjibe_19 -i base -c clientes/hoteljumpjibe_19/conf/odoo.cfg --without-demo=all
+```
+# Istalando demo
+```bash
+./odoo/odoo-bin -d dbhoteljumpjibe_19_delete -i base -c clientes/hoteljumpjibe_19/conf/odoo.cfg --with-demo
 ```
 
 # Arrancamos odoo de manera regular
