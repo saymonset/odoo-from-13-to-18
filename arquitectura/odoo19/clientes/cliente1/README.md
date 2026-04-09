@@ -105,7 +105,7 @@ uv pip install -r odoo/requirements.txt
 ```
 # Si estas en docker la bd postgres
 ```bash
- docker exec -it odoo-db18 bash
+ docker exec -it odoo-db19-n8n bash
  psql -U odoo -d postgres
  ```
 

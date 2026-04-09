@@ -1,0 +1,61 @@
+{
+    'name': 'BCV Rate Update for Venezuela',
+    'summary': 'Actualización automática de tasa BCV para Venezuela',
+    'description': """
+        Obtiene diariamente la tasa de cambio oficial del BCV y actualiza
+        la moneda VES en Odoo.
+    """,
+    'version': '19.0.1.0.0',
+    'category': 'Sales/Point of Sale',
+    'author': 'Simon Alberto Rodriguez Pacheco',
+    'website': 'https://github.com/simonrodriguezpacheco',
+    'maintainer': 'Simon Alberto Rodriguez Pacheco',
+    'license': 'LGPL-3',
+    
+    'depends': [
+        'base',
+        'sale',
+        'account',
+        'point_of_sale',
+        'website_sale', 
+        'payment'
+    ],
+
+    'external_dependencies': {
+        'python': ['requests', 'beautifulsoup4'],
+    },
+    
+    'data': [
+        'security/ir.model.access.csv',
+        'data/cron_data.xml',
+        'views/res_currency_views.xml',
+        'views/sale_order_tree_debug.xml',
+        'views/sale_order_views.xml',
+        'views/website_cart_usd.xml',
+        'views/payment_attachment_templates.xml',
+        'views/payment_provider_views.xml',
+        # 'views/invoice_report_templates.xml',
+    ],
+    
+    'assets': {
+        'point_of_sale.assets': [
+            'conver_pos_sales/static/src/**/*',
+        ],
+        'web.assets_backend': [
+            'conver_pos_sales/static/src/**/*',
+        ],
+         "web.assets_frontend": [
+            'conver_pos_sales/static/src/css/payment_proof_component.css',
+            'conver_pos_sales/static/src/js/payment_proof_component.js',  
+            'conver_pos_sales/static/src/xml/payment_proof_component.xml'
+            
+        ],
+    },
+    
+    'application': False,
+    'installable': True,
+    'auto_install': False,
+    'images': [
+        'conver_pos_sales/static/description/icon.png'
+    ],
+}

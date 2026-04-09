@@ -81,7 +81,7 @@ uv pip install -r odoo/requirements.txt
 # En postgres creamos el usuario odoo19
 
 ```bash
- docker exec -it odoo-db18-n8n bash
+ docker exec -it odoo-db19-n8n bash
    psql -U odoo -d postgres
 ```
 
@@ -99,16 +99,16 @@ CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 ## Para docker
 ```bash
 \q
-docker exec -it odoo-db18-n8n bash
-   psql -U odoo18 -d postgres
+docker exec -it odoo-db19-n8n bash
+   psql -U odoo19 -d postgres
    CREATE USER integraia_19 WITH PASSWORD 'odoo';
-   ALTER USER ointegraia_19 WITH SUPERUSER;
+   ALTER USER integraia_19 WITH SUPERUSER;
 
    \q
-   docker exec -it odoo-db18-n8n bash
+   docker exec -it odoo-db19-n8n bash
    psql -U integraia_19 -d postgres
    CREATE DATABASE dbintegraia_19;
-   GRANT ALL PRIVILEGES ON DATABASE dbintegraia_19 TO odoo19;
+   GRANT ALL PRIVILEGES ON DATABASE dbhoteljumpjibe_19 TO hoteljumpjibe_19;
 
 
 ```
@@ -141,6 +141,7 @@ source .venv/bin/activate
 
 ```bash
 ./odoo/odoo-bin -d dbintegraia_19 -i base -c clientes/cliente1/conf/odoo.cfg
+
 ```
 
 # Arrancamos odoo de manera regular
