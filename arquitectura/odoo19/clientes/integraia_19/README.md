@@ -69,6 +69,16 @@ source .venv/bin/activate
     uv pip install pydantic
     uv pip install pycryptodome
     uv pip install pydub
+    # Opción 1: Solo instalar/sobrescribir
+    uv pip install python-magic
+
+    # Opción 2: Desinstalar y luego instalar
+    uv pip uninstall magic python-magic
+    # Cuando pregunte, escribe: y
+    uv pip install python-magic
+
+    sudo apt-get update
+    sudo apt-get install libmagic1 -y
 
      ``
 # Instalar los requirement
