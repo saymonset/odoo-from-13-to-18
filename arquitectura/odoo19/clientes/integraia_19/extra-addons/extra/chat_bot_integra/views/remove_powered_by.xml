@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="website_brand_promotion_remove" model="ir.ui.view">
+        <field name="name">web.brand.promotion.remove</field>
+        <field name="model">ir.ui.view</field>
+        <field name="inherit_id" ref="web.brand_promotion"/>  <!-- ← 187: esta es la que genera el div -->
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <!-- Elimina el div completo con clase exacta -->
+            <xpath expr="//div[@class='o_brand_promotion']" position="replace"/>
+        </field>
+    </record>
+
+</odoo>

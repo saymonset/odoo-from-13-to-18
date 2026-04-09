@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_chatbot_flujo_user,chatbot.flujo.user,model_chatbot_flujo,base.group_user,1,1,1,1
+access_chatbot_paso_user,chatbot.paso.user,model_chatbot_paso,base.group_user,1,1,1,1
+access_chatbot_session_user,chatbot.session.user,model_chatbot_session,base.group_user,1,1,1,1

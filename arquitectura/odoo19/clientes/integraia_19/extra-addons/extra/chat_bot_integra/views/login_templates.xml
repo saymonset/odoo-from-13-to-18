@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="insertar_boton_en_home" 
+    inherit_id="website.homepage" 
+    name="Insertar Botón OWL en Home"
+    priority="100"
+    >
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <div class="container my-5">
+                <owl-component
+                    name="ChatBotWrapper"
+                    t-attf-props='{"webhookUrl": "#{request.env["ir.config_parameter"].sudo().get_param("chat_bot_integra.webhook_url") or ""}"}'/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

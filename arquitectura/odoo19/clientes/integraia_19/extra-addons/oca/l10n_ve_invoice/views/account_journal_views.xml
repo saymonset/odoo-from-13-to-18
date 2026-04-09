@@ -1,0 +1,16 @@
+<odoo>
+    <record id="view_account_journal_form" model="ir.ui.view">
+        <field name="name">view.account.journal.l10n.ve.invoice.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="is_contingency" invisible="type not in ('sale', 'purchase')"/>
+                <field name="is_debit" invisible="type not in ('sale', 'purchase')"/>
+                <field name="series_correlative_sequence_id" 
+                       invisible="type not in ('sale', 'purchase')"
+                       groups="l10n_ve_invoice.group_sales_invoicing_series"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
