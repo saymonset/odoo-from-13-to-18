@@ -95,6 +95,77 @@ ensure_role() {
     log "✅ Rol '$role' configurado correctamente"
 }
 
+# Función para instalar módulos desde el backup a data/addons/oca y data/addons/extra
+install_modules_from_backup() {
+    local temp_dir=$1
+    
+    info "Instalando módulos desde el backup a data/addons/ según el addons_path..."
+    
+    local oca_copied=0
+    local extra_copied=0
+    local custom_copied=0
+    
+    # 1. Copiar módulos OCA a data/addons/oca/
+    local OCA_DIR=$(find "$temp_dir" -type d -path "*/oca" | head -1)
+    if [ -n "$OCA_DIR" ] && [ "$(ls -A "$OCA_DIR" 2>/dev/null)" ]; then
+        info "Copiando módulos OCA a data/addons/oca/..."
+        sudo mkdir -p "$DATA_DIR/addons/oca"
+        
+        for module_dir in "$OCA_DIR"/*/; do
+            if [ -d "$module_dir" ]; then
+                module_name=$(basename "$module_dir")
+                target_dir="$DATA_DIR/addons/oca/$module_name"
+                
+                # No sobrescribir si ya existe
+                if [ ! -d "$target_dir" ]; then
+                    sudo cp -r "$module_dir" "$target_dir"
+                    log "  ✓ Copiado OCA: $module_name"
+                    ((oca_copied++))
+                else
+                    warn "  ⚠ OCA ya existe: $module_name (no se sobrescribe)"
+                fi
+            fi
+        done
+        log "✅ $oca_copied módulos OCA copiados a data/addons/oca/"
+    fi
+    
+    # 2. Copiar módulos EXTRA a data/addons/extra/
+    local EXTRA_DIR=$(find "$temp_dir" -type d -path "*/extra" | head -1)
+    if [ -n "$EXTRA_DIR" ] && [ "$(ls -A "$EXTRA_DIR" 2>/dev/null)" ]; then
+        info "Copiando módulos EXTRA a data/addons/extra/..."
+        sudo mkdir -p "$DATA_DIR/addons/extra"
+        
+        for module_dir in "$EXTRA_DIR"/*/; do
+            if [ -d "$module_dir" ]; then
+                module_name=$(basename "$module_dir")
+                target_dir="$DATA_DIR/addons/extra/$module_name"
+                
+                if [ ! -d "$target_dir" ]; then
+                    sudo cp -r "$module_dir" "$target_dir"
+                    log "  ✓ Copiado EXTRA: $module_name"
+                    ((extra_copied++))
+                else
+                    warn "  ⚠ EXTRA ya existe: $module_name (no se sobrescribe)"
+                fi
+            fi
+        done
+        log "✅ $extra_copied módulos EXTRA copiados a data/addons/extra/"
+    fi
+    
+    # Limpiar permisos
+    sudo chown -R $(whoami):$(whoami) "$DATA_DIR/addons/" 2>/dev/null || true
+    sudo chmod -R 755 "$DATA_DIR/addons/" 2>/dev/null || true
+    
+    local total=$((oca_copied + extra_copied))
+    if [ $total -gt 0 ]; then
+        log "✅ Total de módulos instalados: $total"
+        info "  - OCA: $oca_copied módulos → data/addons/oca/"
+        info "  - EXTRA: $extra_copied módulos → data/addons/extra/"
+    else
+        warn "No se encontraron módulos para copiar en el backup"
+    fi
+}
+
 usage() {
     echo "Uso: $0 [cliente] [opciones]"
     echo ""
@@ -102,17 +173,16 @@ usage() {
     ls -1 "$HOME/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19/clientes/" | sed 's/^/  - /'
     echo ""
     echo "Opciones:"
-    echo "  -l, --list        Listar backups disponibles"
-    echo "  -f, --file FILE   Restaurar desde archivo específico"
-    echo "  --install-modules Instalar módulos OCA después de restaurar"
-    echo "  --create-role     Solo crear/verificar el rol en PostgreSQL"
-    echo "  -h, --help        Mostrar ayuda"
+    echo "  -l, --list              Listar backups disponibles"
+    echo "  -f, --file FILE         Restaurar desde archivo específico"
+    echo "  --install-modules       Instalar módulos del backup en data/addons/ (oca/, extra/)"
+    echo "  --create-role           Solo crear/verificar el rol en PostgreSQL"
+    echo "  -h, --help              Mostrar ayuda"
     echo ""
     echo "Ejemplos:"
-    echo "  $0 integraia_19                    # Restaurar último backup para integraia_19"
-    echo "  $0 hoteljumpjibe_19 --install-modules  # Restaurar e instalar módulos"
+    echo "  $0 integraia_19                    # Restaurar último backup"
+    echo "  $0 integraia_19 --install-modules  # Restaurar e instalar módulos en data/addons/"
     echo "  $0 --list                          # Listar todos los backups"
-    echo "  $0 integraia_19 --create-role      # Solo crear el rol"
     exit 0
 }
 
@@ -149,6 +219,8 @@ restore() {
     info "Base de datos destino: $DB_NAME"
     info "Usuario DB: $DB_USER"
     info "Data directory: $DATA_DIR"
+    info "Addons OCA: $DATA_DIR/addons/oca"
+    info "Addons EXTRA: $DATA_DIR/addons/extra"
     info "Backup: $BASE_NAME"
     info "=========================================="
     
@@ -160,9 +232,9 @@ restore() {
     pkill -f "odoo-bin.*--conf $ODOO_CONF" 2>/dev/null || warn "No se encontró proceso Odoo corriendo"
     sleep 3
     
-    # 3. Restaurar filestore y addons
+    # 3. Restaurar filestore
     if [ -f "$FILESTORE_FILE" ]; then
-        info "Restaurando filestore y addons..."
+        info "Restaurando filestore..."
         
         local TEMP_RESTORE_DIR="/tmp/restore_$$"
         mkdir -p "$TEMP_RESTORE_DIR"
@@ -190,44 +262,13 @@ restore() {
             fi
         fi
         
-        # Restaurar addons (extra-addons)
-        info "Restaurando addons..."
-        
-        # Buscar estructura oca y extra
-        local OCA_DIR=$(find "$TEMP_RESTORE_DIR" -type d -path "*/oca" | head -1)
-        if [ -n "$OCA_DIR" ] && [ "$(ls -A "$OCA_DIR" 2>/dev/null)" ]; then
-            info "Restaurando módulos OCA..."
-            sudo rm -rf "$CLIENT_DIR/extra-addons/oca"
-            sudo mkdir -p "$CLIENT_DIR/extra-addons/oca"
-            sudo cp -r "$OCA_DIR"/* "$CLIENT_DIR/extra-addons/oca/"
-            log "✅ Módulos OCA restaurados"
+        # Si se solicitó instalar módulos, copiarlos a data/addons/
+        if [ "$INSTALL_MODULES" = true ]; then
+            install_modules_from_backup "$TEMP_RESTORE_DIR"
         fi
-        
-        local EXTRA_DIR=$(find "$TEMP_RESTORE_DIR" -type d -path "*/extra" | head -1)
-        if [ -n "$EXTRA_DIR" ] && [ "$(ls -A "$EXTRA_DIR" 2>/dev/null)" ]; then
-            info "Restaurando módulos EXTRA..."
-            sudo rm -rf "$CLIENT_DIR/extra-addons/extra"
-            sudo mkdir -p "$CLIENT_DIR/extra-addons/extra"
-            sudo cp -r "$EXTRA_DIR"/* "$CLIENT_DIR/extra-addons/extra/"
-            log "✅ Módulos EXTRA restaurados"
-        fi
-        
-        # También buscar addons directos
-        local ADDONS_DIR=$(find "$TEMP_RESTORE_DIR" -type d -name "addons" ! -path "*/oca/*" ! -path "*/extra/*" | head -1)
-        if [ -n "$ADDONS_DIR" ] && [ "$(ls -A "$ADDONS_DIR" 2>/dev/null)" ]; then
-            info "Restaurando addons adicionales..."
-            sudo cp -r "$ADDONS_DIR"/* "$CLIENT_DIR/extra-addons/" 2>/dev/null || true
-            log "✅ Addons adicionales restaurados"
-        fi
-        
-        # Limpiar permisos
-        sudo chown -R $(whoami):$(whoami) "$CLIENT_DIR/extra-addons/" 2>/dev/null || true
-        sudo chmod -R 755 "$CLIENT_DIR/extra-addons/" 2>/dev/null || true
-        sudo chown -R $(whoami):$(whoami) "$DATA_DIR/filestore/" 2>/dev/null || true
-        sudo chmod -R 755 "$DATA_DIR/filestore/" 2>/dev/null || true
         
         sudo rm -rf "$TEMP_RESTORE_DIR"
-        log "✅ Filestore y addons restaurados"
+        log "✅ Filestore restaurado"
     else
         warn "No se encontró backup de filestore"
     fi
@@ -282,8 +323,8 @@ restore() {
     info "Base de datos: $DB_NAME"
     info "Usuario: $DB_USER"
     info "Filestore: $DATA_DIR/filestore/$DB_NAME"
-    info "Addons OCA: $CLIENT_DIR/extra-addons/oca"
-    info "Addons EXTRA: $CLIENT_DIR/extra-addons/extra"
+    info "Addons OCA: $DATA_DIR/addons/oca"
+    info "Addons EXTRA: $DATA_DIR/addons/extra"
     info "Puerto Odoo: $(grep '^http_port' $ODOO_CONF | awk -F '=' '{print $2}' | tr -d ' ')"
     info "Accede a Odoo en: http://localhost:$(grep '^http_port' $ODOO_CONF | awk -F '=' '{print $2}' | tr -d ' ')"
 }
