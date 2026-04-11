@@ -1,0 +1,8 @@
+# Backup diario a las 2:00 AM
+0 2 * * * /backup/backup.sh >> /backup/backup.log 2>&1
+
+# Backup semanal los domingos a las 3:00 AM (backup completo)
+0 3 * * 0 /backup/backup.sh >> /backup/backup_weekly.log 2>&1
+
+# Limpieza mensual de backups antiguos (1er día del mes a las 4:00 AM)
+0 4 1 * * find /backup/daily -type f -mtime +30 -delete

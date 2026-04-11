@@ -16,9 +16,9 @@ pkill -9 -f "odoo-bin.*cliente1" 2>/dev/null || true
 pkill -9 -f "gevent.*cliente1" 2>/dev/null || true
 
 # Liberar puertos
-echo "🔓 Liberando puertos 38069 y 38070..."
-sudo fuser -k 38069/tcp 2>/dev/null || true
-sudo fuser -k 38070/tcp 2>/dev/null || true
+echo "🔓 Liberando puertos 48069 y 48070..."
+sudo fuser -k 48069/tcp 2>/dev/null || true
+sudo fuser -k 48070/tcp 2>/dev/null || true
 
 # Verificación final
 echo "🔎 Verificando estado final..."
@@ -34,7 +34,7 @@ fi
 
 # Verificar puertos
 echo "🔍 Verificando estado de puertos..."
-netstat -tlnp 2>/dev/null | grep -E '(38069|38070)' || echo "✅ Puertos 38069 y 38070 liberados"
+netstat -tlnp 2>/dev/null | grep -E '(48069|48070)' || echo "✅ Puertos 48069 y 48070 liberados"
 
 # Mostrar logs recientes si existen
 LOG_FILE="/home/odoo/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraia_19/log/odoo.log"
