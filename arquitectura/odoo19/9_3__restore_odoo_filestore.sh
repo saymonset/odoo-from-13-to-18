@@ -1,17 +1,23 @@
 # Dar permisos de ejecución
-#chmod +x /home/simon/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19/backup/restore.sh
-
-# Restaurar último backup para integraia_19
-#./restore.sh integraia_19
-
-# Restaurar último backup para hoteljumpjibe_19
-#./restore.sh hoteljumpjibe_19
-
-# Restaurar e instalar módulos
-./backup/restore.sh integraia_19 --install-modules
-
-# Restaurar desde un archivo específico
-#./restore.sh integraia_19 -f /ruta/al/backup.dump
+chmod +x backup/restore.sh
 
 # Listar backups disponibles
-#./restore.sh --list
+#./backup/restore.sh --list
+
+# Restaurar último backup (solo datos)
+#./backup/restore.sh integraia_19
+
+# Restaurar último backup con módulos
+./backup/restore.sh integraia_19 --install-modules
+
+# Restaurar backup específico
+#./backup/restore.sh integraia_19 -f 2026-04-11_14-59-52
+
+# Restaurar backup específico con módulos
+#./backup/restore.sh integraia_19 -f 2026-04-11_14-59-52 --install-modules
+
+# Solo crear rol
+#./backup/restore.sh integraia_19 --create-role
+
+# Ayuda
+#./backup/restore.sh --help

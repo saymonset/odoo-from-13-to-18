@@ -6,6 +6,13 @@
 /arquitectura/odoo*/clientes/*/respaldo_odoo/
 /arquitectura/odoo*/clientes/*/respaldo_odoo/*
 
+# Ignorar backups automáticos de Odoo (carpeta out)
+/arquitectura/odoo*/backup/out/
+/arquitectura/odoo*/backup/out/*
+# Excepción: mantener la estructura de carpetas
+!/arquitectura/odoo*/backup/out/.gitkeep
+!/arquitectura/odoo*/backup/out/README.md
+
 # Ignorar entornos virtuales de todas las versiones
 /arquitectura/odoo*/.venv
 
@@ -27,5 +34,5 @@
 /arquitectura/odoo*/clientes/*/sessions/filestore/**
 /arquitectura/odoo*/clientes/*/sessions/sessions/**
 /arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chatter_voice_note/uses_cases/__pycache__/**
- /arquitectura/odoo18/clientes/cliente1/extra-addons/oca/**/*
- /arquitectura/odoo19/clientes/integraiadev/extra-addon/
+/arquitectura/odoo18/clientes/cliente1/extra-addons/oca/**/*
+/arquitectura/odoo19/clientes/integraiadev/extra-addon/
