@@ -175,6 +175,7 @@ source .venv/bin/activate
 
 ```bash
  ./odoo/odoo-bin -d dbintegraia_19 -c clientes/integraia_19/conf/odoo.cfg --dev=all
+ ./odoo/odoo-bin -d dbintegraia_19 -c clientes/integraia_19/conf/odoo.cfg --update=web --stop-after-init
 ```
 # actualizar modulo
 ```bash
