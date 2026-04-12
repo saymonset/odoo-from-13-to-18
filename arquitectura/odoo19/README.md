@@ -1,3 +1,20 @@
+
+################################***PRODUCCION***################################
+ PROXY_MODE EN EL .CG SE CAMBIO A FALSE SIE STA EN DEVELOPER, EN PRODUCCION DEBE ESTAR EN TRUE
+
+################################***FIN PRODUCCION***################################
+
+###############################****HACER BACKUP****################################
+   SIEMPRE QUE HAGAS BACKUP A PRODUCCION COLOCA LA BANDERA proxy_mode = True en el arquitectura/odoo19/clientes/integraia_19/conf/odoo.cfg
+  solo debes abrir el archivo backup.sh y cambiar el nombre del cliente a respaldar y ejecutarlo ./9_1_backup_bd.sh
+  ###############################****FIN HACER BACKUP****################################
+
+  ###############################****HACER RESTORE****################################
+    solo debes abrir el archivo 9_3__restore_odoo_filestore.sh y cambiar el nombre del cliente a restaurar y ejecutarlo ./9_3__restore_odoo_filestore.sh
+    ###############################****FIN HACER RESTORE****################################
+
+
+
 ## Si vas a debug , en el archivo, cambiar el 18 por la version que vas a debuguear y en la carpeta cliente1 es la default
 '''bash
 /home/odoo/odoo-from-13-to-18/.vscode/launch.json
