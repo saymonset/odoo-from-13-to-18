@@ -4,7 +4,7 @@ set -e
 # Configuración - Usando Docker para PostgreSQL
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_BASE_DIR="$SCRIPT_DIR/out"
-DB_CONTAINER="odoo-db19-n8n"  # Tu contenedor de PostgreSQL
+DB_CONTAINER="odoo-db19-test"  # Tu contenedor de PostgreSQL
 SUPERUSER="odoo"  # El superuser en tu contenedor es 'odoo'
 
 # El script recibe el cliente como parámetro

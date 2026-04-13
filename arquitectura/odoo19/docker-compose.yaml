@@ -1,0 +1,16 @@
+# Este archivo une todos los servicios
+services:
+  # Incluir servicios de Odoo
+  db:
+    extends:
+      file: docker-compose.postgrestest.yml
+      service: db
+  
+# Secrets globales
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+# CORRECCIÓN: La red debe ser external: true porque ya existe
+networks:
+  odoo_network_19:
+    external: true
