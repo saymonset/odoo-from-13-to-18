@@ -9,7 +9,7 @@
 # Ignorar backups automáticos de Odoo (carpeta out)
 /arquitectura/odoo*/backup/out/
 /arquitectura/odoo*/backup/out/*
-/arquitectura/odoo19/v19/*
+/arquitectura/odoo19/v19test/*
 # Excepción: mantener la estructura de carpetas
 !/arquitectura/odoo*/backup/out/.gitkeep
 !/arquitectura/odoo*/backup/out/README.md

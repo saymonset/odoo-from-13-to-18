@@ -13,8 +13,8 @@ services:
     networks:
       - odoo_network_19
     volumes:
-      - "./v19/odoo_n8n_pgdata/data:/var/lib/postgresql/data/pgdata"
-      - "./v19/odoo_n8n_pgdata/init:/docker-entrypoint-initdb.d"
+      - "./v19test/test_pgdata/data:/var/lib/postgresql/data/pgdata"
+      - "./v19test/test_pgdata/init:/docker-entrypoint-initdb.d"
     secrets:
       - postgres_password
     healthcheck:
