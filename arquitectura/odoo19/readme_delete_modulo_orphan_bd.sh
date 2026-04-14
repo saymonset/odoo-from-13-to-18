@@ -4,7 +4,7 @@
 CONTAINER="odoo-db19-test"
 DB_USER="odoo"
 DB_NAME="dbintegraia_19"
-MODULE="conver_pos_sales"
+MODULE="l10n_ve_currency_rate_live"
 
 echo "Eliminando módulo: $MODULE"
 
