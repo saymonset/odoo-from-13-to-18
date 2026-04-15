@@ -6,9 +6,28 @@ BASE_DIR="$HOME/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19"
 BACKUP_BASE_DIR="$BASE_DIR/backup/out"
 DB_CONTAINER="odoo-db19-test"
 
-# Configuración del cliente
-CLIENT_NAME="integraia_19"
+usage() {
+    echo "Uso: $0 <cliente> [nombre_directorio_backup_opcional]"
+    echo ""
+    echo "Clientes disponibles:"
+    ls -1 "$BASE_DIR/clientes/" | sed 's/^/  - /'
+    exit 1
+}
+
+# Configuración del cliente tomando el primer parámetro
+CLIENT_NAME="${1:-}"
+
+if [ -z "$CLIENT_NAME" ]; then
+    usage
+fi
+
 CLIENT_DIR="$BASE_DIR/clientes/$CLIENT_NAME"
+
+if [ ! -d "$CLIENT_DIR" ]; then
+    echo "[ERROR] Cliente no encontrado: $CLIENT_NAME"
+    usage
+fi
+
 ODOO_CONF="$CLIENT_DIR/conf/odoo.cfg"
 
 # Verificar que exista el directorio de backups
@@ -17,16 +36,36 @@ if [ ! -d "$BACKUP_BASE_DIR" ]; then
     exit 1
 fi
 
-# Buscar el backup más reciente automáticamente
-LATEST_BACKUP=$(ls -td "$BACKUP_BASE_DIR"/backup_* 2>/dev/null | head -1)
-if [ -n "$LATEST_BACKUP" ]; then
-    BACKUP_DIR="$LATEST_BACKUP"
-    echo "[INFO] Backup encontrado: $(basename $BACKUP_DIR)"
+# Si se pasó un backup explícito como segundo parámetro, lo usamos
+if [ -n "${2:-}" ]; then
+    BACKUP_DIR="$BACKUP_BASE_DIR/$2"
+    if [ ! -d "$BACKUP_DIR" ]; then
+        echo "[ERROR] El backup especificado no existe: $BACKUP_DIR"
+        exit 1
+    fi
+    echo "[INFO] Backup manual seleccionado: $(basename "$BACKUP_DIR")"
 else
-    echo "[ERROR] No hay backups disponibles en $BACKUP_BASE_DIR"
-    echo "Backups existentes:"
-    ls -la "$BACKUP_BASE_DIR"/ 2>/dev/null || echo "  (ninguno)"
-    exit 1
+    # Buscar el backup más reciente PARA ESTE CLIENTE específicamente
+    echo "[INFO] Buscando el backup más reciente para el cliente '$CLIENT_NAME'..."
+    FOUND_BACKUP=""
+    
+    # Recorrer backups guardados del más nuevo al más viejo
+    for b in $(ls -td "$BACKUP_BASE_DIR"/backup_* 2>/dev/null); do
+        if [ -f "$b/backup_info.txt" ]; then
+            if grep -q "Cliente: $CLIENT_NAME" "$b/backup_info.txt"; then
+                FOUND_BACKUP="$b"
+                break
+            fi
+        fi
+    done
+
+    if [ -n "$FOUND_BACKUP" ]; then
+        BACKUP_DIR="$FOUND_BACKUP"
+        echo "[INFO] Backup encontrado: $(basename "$BACKUP_DIR")"
+    else
+        echo "[ERROR] No hay backups disponibles para el cliente '$CLIENT_NAME' en $BACKUP_BASE_DIR"
+        exit 1
+    fi
 fi
 
 # Extraer variables del archivo de configuración del cliente
@@ -187,10 +226,10 @@ fi
 # 7. Restaurar base de datos
 log "Restaurando base de datos $DB_NAME..."
 
-# Eliminar base de datos existente
-docker exec -e PGPASSWORD=$DB_PASSWORD $DB_CONTAINER psql -U $DB_USER -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='$DB_NAME';" 2>/dev/null || true
-docker exec -e PGPASSWORD=$DB_PASSWORD $DB_CONTAINER dropdb -U $DB_USER --if-exists $DB_NAME 2>/dev/null || true
-docker exec -e PGPASSWORD=$DB_PASSWORD $DB_CONTAINER createdb -U $DB_USER $DB_NAME
+# Eliminar base de datos existente (usando el superusuario odoo para garantizar permisos de terminación y recreación)
+docker exec $DB_CONTAINER psql -U odoo -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='$DB_NAME';" 2>/dev/null || true
+docker exec $DB_CONTAINER dropdb -U odoo --if-exists $DB_NAME 2>/dev/null || true
+docker exec $DB_CONTAINER createdb -U odoo -O "$DB_USER" $DB_NAME
 
 log "Restaurando dump de base de datos (puede tomar varios minutos)..."
 set +e

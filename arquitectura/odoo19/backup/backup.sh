@@ -313,7 +313,7 @@ echo ""
 if [ -f "$BACKUP_DIR/odoo_addons_${TIMESTAMP}.tar.gz" ]; then
     info "Contenido del backup de addons:"
     tar -tzf "$BACKUP_DIR/odoo_addons_${TIMESTAMP}.tar.gz" | head -20 | sed 's/^/  /'
-    local total_modules=$(tar -tzf "$BACKUP_DIR/odoo_addons_${TIMESTAMP}.tar.gz" | grep -c "__manifest__.py" || echo "0")
+    total_modules=$(tar -tzf "$BACKUP_DIR/odoo_addons_${TIMESTAMP}.tar.gz" | grep -c "__manifest__.py" || echo "0")
     if [ "$total_modules" -gt 0 ]; then
         log "  Total de módulos encontrados: $total_modules"
     fi
