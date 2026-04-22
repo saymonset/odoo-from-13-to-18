@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Bancos de Venezuela -->
+        <record id="bank_0102" model="res.bank">
+            <field name="name">Banco de Venezuela</field>
+            <field name="bic">0102</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0134" model="res.bank">
+            <field name="name">Banesco Banco Universal</field>
+            <field name="bic">0134</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0105" model="res.bank">
+            <field name="name">Banco Mercantil</field>
+            <field name="bic">0105</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0108" model="res.bank">
+            <field name="name">Banco Provincial</field>
+            <field name="bic">0108</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0191" model="res.bank">
+            <field name="name">Banco Nacional de Crédito (BNC)</field>
+            <field name="bic">0191</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0172" model="res.bank">
+            <field name="name">Bancamiga</field>
+            <field name="bic">0172</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0163" model="res.bank">
+            <field name="name">Banco del Tesoro</field>
+            <field name="bic">0163</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0115" model="res.bank">
+            <field name="name">Banco Exterior</field>
+            <field name="bic">0115</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0114" model="res.bank">
+            <field name="name">Bancaribe</field>
+            <field name="bic">0114</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0137" model="res.bank">
+            <field name="name">Banco Sofitasa</field>
+            <field name="bic">0137</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0175" model="res.bank">
+            <field name="name">Banco Bicentenario</field>
+            <field name="bic">0175</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0138" model="res.bank">
+            <field name="name">Banco Plaza</field>
+            <field name="bic">0138</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0171" model="res.bank">
+            <field name="name">Banco Activo</field>
+            <field name="bic">0171</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0104" model="res.bank">
+            <field name="name">Banco Venezolano de Crédito (BVC)</field>
+            <field name="bic">0104</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0128" model="res.bank">
+            <field name="name">Banco Caroní</field>
+            <field name="bic">0128</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0146" model="res.bank">
+            <field name="name">Bangente</field>
+            <field name="bic">0146</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0151" model="res.bank">
+            <field name="name">Banco Fondo Común (BFC)</field>
+            <field name="bic">0151</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0156" model="res.bank">
+            <field name="name">100% Banco</field>
+            <field name="bic">0156</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0157" model="res.bank">
+            <field name="name">Del Sur Banco Universal</field>
+            <field name="bic">0157</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0166" model="res.bank">
+            <field name="name">Banco Agrícola de Venezuela</field>
+            <field name="bic">0166</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0168" model="res.bank">
+            <field name="name">Bancrecer</field>
+            <field name="bic">0168</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0169" model="res.bank">
+            <field name="name">Mi Banco</field>
+            <field name="bic">0169</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0174" model="res.bank">
+            <field name="name">Banplus</field>
+            <field name="bic">0174</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0177" model="res.bank">
+            <field name="name">Banco de la Fuerza Armada Nacional (BANFANB)</field>
+            <field name="bic">0177</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+
+        <record id="bank_0001" model="res.bank">
+            <field name="name">Banco Central de Venezuela</field>
+            <field name="bic">0001</field>
+            <field name="country" ref="base.ve"/>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>
