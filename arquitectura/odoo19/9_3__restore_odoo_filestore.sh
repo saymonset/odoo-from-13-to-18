@@ -11,7 +11,7 @@ chmod +x backup/restore.sh
 # 1. RESTAURAR EL ÚLTIMO BACKUP DISPONIBLE DE UN CLIENTE
 # Busca automáticamente en la carpeta de backups el último que pertenezca a este cliente.
 # ------------------------------------------------------------------------------
-./backup/restore.sh integraia_19
+# ./backup/restore.sh integraia_19
 # ./backup/restore.sh hoteljumpjibe_19
 
 
@@ -20,7 +20,7 @@ chmod +x backup/restore.sh
 # Si quieres restaurar una fecha en particular, copia el nombre de la carpeta
 # de backup y ponla como segundo argumento.
 # ------------------------------------------------------------------------------
-# ./backup/restore.sh integraia_19 backup_2026-04-14_10-00-00
+./backup/restore.sh integraia_19 backup_2026-04-22_21-21-28
 
 
 # ------------------------------------------------------------------------------

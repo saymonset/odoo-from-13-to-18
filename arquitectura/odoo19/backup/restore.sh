@@ -91,6 +91,11 @@ DB_DUMP="$BACKUP_DIR/odoo_db_${BACKUP_DATE}.dump"
 ADDONS_TAR="$BACKUP_DIR/odoo_addons_${BACKUP_DATE}.tar.gz"
 FILESTORE_TAR="$BACKUP_DIR/odoo_filestore_${BACKUP_DATE}.tar.gz"
 
+if [ ! -f "$DB_DUMP" ]; then
+    DB_DUMP="$BACKUP_DIR/dbodoo19_${BACKUP_DATE}.dump"
+fi
+COMBINED_DATA_TAR="$BACKUP_DIR/odoo_data_${BACKUP_DATE}.tar.gz"
+
 # Colores
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -126,15 +131,21 @@ log "Creando directorios necesarios..."
 mkdir -p "$DATA_DIR"/{filestore,addons}
 mkdir -p "$DATA_DIR/addons"/{oca,extra,enterprise}
 
-# 3. Restaurar addons (desde archivo separado)
-if [ -f "$ADDONS_TAR" ]; then
-    log "Restaurando addons desde: $(basename "$ADDONS_TAR")"
+# 3. Restaurar addons (desde archivo separado o combinado)
+if [ -f "$ADDONS_TAR" ] || [ -f "$COMBINED_DATA_TAR" ]; then
+    if [ -f "$ADDONS_TAR" ]; then
+        log "Restaurando addons desde: $(basename "$ADDONS_TAR")"
+        ACTIVE_TAR="$ADDONS_TAR"
+    else
+        log "Restaurando addons desde backup combinado: $(basename "$COMBINED_DATA_TAR")"
+        ACTIVE_TAR="$COMBINED_DATA_TAR"
+    fi
     
     TEMP_ADDONS_DIR="/tmp/restore_addons_$$"
     mkdir -p "$TEMP_ADDONS_DIR"
     
     # Extraer addons
-    tar --no-same-owner --no-same-permissions -xzf "$ADDONS_TAR" -C "$TEMP_ADDONS_DIR"
+    tar --no-same-owner --no-same-permissions -xzf "$ACTIVE_TAR" -C "$TEMP_ADDONS_DIR"
     
     # Buscar y clasificar módulos
     log "Buscando y clasificando addons..."
@@ -163,18 +174,24 @@ if [ -f "$ADDONS_TAR" ]; then
     rm -rf "$TEMP_ADDONS_DIR"
     log "✅ Addons restaurados en $DATA_DIR/addons/"
 else
-    warn "No se encontró backup de addons: $ADDONS_TAR"
+    warn "No se encontró backup de addons ($ADDONS_TAR ni $COMBINED_DATA_TAR)"
 fi
 
 # 4. Restaurar filestore
-if [ -f "$FILESTORE_TAR" ]; then
-    log "Restaurando filestore desde: $(basename "$FILESTORE_TAR")"
+if [ -f "$FILESTORE_TAR" ] || [ -f "$COMBINED_DATA_TAR" ]; then
+    if [ -f "$FILESTORE_TAR" ]; then
+        log "Restaurando filestore desde: $(basename "$FILESTORE_TAR")"
+        ACTIVE_TAR="$FILESTORE_TAR"
+    else
+        log "Restaurando filestore desde backup combinado: $(basename "$COMBINED_DATA_TAR")"
+        ACTIVE_TAR="$COMBINED_DATA_TAR"
+    fi
     
     TEMP_FILESTORE_DIR="/tmp/restore_filestore_$$"
     mkdir -p "$TEMP_FILESTORE_DIR"
     
     # Extraer filestore
-    tar --no-same-owner --no-same-permissions -xzf "$FILESTORE_TAR" -C "$TEMP_FILESTORE_DIR"
+    tar --no-same-owner --no-same-permissions -xzf "$ACTIVE_TAR" -C "$TEMP_FILESTORE_DIR"
     
     # Buscar el directorio filestore
     FILESTORE_BASE=$(find "$TEMP_FILESTORE_DIR" -type d -name "filestore" | head -1)
@@ -200,7 +217,7 @@ if [ -f "$FILESTORE_TAR" ]; then
     
     rm -rf "$TEMP_FILESTORE_DIR"
 else
-    warn "No se encontró backup de filestore: $FILESTORE_TAR"
+    warn "No se encontró backup de filestore ($FILESTORE_TAR ni $COMBINED_DATA_TAR)"
 fi
 
 # 5. Limpiar permisos
