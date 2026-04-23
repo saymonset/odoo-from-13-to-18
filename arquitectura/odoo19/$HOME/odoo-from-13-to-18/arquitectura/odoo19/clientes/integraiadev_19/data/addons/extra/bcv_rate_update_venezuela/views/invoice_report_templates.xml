@@ -1,0 +1,21 @@
+<odoo>
+    <!-- Hereda la vista de líneas de factura - Versión alternativa -->
+    <template id="report_invoice_document_inherit_bcv" inherit_id="account.report_invoice_document">
+        <!-- Busca cualquier tabla en el reporte -->
+        <xpath expr="//table[hasclass('table')]/thead/tr" position="inside">
+            <th class="text-right">Precio USD (BCV)</th>
+        </xpath>
+        
+        <xpath expr="//table[hasclass('table')]/tbody/tr" position="inside">
+            <td class="text-right">
+                <span t-if="line.price_usd_bcv">
+                    <t t-esc="format_amount(line.price_usd_bcv, line.currency_id)"/>
+                    <small class="text-muted d-block">
+                        Tasa BCV: <t t-esc="format_amount(line.bcv_rate_value, line.currency_id)"/>
+                    </small>
+                </span>
+                <span t-else="">-</span>
+            </td>
+        </xpath>
+    </template>
+</odoo>

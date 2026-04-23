@@ -1,0 +1,7 @@
+<odoo>
+    <template id="payment_attachment_inherit" inherit_id="website_sale.payment" name="Payment Attachment">
+        <xpath expr="//div[@id='payment_method']" position="after">
+            <owl-component name="bcv_rate_update_venezuela.PaymentProofComponent"/>
+        </xpath>
+    </template>
+</odoo>

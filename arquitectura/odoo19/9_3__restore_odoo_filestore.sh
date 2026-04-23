@@ -20,7 +20,7 @@ chmod +x backup/restore.sh
 # Si quieres restaurar una fecha en particular, copia el nombre de la carpeta
 # de backup y ponla como segundo argumento.
 # ------------------------------------------------------------------------------
-./backup/restore.sh integraia_19 backup_2026-04-22_21-21-28
+./backup/restore.sh integraiadev_19 backup_2026-04-22_21-21-28
 
 
 # ------------------------------------------------------------------------------

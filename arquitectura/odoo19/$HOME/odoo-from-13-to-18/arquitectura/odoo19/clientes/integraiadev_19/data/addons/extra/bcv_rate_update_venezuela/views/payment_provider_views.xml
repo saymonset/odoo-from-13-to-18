@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_payment_provider_form_inherit" model="ir.ui.view">
+        <field name="name">payment.provider.form.inherit</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <!-- Insertar el campo is_wire_transfer después del campo state -->
+            <xpath expr="//group[@name='payment_state']/field[@name='state']" position="after">
+                <field name="is_wire_transfer"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

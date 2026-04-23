@@ -1,3 +1,7 @@
+ 
+ ```bash
+ para las pruebas desarrollo , simpre se hace con integraiadev_19
+ ```
 
 ################################***PRODUCCION***################################
  PROXY_MODE EN EL .CG SE CAMBIO A FALSE SIE STA EN DEVELOPER, EN PRODUCCION DEBE ESTAR EN TRUE
@@ -5,17 +9,18 @@
 ################################***FIN PRODUCCION***################################
 
 ###############################****HACER BACKUP****################################
-   SIEMPRE QUE HAGAS BACKUP A PRODUCCION COLOCA LA BANDERA proxy_mode = True en el arquitectura/odoo19/clientes/integraia_19/conf/odoo.cfg
+   SIEMPRE QUE HAGAS BACKUP A PRODUCCION COLOCA LA BANDERA proxy_mode = True en el arquitectura/odoo19/clientes/integraiadev_19/conf/odoo.cfg
   solo debes abrir el archivo backup.sh y cambiar el nombre del cliente a respaldar y ejecutarlo ./9_1_backup_bd.sh
   ###############################****FIN HACER BACKUP****################################
 
   ###############################****HACER RESTORE****################################
-    solo debes abrir el archivo 9_3__restore_odoo_filestore.sh y cambiar el nombre del cliente a restaurar y ejecutarlo ./9_3__restore_odoo_filestore.sh
+    solo debes abrir el archivo 9
+    _3__restore_odoo_filestore.sh y cambiar el nombre del cliente a restaurar y ejecutarlo ./9_3__restore_odoo_filestore.sh
     ###############################****FIN HACER RESTORE****################################
 
+# para probar en remoto es https://integradev.integraia.lat
 
-
-## Si vas a debug , en el archivo, cambiar el 18 por la version que vas a debuguear y en la carpeta cliente1 es la default
+## Si vas a debug , en el archivo, cambiar el 18 por la version que vas a debuguear y en la carpeta integraiadev_19 es la default
 '''bash
 /home/odoo/odoo-from-13-to-18/.vscode/launch.json
 ```
@@ -95,7 +100,7 @@ source .venv/bin/activate
 uv pip install -r odoo/requirements.txt
 ````
 
-# En postgres creamos el usuario odoo19
+# En docker creamos el usuario odoo19
 
 ```bash
  docker exec -it odoo-db19-n8n bash
@@ -118,14 +123,14 @@ CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 \q
 docker exec -it odoo-db19-n8n bash
    psql -U odoo19 -d postgres
-   CREATE USER integraia_19 WITH PASSWORD 'odoo';
-   ALTER USER integraia_19 WITH SUPERUSER;
+   CREATE USER integraiadev_19 WITH PASSWORD 'odoo';
+   ALTER USER integraiadev_19 WITH SUPERUSER;
 
    \q
    docker exec -it odoo-db19-n8n bash
-   psql -U integraia_19 -d postgres
-   CREATE DATABASE dbintegraia_19;
-   GRANT ALL PRIVILEGES ON DATABASE dbhoteljumpjibe_19 TO hoteljumpjibe_19;
+   psql -U integraiadev_19 -d postgres
+   CREATE DATABASE dbintegraiadev_19;
+   GRANT ALL PRIVILEGES ON DATABASE dbintegraiadev_19 TO integraiadev_19;
 
 
 ```
@@ -157,7 +162,7 @@ source .venv/bin/activate
 ```
 
 ```bash
-./odoo/odoo-bin -d dbintegraia_19 -i base -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbintegraiadev_19 -i base -c clientes/integraiadev_19/conf/odoo.cfg
 
 ```
 
@@ -174,7 +179,7 @@ sudo lsof -i :8019
 ```
 
 ```bash
-./odoo/odoo-bin -d dbintegraia_19 -c clientes/cliente1/conf/odoo.cfg
+./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg
 ```
 # Accedemos
 ```bash
@@ -182,6 +187,6 @@ http://5.189.161.7:18069/
 ```
 # Base de datos
 ```bash
-psql -U panna19 -d dbintegraia_19
+psql -U panna19 -d dbintegraiadev_19
 password:odoo
 ```

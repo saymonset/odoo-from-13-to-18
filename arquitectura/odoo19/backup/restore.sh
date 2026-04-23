@@ -2,9 +2,9 @@
 set -e
 
 # Configuración - Usando rutas ABSOLUTAS
-BASE_DIR="$HOME/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19"
+BASE_DIR="$HOME/odoo-from-13-to-18/arquitectura/odoo19"
 BACKUP_BASE_DIR="$BASE_DIR/backup/out"
-DB_CONTAINER="odoo-db19-test"
+DB_CONTAINER="odoo-db19-n8n"
 
 usage() {
     echo "Uso: $0 <cliente> [nombre_directorio_backup_opcional]"
@@ -14,7 +14,35 @@ usage() {
     exit 1
 }
 
-# Configuración del cliente tomando el primer parámetro
+# Función para expandir rutas (maneja ~ y $HOME)
+expand_path() {
+    local path="$1"
+    local expanded=""
+    
+    if [ -z "$path" ]; then
+        echo ""
+        return
+    fi
+    
+    if [[ "$path" == *"\$HOME"* ]]; then
+        expanded="${path//\$HOME/$HOME}"
+    else
+        expanded="$path"
+    fi
+    
+    if [[ "$expanded" == "~"* ]]; then
+        expanded="${expanded/#\~/$HOME}"
+    fi
+    
+    expanded=$(echo "$expanded" | cut -d',' -f1 | xargs | tr -d '\r\n')
+    
+    if [ -z "$expanded" ]; then
+        expanded="$CLIENT_DIR/data"
+    fi
+    
+    echo "$expanded"
+}
+
 CLIENT_NAME="${1:-}"
 
 if [ -z "$CLIENT_NAME" ]; then
@@ -30,13 +58,11 @@ fi
 
 ODOO_CONF="$CLIENT_DIR/conf/odoo.cfg"
 
-# Verificar que exista el directorio de backups
 if [ ! -d "$BACKUP_BASE_DIR" ]; then
     echo "[ERROR] No existe el directorio: $BACKUP_BASE_DIR"
     exit 1
 fi
 
-# Si se pasó un backup explícito como segundo parámetro, lo usamos
 if [ -n "${2:-}" ]; then
     BACKUP_DIR="$BACKUP_BASE_DIR/$2"
     if [ ! -d "$BACKUP_DIR" ]; then
@@ -45,11 +71,9 @@ if [ -n "${2:-}" ]; then
     fi
     echo "[INFO] Backup manual seleccionado: $(basename "$BACKUP_DIR")"
 else
-    # Buscar el backup más reciente PARA ESTE CLIENTE específicamente
     echo "[INFO] Buscando el backup más reciente para el cliente '$CLIENT_NAME'..."
     FOUND_BACKUP=""
     
-    # Recorrer backups guardados del más nuevo al más viejo
     for b in $(ls -td "$BACKUP_BASE_DIR"/backup_* 2>/dev/null); do
         if [ -f "$b/backup_info.txt" ]; then
             if grep -q "Cliente: $CLIENT_NAME" "$b/backup_info.txt"; then
@@ -68,24 +92,22 @@ else
     fi
 fi
 
-# Extraer variables del archivo de configuración del cliente
 if [ -f "$ODOO_CONF" ]; then
     DB_NAME=$(grep -E '^db_name\s*=' "$ODOO_CONF" | awk -F '=' '{print $2}' | tr -d ' ' | tr -d '\r')
     DB_USER=$(grep -E '^db_user\s*=' "$ODOO_CONF" | awk -F '=' '{print $2}' | tr -d ' ' | tr -d '\r')
     DB_PASSWORD=$(grep -E '^db_password\s*=' "$ODOO_CONF" | awk -F '=' '{print $2}' | tr -d ' ' | tr -d '\r')
-    DATA_DIR=$(grep -E '^data_dir\s*=' "$ODOO_CONF" | awk -F '=' '{print $2}' | tr -d ' ' | tr -d '\r')
-    # Expandir ~ a home
-    DATA_DIR="${DATA_DIR/#\~/$HOME}"
-    # Eliminar posibles comas y espacios (por si hay múltiples rutas)
-    DATA_DIR=$(echo "$DATA_DIR" | cut -d',' -f1 | xargs)
+    RAW_DATA_DIR=$(grep -E '^data_dir\s*=' "$ODOO_CONF" | awk -F '=' '{print $2}' | tr -d ' ' | tr -d '\r')
+    DATA_DIR=$(expand_path "$RAW_DATA_DIR")
+else
+    DATA_DIR=""
 fi
 
-# Valores por defecto si no se encuentran en el cfg
 DB_NAME=${DB_NAME:-dbintegraia_19}
 DB_USER=${DB_USER:-integraia_19}
-DATA_DIR=${DATA_DIR:-"$CLIENT_DIR/data"}
+if [ -z "$DATA_DIR" ]; then
+    DATA_DIR="$CLIENT_DIR/data"
+fi
 
-# Buscar los archivos del backup (usando la fecha del directorio)
 BACKUP_DATE=$(basename "$BACKUP_DIR" | sed 's/backup_//')
 DB_DUMP="$BACKUP_DIR/odoo_db_${BACKUP_DATE}.dump"
 ADDONS_TAR="$BACKUP_DIR/odoo_addons_${BACKUP_DATE}.tar.gz"
@@ -96,7 +118,6 @@ if [ ! -f "$DB_DUMP" ]; then
 fi
 COMBINED_DATA_TAR="$BACKUP_DIR/odoo_data_${BACKUP_DATE}.tar.gz"
 
-# Colores
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
@@ -108,7 +129,6 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 info() { echo -e "${BLUE}[DEBUG]${NC} $1"; }
 
-# Verificar que exista el dump
 if [ ! -f "$DB_DUMP" ]; then
     error "No se encuentra el dump: $DB_DUMP"
 fi
@@ -121,17 +141,19 @@ log "Usuario DB: $DB_USER"
 log "Data directory: $DATA_DIR"
 log "=========================================="
 
-# 1. Detener Odoo (si está corriendo)
 log "Deteniendo Odoo para $CLIENT_NAME..."
 pkill -f "odoo-bin.*--conf $ODOO_CONF" 2>/dev/null || warn "No se encontró proceso Odoo corriendo"
 sleep 3
 
-# 2. Crear directorios necesarios
 log "Creando directorios necesarios..."
 mkdir -p "$DATA_DIR"/{filestore,addons}
 mkdir -p "$DATA_DIR/addons"/{oca,extra,enterprise}
 
-# 3. Restaurar addons (desde archivo separado o combinado)
+if [ ! -d "$DATA_DIR/filestore" ]; then
+    error "No se pudo crear el directorio: $DATA_DIR/filestore"
+fi
+
+# Restaurar addons
 if [ -f "$ADDONS_TAR" ] || [ -f "$COMBINED_DATA_TAR" ]; then
     if [ -f "$ADDONS_TAR" ]; then
         log "Restaurando addons desde: $(basename "$ADDONS_TAR")"
@@ -144,18 +166,14 @@ if [ -f "$ADDONS_TAR" ] || [ -f "$COMBINED_DATA_TAR" ]; then
     TEMP_ADDONS_DIR="/tmp/restore_addons_$$"
     mkdir -p "$TEMP_ADDONS_DIR"
     
-    # Extraer addons
     tar --no-same-owner --no-same-permissions -xzf "$ACTIVE_TAR" -C "$TEMP_ADDONS_DIR"
     
-    # Buscar y clasificar módulos
     log "Buscando y clasificando addons..."
     
-    # Buscar módulos por __manifest__.py
     while IFS= read -r manifest; do
         module_dir=$(dirname "$manifest")
         module_name=$(basename "$module_dir")
         
-        # Determinar tipo por la ruta
         if [[ "$module_dir" =~ /oca/ ]]; then
             module_type="oca"
         elif [[ "$module_dir" =~ /enterprise/ ]]; then
@@ -174,10 +192,12 @@ if [ -f "$ADDONS_TAR" ] || [ -f "$COMBINED_DATA_TAR" ]; then
     rm -rf "$TEMP_ADDONS_DIR"
     log "✅ Addons restaurados en $DATA_DIR/addons/"
 else
-    warn "No se encontró backup de addons ($ADDONS_TAR ni $COMBINED_DATA_TAR)"
+    warn "No se encontró backup de addons"
 fi
 
-# 4. Restaurar filestore
+# ==============================================================================
+# RESTAURAR FILESTORE - CORREGIDO PARA ESTRUCTURA REAL
+# ==============================================================================
 if [ -f "$FILESTORE_TAR" ] || [ -f "$COMBINED_DATA_TAR" ]; then
     if [ -f "$FILESTORE_TAR" ]; then
         log "Restaurando filestore desde: $(basename "$FILESTORE_TAR")"
@@ -190,49 +210,96 @@ if [ -f "$FILESTORE_TAR" ] || [ -f "$COMBINED_DATA_TAR" ]; then
     TEMP_FILESTORE_DIR="/tmp/restore_filestore_$$"
     mkdir -p "$TEMP_FILESTORE_DIR"
     
-    # Extraer filestore
+    log "Extrayendo backup para filestore..."
     tar --no-same-owner --no-same-permissions -xzf "$ACTIVE_TAR" -C "$TEMP_FILESTORE_DIR"
     
-    # Buscar el directorio filestore
-    FILESTORE_BASE=$(find "$TEMP_FILESTORE_DIR" -type d -name "filestore" | head -1)
+    # Depuración: mostrar estructura
+    log "Estructura del backup extraído:"
+    ls -la "$TEMP_FILESTORE_DIR" | head -10
     
-    if [ -n "$FILESTORE_BASE" ]; then
-        ORIGINAL_DB_NAME=$(find "$FILESTORE_BASE" -maxdepth 1 -type d ! -path "$FILESTORE_BASE" | head -1 | xargs basename 2>/dev/null)
+    # Buscar la estructura correcta: filestore/NOMBRE_DB_ORIGINAL/
+    # Según tu lista de archivos, la estructura es: ./filestore/dbodoo19/
+    
+    ORIGINAL_DB_NAME=""
+    FILESTORE_SOURCE=""
+    
+    # Verificar si existe el directorio filestore
+    if [ -d "$TEMP_FILESTORE_DIR/filestore" ]; then
+        log "Directorio filestore encontrado"
         
-        if [ -n "$ORIGINAL_DB_NAME" ]; then
-            log "Filestore original detectado: $ORIGINAL_DB_NAME"
-            log "Renombrando a: $DB_NAME"
-            
-            rm -rf "$DATA_DIR/filestore/$DB_NAME"
-            mkdir -p "$DATA_DIR/filestore"
-            mv "$FILESTORE_BASE/$ORIGINAL_DB_NAME" "$DATA_DIR/filestore/$DB_NAME"
-            
-            log "✅ Filestore restaurado en $DATA_DIR/filestore/$DB_NAME"
-        else
-            warn "No se pudo determinar el nombre original del filestore"
+        # Buscar subdirectorios dentro de filestore (debería ser dbodoo19)
+        for subdir in "$TEMP_FILESTORE_DIR/filestore"/*; do
+            if [ -d "$subdir" ]; then
+                # Verificar que este subdirectorio contiene la estructura de dos niveles (6e/, e1/, etc.)
+                if [ -d "$subdir/6e" ] || [ -d "$subdir/e1" ] || [ -d "$subdir/4b" ]; then
+                    ORIGINAL_DB_NAME=$(basename "$subdir")
+                    FILESTORE_SOURCE="$subdir"
+                    log "✅ Encontrada estructura correcta: filestore/$ORIGINAL_DB_NAME/"
+                    break
+                fi
+            fi
+        done
+        
+        # Si no encontramos por la estructura de dos niveles, tomar el primer subdirectorio
+        if [ -z "$FILESTORE_SOURCE" ]; then
+            FIRST_SUBDIR=$(find "$TEMP_FILESTORE_DIR/filestore" -maxdepth 1 -type d ! -path "$TEMP_FILESTORE_DIR/filestore" | head -1)
+            if [ -n "$FIRST_SUBDIR" ]; then
+                ORIGINAL_DB_NAME=$(basename "$FIRST_SUBDIR")
+                FILESTORE_SOURCE="$FIRST_SUBDIR"
+                log "Usando primer subdirectorio encontrado: $ORIGINAL_DB_NAME"
+            fi
+        fi
+    fi
+    
+    # Si encontramos el filestore, proceder a restaurar
+    if [ -n "$FILESTORE_SOURCE" ] && [ -d "$FILESTORE_SOURCE" ]; then
+        log "Filestore original detectado: $ORIGINAL_DB_NAME"
+        log "Renombrando a: $DB_NAME"
+        
+        # Mostrar algunos archivos de ejemplo para confirmar
+        log "Ejemplo de archivos en el filestore original:"
+        find "$FILESTORE_SOURCE" -type f | head -5
+        
+        # Limpiar destino si existe
+        rm -rf "$DATA_DIR/filestore/$DB_NAME"
+        mkdir -p "$DATA_DIR/filestore"
+        
+        # Copiar el contenido completo del filestore
+        log "Copiando archivos desde: $FILESTORE_SOURCE"
+        cp -r "$FILESTORE_SOURCE" "$DATA_DIR/filestore/$DB_NAME"
+        
+        # Contar archivos restaurados
+        FILE_COUNT=$(find "$DATA_DIR/filestore/$DB_NAME" -type f | wc -l)
+        log "✅ Filestore restaurado en $DATA_DIR/filestore/$DB_NAME"
+        log "📁 Archivos restaurados: $FILE_COUNT"
+        
+        # Verificar estructura de dos niveles
+        if [ -d "$DATA_DIR/filestore/$DB_NAME/6e" ]; then
+            log "✅ Estructura correcta detectada (subdirectorios de dos letras)"
+            log "   Ejemplo: $(ls "$DATA_DIR/filestore/$DB_NAME/6e" | head -3)"
         fi
     else
         warn "No se encontró el directorio filestore en el backup"
+        log "Buscando en toda la estructura extraída:"
+        find "$TEMP_FILESTORE_DIR" -type d | head -30
     fi
     
     rm -rf "$TEMP_FILESTORE_DIR"
 else
-    warn "No se encontró backup de filestore ($FILESTORE_TAR ni $COMBINED_DATA_TAR)"
+    warn "No se encontró backup de filestore"
 fi
 
-# 5. Limpiar permisos
 log "Ajustando permisos..."
-chown -R $(whoami):$(whoami) "$DATA_DIR/addons/" 2>/dev/null || true
-chmod -R 755 "$DATA_DIR/addons/" 2>/dev/null || true
+chown -R $(whoami):$(whoami) "$DATA_DIR" 2>/dev/null || true
+chmod -R 755 "$DATA_DIR" 2>/dev/null || true
 
-# 6. Crear/verificar rol en PostgreSQL
+# Crear/verificar rol en PostgreSQL
 log "Verificando rol '$DB_USER' en PostgreSQL..."
 
 ROLE_EXISTS=$(docker exec $DB_CONTAINER psql -U odoo -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER'" 2>/dev/null || echo "0")
 
 if [ "$ROLE_EXISTS" = "1" ]; then
     log "✅ El rol '$DB_USER' ya existe"
-    # Actualizar contraseña
     docker exec $DB_CONTAINER psql -U odoo -d postgres -c "ALTER ROLE \"$DB_USER\" WITH LOGIN PASSWORD '$DB_PASSWORD';" 2>/dev/null || true
 else
     log "Creando rol '$DB_USER'..."
@@ -240,10 +307,9 @@ else
     log "✅ Rol '$DB_USER' creado"
 fi
 
-# 7. Restaurar base de datos
+# Restaurar base de datos
 log "Restaurando base de datos $DB_NAME..."
 
-# Eliminar base de datos existente (usando el superusuario odoo para garantizar permisos de terminación y recreación)
 docker exec $DB_CONTAINER psql -U odoo -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='$DB_NAME';" 2>/dev/null || true
 docker exec $DB_CONTAINER dropdb -U odoo --if-exists $DB_NAME 2>/dev/null || true
 docker exec $DB_CONTAINER createdb -U odoo -O "$DB_USER" $DB_NAME
@@ -265,16 +331,17 @@ else
     error "❌ Falló la restauración de la base de datos (código: $PG_EXIT)"
 fi
 
-# 8. Mostrar resumen
 echo ""
 log "=========================================="
 log "✅ RESTAURACIÓN COMPLETADA"
 log "=========================================="
 log "Base de datos: $DB_NAME"
 log "Usuario DB: $DB_USER"
+log "Data directory: $DATA_DIR"
 log "Filestore: $DATA_DIR/filestore/$DB_NAME"
 log "Addons OCA: $DATA_DIR/addons/oca"
 log "Addons EXTRA: $DATA_DIR/addons/extra"
+log "Addons ENTERPRISE: $DATA_DIR/addons/enterprise"
 log "Puerto Odoo: $(grep '^http_port' $ODOO_CONF | awk -F '=' '{print $2}' | tr -d ' ')"
 log ""
 log "Para iniciar Odoo:"
