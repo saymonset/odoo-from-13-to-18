@@ -4,13 +4,13 @@
     
 
     {
-      "name": "backend + Debug (integraia_19)",
+      "name": "backend + Debug (integraiadev_19)",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/arquitectura/odoo19/odoo/odoo-bin",
       "console": "integratedTerminal",
       "args": [
-        "--config=clientes/integraia_19/conf/odoo.cfg",
+        "--config=clientes/integraiadev_19/conf/odoo.cfg",
         "--dev=all,qweb,xml,reload"
       ],
       "cwd": "${workspaceFolder}/arquitectura/odoo19",
@@ -22,11 +22,11 @@
       "postDebugTask": "disable_debugpy" // Limpia después
     },
     {
-      "name": "fronteEnd integraia_19",
+      "name": "fronteEnd integraiadev_19",
       "request": "launch",
       "type": "chrome",
-      "url": "https://integraia.lat", // Cambia a tu puerto real
-      "webRoot": "${workspaceFolder}/arquitectura/odoo19/clientes/integraia_19/extra-addons/extra/"
+      "url": "https://integraiadev.lat", // Cambia a tu puerto real
+      "webRoot": "${workspaceFolder}/arquitectura/odoo19/clientes/integraiadev_19/extra-addons/extra/"
     }
   ]
 }
