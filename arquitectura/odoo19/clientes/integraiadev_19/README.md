@@ -77,8 +77,15 @@ source .venv/bin/activate
     # Cuando pregunte, escribe: y
     uv pip install python-magic
 
+# Dependencias externas del módulo
+    uv pip install "pydantic>=2.0,<3.0"
+    uv pip install httpx>=0.27.0  # Si usas llamadas HTTP (ej. a n8n o OpenAI)
+    uv pip install python-dotenv>=1.0.0  
+
     sudo apt-get update
     sudo apt-get install libmagic1 -y
+
+     uv pip install openai==2.32.0
 
      ``
 # Instalar los requirement
@@ -181,6 +188,7 @@ source .venv/bin/activate
 ```bash
  ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg -u all
  ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all -u web -u website --stop-after-init
+ ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all -u chat_bot_n8n_ia -u chat_bot_integra --stop-after-init
 ```
 # Accedemos
 ```bash
