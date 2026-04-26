@@ -10,7 +10,8 @@ chmod +x backup/backup.sh
 # ------------------------------------------------------------------------------
 # 1. BACKUP COMPLETO (Base de datos + Filestore + Addons)
 # ------------------------------------------------------------------------------
-./backup/backup.sh integraia_19
+#./backup/backup.sh integraia_19
+./backup/backup.sh integraiadev_19
 # ./backup/backup.sh hoteljumpjibe_19
 
 # ------------------------------------------------------------------------------

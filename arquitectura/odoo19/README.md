@@ -68,18 +68,19 @@ sudo snap install astral-uv --classic
 
 ```bash
 uv python install 3.12
-```
-
-#  Instalar viivakoodi para códigos de barras
-```bash
 uv pip install viivakoodi
 uv pip install python-barcode
+    uv pip install pandas
+    uv  pip install xmltodict
+    uv    pip install gtts
+   uv pip install lxml
+uv venv --python 3.12
 ```
 
 # colocar el enviroment
 
 ```bash
-uv venv --python 3.12
+
 ```
 
 # activarlo
@@ -89,10 +90,6 @@ source .venv/bin/activate
 ```
 
 ````bash
-    uv pip install pandas
-    uv  pip install xmltodict
-    uv    pip install gtts
-   uv pip install lxml
 
      ``
 # Instalar los requirement

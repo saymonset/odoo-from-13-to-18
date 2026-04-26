@@ -4,12 +4,12 @@ set -e
 # Configuración - Usando Docker para PostgreSQL
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_BASE_DIR="$SCRIPT_DIR/out"
-DB_CONTAINER="odoo-db19-test"  # Tu contenedor de PostgreSQL
+DB_CONTAINER="odoo-db19-n8n"  # Tu contenedor de PostgreSQL
 SUPERUSER="odoo"  # El superuser en tu contenedor es 'odoo'
 
 # El script recibe el cliente como parámetro
 CLIENT_NAME="${1:-integraia_19}"  # Por defecto integraia_19
-CLIENT_DIR="$HOME/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19/clientes/$CLIENT_NAME"
+CLIENT_DIR="$HOME/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/$CLIENT_NAME"
 ODOO_CONF="$CLIENT_DIR/conf/odoo.cfg"
 
 # Verificar que exista el cliente
