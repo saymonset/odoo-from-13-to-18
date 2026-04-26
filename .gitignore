@@ -37,3 +37,6 @@
 /arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chatter_voice_note/uses_cases/__pycache__/**
 /arquitectura/odoo18/clientes/cliente1/extra-addons/oca/**/*
 /arquitectura/odoo19/clientes/integraiadev/extra-addon/
+
+# Excepciones para permitir rastreo de código en carpetas de datos específicas
+!/arquitectura/odoo19/clientes/integraiadev_19/data/addons/extra/
