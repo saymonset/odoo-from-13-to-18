@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<templates xml:space="preserve">
-    <t t-name="chat-bot-n8n-ia.OpenAI">
-      <div>
-            <h1></h1>
-        </div>
-    </t>
-</templates>

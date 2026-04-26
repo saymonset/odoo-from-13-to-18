@@ -38,5 +38,8 @@
 /arquitectura/odoo18/clientes/cliente1/extra-addons/oca/**/*
 /arquitectura/odoo19/clientes/integraiadev/extra-addon/
 
-# Excepciones para permitir rastreo de código en carpetas de datos específicas
-!/arquitectura/odoo19/clientes/integraiadev_19/data/addons/extra/
+# Excepciones para permitir el rastreo de data y log en integraiadev_19
+!/arquitectura/odoo19/clientes/integraiadev_19/data/
+!/arquitectura/odoo19/clientes/integraiadev_19/data/**
+!/arquitectura/odoo19/clientes/integraiadev_19/log/
+!/arquitectura/odoo19/clientes/integraiadev_19/log/**
