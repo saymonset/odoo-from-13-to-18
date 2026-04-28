@@ -2,7 +2,7 @@
 set -e
 
 # Configuración - Usando rutas ABSOLUTAS
-BASE_DIR="$HOME/odoo-from-13-to-18/arquitectura/odoo19"
+BASE_DIR="$HOME/develop/odoo-from-13-to-18/arquitectura/odoo19"
 BACKUP_BASE_DIR="$BASE_DIR/backup/out"
 DB_CONTAINER="odoo-db19-n8n"
 

@@ -1,15 +1,5 @@
 #!/bin/bash
 
-
-## Si es la primera vez que se ejecuta, iniciar bdcon esto
-# ir a consola
-# source .venv/bin/activate
-# ./odoo/odoo-bin -d dbintegraiadev_19 -i base -c clientes/integraiadev_19/conf/odoo.cfg
-
-
-# Luego salir con ctrl+D y ejecutar este script
-# Script para levantar Odoo integraiadev_19 con entorno virtual
-
 # Activar entorno virtual
 echo "Activando entorno virtual..."
 source .venv/bin/activate
@@ -18,23 +8,22 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Puerto por defecto de Odoo
-#PORT=8069
-#PORT=18069
+# Puerto, base de datos y rutas
 PORT=38069
-
-# Base de datos
 DB="dbintegraiadev_19"
-
-# Ruta a odoo-bin
 ODOO_BIN="./odoo/odoo-bin"
-
-# Config
 ODOO_CONF="clientes/integraiadev_19/conf/odoo.cfg"
 
-echo "Verificando si hay procesos usando el puerto $PORT..."
+# --- SOLUCIÓN: regenerar assets antes de arrancar ---
+# echo "Regenerando assets (web) para solucionar filestore corrupto..."
+# $ODOO_BIN -d $DB -c $ODOO_CONF --update=web --stop-after-init
+# if [ $? -ne 0 ]; then
+#     echo "Error al regenerar assets. Revisa la base de datos o filestore."
+#     exit 1
+# fi
+# ----------------------------------------------------
 
-# Buscar procesos en el puerto y matarlos
+echo "Verificando si hay procesos usando el puerto $PORT..."
 PIDS=$(sudo lsof -t -i :$PORT)
 if [ ! -z "$PIDS" ]; then
     echo "Matando procesos en el puerto $PORT: $PIDS"
@@ -43,6 +32,5 @@ else
     echo "No hay procesos usando el puerto $PORT"
 fi
 
-# Levantar Odoo
 echo "Iniciando Odoo..."
 $ODOO_BIN -d $DB -c $ODOO_CONF --dev=all

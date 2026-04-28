@@ -74,7 +74,7 @@ CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 # Acceder al contenedor
 docker exec -it odoo-db19-n8n bash
 psql -U odoo -d postgres
-
+\
 # Crear base de datos y usuario
 CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 CREATE DATABASE dbintegraiadev_19 OWNER integraiadev_19;
@@ -109,11 +109,16 @@ sudo ufw allow 8888/tcp
 ```bash
 ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all
 ```
-
+### Si es bloqueadso
+```bash 
+source .venv/bin/activate
+./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --update=nombre_modulo --stop-after-init
+```
 ### Actualización de Módulos Específicos
 ```bash
 # Actualizar módulos de IA
 ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all -u chat_bot_n8n_ia,chat_bot_integra --stop-after-init
+./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all -u chat_bot_integra --stop-after-init
 ```
 
 ---
@@ -127,3 +132,17 @@ URL Local/Server: `http://5.189.161.7:38069/`
 ## Notas Adicionales
 - **Logs**: Los logs están configurados en `clientes/integraiadev_19/log/odoo.log`. Puedes verlos en tiempo real con `tail -f`.
 - **Scripts**: Usa `./stop_odoo_puertos.sh` para liberar los puertos antes de reiniciar.
+
+
+<!-- odoo@vmi2870902:~/develop/odoo-from-13-to-18$ docker exec -it odoo-db19-n8n bash
+root@0e74696284cd:/# psql -U integraiadev_19 -d dbintegraiadev_19
+psql (15.17 (Debian 15.17-1.pgdg12+1))
+Type "help" for help.
+
+dbintegraiadev_19=# UPDATE ir_module_module 
+SET state = 'uninstalled' 
+WHERE state IN ('to install', 'to upgrade', 'installing');
+UPDATE 1
+dbintegraiadev_19=# DELETE FROM ir_model_constraint WHERE name LIKE '%ir_module_module%';
+-- No es necesario normalmente, pero si persiste, reinicia Odoo después.
+DELETE 0 -->
