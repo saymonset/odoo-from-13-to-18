@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_chatbot_res_config_settings" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.chatbot</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <group string="Chat Bot Integra">
+                    <field name="chat_bot_webhook_url"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

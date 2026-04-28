@@ -1,189 +1,135 @@
- 
- ```bash
- para las pruebas desarrollo , simpre se hace con integraiadev_19
- ```
+# para las pruebas desarrollo , siempre se hace con integraiadev_19
 
 ################################***PRODUCCION***################################
- PROXY_MODE EN EL .CG SE CAMBIO A FALSE SIE STA EN DEVELOPER, EN PRODUCCION DEBE ESTAR EN TRUE
-
+# PROXY_MODE EN EL .cfg SE CAMBIA A FALSE SI ESTÁ EN DEVELOPER, EN PRODUCCIÓN DEBE ESTAR EN TRUE
 ################################***FIN PRODUCCION***################################
 
 ###############################****HACER BACKUP****################################
-   SIEMPRE QUE HAGAS BACKUP A PRODUCCION COLOCA LA BANDERA proxy_mode = True en el arquitectura/odoo19/clientes/integraiadev_19/conf/odoo.cfg
-  solo debes abrir el archivo backup.sh y cambiar el nombre del cliente a respaldar y ejecutarlo ./9_1_backup_bd.sh
-  ###############################****FIN HACER BACKUP****################################
+# SIEMPRE QUE HAGAS BACKUP A PRODUCCIÓN COLOCA LA BANDERA proxy_mode = True en el archivo:
+# arquitectura/odoo19/clientes/integraiadev_19/conf/odoo.cfg
+# Solo debes abrir el archivo backup.sh y cambiar el nombre del cliente a respaldar y ejecutar:
+# ./9_1_backup_bd.sh
+###############################****FIN HACER BACKUP****################################
 
-  ###############################****HACER RESTORE****################################
-    solo debes abrir el archivo 9
-    _3__restore_odoo_filestore.sh y cambiar el nombre del cliente a restaurar y ejecutarlo ./9_3__restore_odoo_filestore.sh
-    ###############################****FIN HACER RESTORE****################################
+###############################****HACER RESTORE****################################
+# Solo debes abrir el archivo 9_3__restore_odoo_filestore.sh y cambiar el nombre del cliente a restaurar y ejecutar:
+# ./9_3__restore_odoo_filestore.sh
+###############################****FIN HACER RESTORE****################################
 
-# para probar en remoto es https://integradev.integraia.lat
+# Para probar en remoto: https://integradev.integraia.lat
 
-## Si vas a debug , en el archivo, cambiar el 18 por la version que vas a debuguear y en la carpeta integraiadev_19 es la default
-'''bash
-/home/odoo/odoo-from-13-to-18/.vscode/launch.json
-```
-## Para debuguear , siempre en el ssh abrir los fuentes desde ODOO-13-19
-```bash
+# Si vas a debuggear, en el archivo /home/odoo/odoo-from-13-to-18/.vscode/launch.json,
+# cambiar el 18 por la versión que vas a debuguear. La carpeta integraiadev_19 es la default.
+
+# Para debuguear, siempre en el SSH abrir los fuentes desde ODOO-13-19:
 cd /home/odoo/odoo-from-13-to-18/arquitectura/odoo19
-```
 
-### En el archivo start_odoo.sh , debes cambiar el nombre del cliente a correr
+# En el archivo start_odoo.sh debes cambiar el nombre del cliente a correr.
 
-## Buscar un modulo
+# Buscar un módulo, ejemplo: _name = "stock.picking.type"
 
-## ejemplo , find con eso
+# Descripción: Esta es la arquitectura para implementar diferentes versiones de Odoo
+# con sus respectivos clientes y extra-addons.
 
-\_name = "stock.picking.type"
+# ============================================================
+# INSTALACIÓN DE LIBRERÍAS ESTÁNDAR (sistema)
+# ============================================================
+sudo apt install openssh-server fail2ban libxml2-dev libxslt1-dev zlib1g-dev libsasl2-dev libldap2-dev build-essential libssl-dev libffi-dev libmysqlclient-dev libpq-dev libjpeg8-dev liblcms2-dev libblas-dev libatlas-base-dev git curl fontconfig libxrender1 xfonts-75dpi xfonts-base -y
 
-## Descripción
-
-Este es la arquitectura para implementar diferentes versiones de odoo con sus respectios clientes y extra-addons
-
-# Instalacion de algunas librerias standar
-
-```bash
-sudo apt install openssh-server fail2ban libxml2-dev libxslt1-dev zlib1g-dev libsasl2-dev libldap2-dev build-essential libssl-dev libffi-dev libmysqlclient-dev libpq-dev libjpeg8-dev liblcms2-dev libblas-dev libatlas-base-dev git curl   fontconfig libxrender1 xfonts-75dpi xfonts-base -y
-
-```
-
-```bash
- sudo apt install snapd
-```
-
-```bash
+sudo apt install snapd
 sudo snap install astral-uv --classic
-```
 
-# Bajar fuentes
+# ============================================================
+# BAJAR FUENTES DE ODOO 19
+# ============================================================
+git clone -b 19.0 --single-branch --depth 1 https://github.com/odoo/odoo.git odoo
 
-```bash
-  git clone -b 19.0 --single-branch --depth 1 https://github.com/odoo/odoo.git odoo
-
-  
-```
-
-# Instalar version python con uv
-
-```bash
+# ============================================================
+# INSTALAR PYTHON 3.12 Y LIBRERÍAS CON UV
+# ============================================================
 uv python install 3.12
+uv venv --python 3.12
+source .venv/bin/activate
+
+# Instalar dependencias base de Odoo
+uv pip install -r odoo/requirements.txt
+
+# Instalar librerías adicionales necesarias para el proyecto
 uv pip install viivakoodi
 uv pip install python-barcode
-    uv pip install pandas
-    uv  pip install xmltodict
-    uv    pip install gtts
-   uv pip install lxml
-uv venv --python 3.12
-```
+uv pip install pandas
+uv pip install xmltodict
+uv pip install gtts
+uv pip install lxml
 
-# colocar el enviroment
+# ---------- ⚠️ LIBRERÍA FALTANTE DETECTADA ----------
+# El módulo chat_bot_n8n_ia necesita openai para funcionar (evita error 'NoneType' object is not callable)
+uv pip install openai
+# -----------------------------------------------------
 
-```bash
-
-```
-
-# activarlo
-
-```bash
-source .venv/bin/activate
-```
-
-````bash
-
-     ``
-# Instalar los requirement
-```bash
-uv pip install -r odoo/requirements.txt
-````
-
-# En docker creamos el usuario odoo19
-
-```bash
- docker exec -it odoo-db19-n8n bash
-   psql -U odoo -d postgres
-```
-
-```bash
-
-CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB ;
- ALTER USER odoo19 WITH SUPERUSER;
-```
-
-# En postgres creamos el usuario odoo19 con super usuario
-
-```bash
-CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
-```
-## Para docker
-```bash
-\q
+# ============================================================
+# CONFIGURACIÓN DE BASE DE DATOS (DOCKER)
+# ============================================================
+# 1. Crear usuario odoo19 dentro del contenedor PostgreSQL
 docker exec -it odoo-db19-n8n bash
-   psql -U odoo19 -d postgres
-   CREATE USER integraiadev_19 WITH PASSWORD 'odoo';
-   ALTER USER integraiadev_19 WITH SUPERUSER;
+psql -U odoo -d postgres
 
-   \q
-   docker exec -it odoo-db19-n8n bash
-   psql -U integraiadev_19 -d postgres
-   CREATE DATABASE dbintegraiadev_19;
-   GRANT ALL PRIVILEGES ON DATABASE dbintegraiadev_19 TO integraiadev_19;
+CREATE ROLE odoo19 WITH LOGIN PASSWORD 'odoo' CREATEDB;
+ALTER USER odoo19 WITH SUPERUSER;
+\q
+exit
 
+# 2. Crear usuario y base de datos para el cliente integraiadev_19
+docker exec -it odoo-db19-n8n bash
+psql -U odoo19 -d postgres
 
-```
+CREATE USER integraiadev_19 WITH PASSWORD 'odoo';
+ALTER USER integraiadev_19 WITH SUPERUSER;
+CREATE DATABASE dbintegraiadev_19;
+GRANT ALL PRIVILEGES ON DATABASE dbintegraiadev_19 TO integraiadev_19;
+\q
+exit
 
-# Para listar los roles y permisos
-
-```bash
+# Para listar roles y permisos:
 \du
-```
 
-# Abrir el puertoen el server para que pueda escuchar
-
-```bash
+# ============================================================
+# ABRIR PUERTO EN EL SERVIDOR (si es necesario)
+# ============================================================
 sudo ufw allow 8019/tcp
-```
 
-# Instalamo la base de odoo en bd por primera vez
+# ============================================================
+# INICIALIZAR BASE DE DATOS POR PRIMERA VEZ
+# ============================================================
+# Ir a la ruta del proyecto
+cd /home/simon/odoo-13-19/arquitectura/odoo19   # Ajusta según tu usuario real
 
-# Ir a la ruta or path
-```bash
-/home/simon/odoo-13-19/arquitectura/odoo19
-```
-
-
-# Si no esta activao el ambiente
-
-```bash
+# Activar entorno virtual si no lo está
 source .venv/bin/activate
-```
 
-```bash
+# Inicializar con módulo base
 ./odoo/odoo-bin -d dbintegraiadev_19 -i base -c clientes/integraiadev_19/conf/odoo.cfg
 
-```
-
-# Arrancamos odoo de manera regular
-
-# Si no esta activao el ambiente
-
-```bash
-source .venv/bin/activate
-```
-# si esta activo dl puero lo matamos
-```bash
+# ============================================================
+# ARRANCAR ODOO DE MANERA REGULAR
+# ============================================================
+# Si el puerto está ocupado, matar proceso:
 sudo lsof -i :8019
-```
+# (opcional kill -9 <PID>)
 
-```bash
+# Activar entorno virtual
+source .venv/bin/activate
+
+# Levantar Odoo
 ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg
-```
-# Accedemos
-```bash
-http://5.189.161.7:18069/
-```
-# Base de datos
-```bash
+
+# ============================================================
+# ACCESO WEB
+# ============================================================
+# http://5.189.161.7:18069/   (ajustar IP y puerto según tu configuración)
+
+# ============================================================
+# CONEXIÓN DIRECTA A LA BASE DE DATOS (postgreSQL)
+# ============================================================
 psql -U panna19 -d dbintegraiadev_19
-password:odoo
-```
+# password: odoo

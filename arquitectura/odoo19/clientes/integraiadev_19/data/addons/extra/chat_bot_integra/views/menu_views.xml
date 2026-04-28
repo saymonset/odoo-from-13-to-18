@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menú principal -->
+        <menuitem id="menu_chatbot_root" name="Chatbot" sequence="10"/>
+
+        <!-- Submenú Flujos -->
+        <menuitem id="menu_chatbot_flujo"
+                  parent="menu_chatbot_root"
+                  action="action_chatbot_flujo"
+                  sequence="20"/>
+
+        <!-- Submenú Pasos (opcional) -->
+        <menuitem id="menu_chatbot_paso"
+                  parent="menu_chatbot_root"
+                  action="action_chatbot_paso"
+                  sequence="30"/>
+    </data>
+</odoo>

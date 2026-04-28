@@ -216,7 +216,7 @@ INCLUDE_ADDONS=true
 # Si el primer argumento no empieza con -, es el nombre del cliente
 if [[ $1 && $1 != -* ]]; then
     CLIENT_NAME="$1"
-    CLIENT_DIR="$HOME/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19/clientes/$CLIENT_NAME"
+    CLIENT_DIR="$HOME/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/$CLIENT_NAME"
     ODOO_CONF="$CLIENT_DIR/conf/odoo.cfg"
     shift
 fi
