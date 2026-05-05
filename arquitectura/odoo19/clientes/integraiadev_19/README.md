@@ -74,6 +74,7 @@ CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 # Acceder al contenedor
 docker exec -it odoo-db19-n8n bash
 psql -U odoo -d postgres
+
 \
 # Crear base de datos y usuario
 CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
@@ -109,6 +110,13 @@ sudo ufw allow 8888/tcp
 ```bash
 ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all
 ```
+
+```bash
+./odoo/odoo-bin -c clientes/integraiadev_19/conf/odoo.cfg -d dbintegraiadev_19 -i bcv_rate_update_venezuela --test-enable --stop-after-init
+```
+
+
+
 ### Si es bloqueadso
 ```bash 
 source .venv/bin/activate
