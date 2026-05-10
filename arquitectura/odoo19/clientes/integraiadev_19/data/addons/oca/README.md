@@ -1,46 +1,34 @@
+# 📦 Módulos OCA - Odoo 19.0
 
-[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/server-ux&target_branch=19.0)
-[![Pre-commit Status](https://github.com/OCA/server-ux/actions/workflows/pre-commit.yml/badge.svg?branch=19.0)](https://github.com/OCA/server-ux/actions/workflows/pre-commit.yml?query=branch%3A19.0)
-[![Build Status](https://github.com/OCA/server-ux/actions/workflows/test.yml/badge.svg?branch=19.0)](https://github.com/OCA/server-ux/actions/workflows/test.yml?query=branch%3A19.0)
-[![codecov](https://codecov.io/gh/OCA/server-ux/branch/19.0/graph/badge.svg)](https://codecov.io/gh/OCA/server-ux)
-[![Translation Status](https://translation.odoo-community.org/widgets/server-ux-19-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/server-ux-19-0/?utm_source=widget)
+Este directorio está destinado a contener los módulos de la **Odoo Community Association (OCA)** compatibles con la versión 19.0.
 
-<!-- /!\ do not modify above this line -->
+---
 
-# Tools for server UX
+## 📂 Ubicación de los Fuentes
+Los módulos se encuentran centralizados en la siguiente ruta compartida del sistema:
+`📂 /home/odoo/modulos_odoo/shared/oca/19.0`
 
+> [!NOTE]
+> Este directorio en el repositorio puede ser un punto de montaje o una referencia a la ubicación compartida para mantener la consistencia entre diferentes entornos de desarrollo.
 
+## 🛠️ Módulos Disponibles (Ejemplos)
+Actualmente, el repositorio compartido incluye módulos esenciales como:
+- **Contabilidad:** `account_tax_balance`, `account_usability`
+- **Recursos Humanos:** `hr_employee_firstname`, `hr_department_code`, `hr_course`
+- **Utilidades:** `web_responsive`, `report_xlsx`, `base_technical_features`
+- **Localización/Otros:** `partner_statement`, `website_whatsapp`
 
-<!-- /!\ do not modify below this line -->
+## 🚀 Cómo añadir nuevos módulos
+Para añadir módulos adicionales de la OCA:
+1. Clonar el repositorio correspondiente de [GitHub OCA](https://github.com/OCA).
+2. Asegurarse de seleccionar la rama `19.0`.
+3. Copiar el módulo a la ruta compartida o enlazarlo simbólicamente aquí.
 
-<!-- prettier-ignore-start -->
+```bash
+# Ejemplo:
+git clone -b 19.0 --single-branch https://github.com/OCA/web.git
+cp -r web/web_responsive /home/odoo/modulos_odoo/shared/oca/19.0/
+```
 
-[//]: # (addons)
-
-Available addons
-----------------
-addon | version | maintainers | summary
---- | --- | --- | ---
-[base_cancel_confirm](base_cancel_confirm/) | 19.0.1.0.1 | <a href='https://github.com/kittiu'><img src='https://github.com/kittiu.png' width='32' height='32' style='border-radius:50%;' alt='kittiu'/></a> | Base Cancel Confirm
-[base_revision](base_revision/) | 19.0.1.0.0 |  | Keep track of revised document
-[base_search_custom_field_filter](base_search_custom_field_filter/) | 19.0.1.0.0 | <a href='https://github.com/pedrobaeza'><img src='https://github.com/pedrobaeza.png' width='32' height='32' style='border-radius:50%;' alt='pedrobaeza'/></a> | Add custom filters for fields via UI
-[base_substate](base_substate/) | 19.0.1.0.1 |  | Base Sub State
-[base_technical_features](base_technical_features/) | 19.0.1.0.0 |  | Access to technical features without activating debug mode
-[date_range](date_range/) | 19.0.1.0.0 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Manage all kind of date range
-
-[//]: # (end addons)
-
-<!-- prettier-ignore-end -->
-
-## Licenses
-
-This repository is licensed under [AGPL-3.0](LICENSE).
-
-However, each module can have a totally different license, as long as they adhere to Odoo Community Association (OCA)
-policy. Consult each module's `__manifest__.py` file, which contains a `license` key
-that explains its license.
-
-----
-OCA, or the [Odoo Community Association](http://odoo-community.org/), is a nonprofit
-organization whose mission is to support the collaborative development of Odoo features
-and promote its widespread use.
+---
+*Mantenido por el equipo de IntegraIA*

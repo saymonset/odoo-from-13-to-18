@@ -74,11 +74,13 @@ CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 # Acceder al contenedor
 docker exec -it odoo-db19-n8n bash
 psql -U odoo -d postgres
+psql -U integraiadev_19 -d postgres
 
 \
 # Crear base de datos y usuario
 CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 CREATE DATABASE dbintegraiadev_19 OWNER integraiadev_19;
+DROP DATABASE dbintegraiadev_19;
 ```
 
 ---
