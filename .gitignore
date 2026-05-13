@@ -1,157 +1,68 @@
-# Ignorar respaldos de bases de datos y datos de todos los clientes y versiones
+# =======================================
+# Respaldos y datos de clientes
+# =======================================
 /arquitectura/odoo*/clientes/*/respaldo_db/
-/arquitectura/odoo*/clientes/*/respaldo_db/*
 /arquitectura/odoo*/clientes/*/data/
-/arquitectura/odoo*/clientes/*/data/*
 /arquitectura/odoo*/clientes/*/respaldo_odoo/
-/arquitectura/odoo*/clientes/*/respaldo_odoo/*
-
-# Ignorar backups automáticos de Odoo (carpeta out)
 /arquitectura/odoo*/backup/out/
-/arquitectura/odoo*/backup/out/*
-/arquitectura/odoo19/v19test/*
-# Excepción: mantener la estructura de carpetas
+
+# =======================================
+# Ignorar directorios de pruebas y PostgreSQL (evita "Permission denied")
+# =======================================
+/arquitectura/odoo19/v19test/
+**/pgdata/
+**/test_pgdata/
+
+# Excepciones para mantener estructura vacía
 !/arquitectura/odoo*/backup/out/.gitkeep
 !/arquitectura/odoo*/backup/out/README.md
 
-# Ignorar entornos virtuales de todas las versiones
+# =======================================
+# Entornos virtuales y código fuente Odoo
+# =======================================
 /arquitectura/odoo*/.venv
-
-# Ignorar carpetas de código fuente de Odoo descargadas o clonadas
 /arquitectura/odoo*/odoo
 
-# Ignorar carpetas específicas de clientes (por ejemplo, enterprise, log, etc.)
+# =======================================
+# Carpetas de clientes (log, enterprise, oca, etc.)
+# =======================================
 /arquitectura/odoo*/clientes/*/log/
 /arquitectura/odoo*/clientes/*/extra-addons/enterprise
+/arquitectura/odoo*/clientes/*/extra-addons/oca/
+/arquitectura/odoo*/clientes/*/extra-addon/
 
-# (Opcional) Ignorar todos los archivos .pyc y carpetas __pycache__ en cualquier parte del proyecto
-# **/__pycache__/
-# /**/*.pyc
+# =======================================
+# Archivos generados por Odoo (filestore, sessions, etc.)
+# =======================================
+/arquitectura/odoo*/clientes/*/data/filestore/
+/arquitectura/odoo*/clientes/*/data/sessions/
+/arquitectura/odoo*/clientes/*/sessions/
 
-# /arquitectura/odoo*/clientes/*/extra-addons/*/*/*.py
-# /arquitectura/odoo*/clientes/*/extra-addons/*/*/*/*.py
-/arquitectura/odoo*/clientes/cliente1/extra-addons/extra/react-odoo/generated/*
-!/arquitectura/odoo*/clientes/cliente1/extra-addons/extra/react-odoo/generated/.gitkeep
-/arquitectura/odoo*/clientes/*/sessions/filestore/**
-/arquitectura/odoo*/clientes/*/sessions/sessions/**
-/arquitectura/odoo18/clientes/cliente1/extra-addons/extra/chatter_voice_note/uses_cases/__pycache__/**
-/arquitectura/odoo18/clientes/cliente1/extra-addons/oca/**/*
-/arquitectura/odoo19/clientes/integraiadev/extra-addon/
-
-# Excepciones para permitir el rastreo de data y log en integraiadev_19
+# =======================================
+# Excepciones para integraiadev_19 (solo estructura)
+# =======================================
 !/arquitectura/odoo19/clientes/integraiadev_19/data/
-!/arquitectura/odoo19/clientes/integraiadev_19/data/**
+!/arquitectura/odoo19/clientes/integraiadev_19/data/.gitkeep
 !/arquitectura/odoo19/clientes/integraiadev_19/log/
-!/arquitectura/odoo19/clientes/integraiadev_19/log/**
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/04/0423420845c2f6d4196b76b488ec6cd6f6e6bd3d
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/09/09950b035e34098bd7b3215bce303e70f4711233
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/0a/0a33a609b762b227eee1dccae179688e2dd39523
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/11/11ce735a8eeb39b3f0acf2d44a3ba2bdb7d48081
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/11/118e590f8c448bb9c6b840e1b0d0bd1eb8740093
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/11/118ef3feb10398de112d80580720f0f07d2b2f26
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/1a/1a48ddc44ddcf7810596f0c3446d617a6d4b146b
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/1d/1d60eea9fdf5bf3faaad5645bac8ff2eb00e0b43
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/1d/1de03f8f5ce7dfa3114ae403065491a98b8ab917
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/1f/1f26a41ea6a925caad06edde843ac685b5eb2da9
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/21/216c40d2938e6673930237efe9fb62a8e3ab7bf9
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/22/2280705523dd82b6e702972207ecb1b9a74b0123
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/23/23cf53fc6990726ad04af23b2ca0608c4952a335
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/23/23dc57e87c68edcfc8c6ebcd4ca280f0fe1513a7
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/2a/2a2d8968750c0d6c8732a2b00d16f677592a1ac8
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/2d/2ddb344b7cf51a1b18eafb85470e1581ccf1c9c8
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/2d/2dead454c12a54ba937aa3ea1daaaadcf59dafa5
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/2e/2eb7b431a1559d2637a1b970d26ee9e66636eb9c
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/2e/2eeb08529ea126ada3d89679d91bd23399804236
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/33/3390e24b3bfd5f76b2993b77960558f7e871d464
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/3a/3a4e95275194e084a135a16c79298dc02a711eb0
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/43/4351c0934d6b81d2ef7b7d4be45ed40ad7d59b41
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/47/47b7376589059da6226768f50d3723b9c7f57bab
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/4c/4c2b06a6ce5b43a71a2aa91d1ac34ce7220f7a58
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/4c/4c715a52c6cc5fff87cf08a770adedc1d3293abb
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/4e/4e61098720758bd9fa1b8402af7d8f2029051a44
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/51/51cd508bed43c5d5e715684205c24684246e48f7
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/57/5702a056362edb0da1fe4adc9af3ce19003b3b53
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/61/619e27126188c602286292fa7a0e5427e9e253a9
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/63/63062e65c406f35f0ac8e49e5098c423cc5081c9
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/64/640fc8825885b67161c4e68761445c3dfcd4bfee
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/65/65a3a87b4746fc246f27be04808d50313bf2260e
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/66/66f7c5e268464e44a0e568ab5e190f2618115b58
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/69/69df2562b9e85434a218fb6599aeee570ca597bf
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/6d/6d93f3ff55c8ba4bd889266ae07e5d67712d8078
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/6d/6d910d0b25b3fffd94090bd0c502d4f21547d208
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/6f/6f3d1341d02f4e5adad2985a8647d2e3fd90de2f
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/75/75ed2991a3e3ccec3a2ebe178b67a6b13dce8725
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/7a/7a074772a8b6af71153876d48c62f5ac6ae192ec
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/7b/7bc0f3c737a8bf90532c394e5701f81c54110f98
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/7c/7c4187f467abaac1d340e0a47013bb5154905073
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/89/89dbdd62f68342b0d8cf65851dd4c3b715a6e435
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/91/9198b517133c9578ce89215a1008eb2de131dfce
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/95/9525363978cf44719ef4ac1bfc66d3053950ba03
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/a1/a14aeaef9e4285ab24caf1d7a1ac68fb9ff93e23
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/a7/a727a0d328d119bdb5e4a88d77cdbfda1bddecc9
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/a9/a90090ce2b46c7596936e9dbc95d593aabc2d4e6
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/ae/ae557cfc078799803ceddba4fc0f53144f11fd8f
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/b5/b5be01d536631ad100b92d7dee1b8302dc0c17a4
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/b5/b579002cf98ed363ed9fc1e0aa61450b1d86cac8
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/b6/b6a41cbd22db25ecad70902155349d5dc6b10a18
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/b8/b8c9d25a06e0a23e85bc0790a095b6a62222a204
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/c0/c0f4a4fc590590b3dba4738fcdd5ee7bd90cd2f8
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/ca/cac51ead7f8f90332e52cbca2c3c20ed5df44b4b
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/ca/cafe5222dd0c91b79a77f02b6130cd4ceb757ea9
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/cc/ccd9a66b8aa9ee86dff28d41a830e632698b82b4
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/checklist/4c/4c2b06a6ce5b43a71a2aa91d1ac34ce7220f7a58
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/checklist/ae/ae557cfc078799803ceddba4fc0f53144f11fd8f
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/d0/d0c92909930812cd7a32761a45d76e5773c49531
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/d3/d3de9504c59febc80e89bde0443c75f1d62968a1
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/d3/d3310774cbdeeefcc7154a97eec59746adde01ce
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/d5/d5f21845f8b5fcde6c8d91d1a72d8c7263627706
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/d8/d855aaeaf1b733fc28d112f47d90a247c0f6fd94
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/d9/d9480fdd9dd469a34ca6c6d2c0cfb4f6bf81bff7
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/de/de6dbd189822e6db96df14f934ab2952794980f3
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/de/de26abf54ce611defc312e032fcae7b4352d4fb6
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/e3/e3a1655e31f4571abf5b9ca7492b84680dcaba4b
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/e3/e3aeed6ea24c64c143d440c854932567e6052ac6
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/e3/e3f7e30dd911521aa58f9f3ae1a6bd6c048d424e
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/e5/e5cc2ec81efa214f55545e97aa67c6552f146f55
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/ee/eeb92e6caf5e2eac31d60098b678232535f410ef
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/ef/efec633b0b4694191e6fec10b266f50ad7f01350
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/f1/f19489bd66485672e451742a708c1c60b16fd424
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/f6/f65b09777042f49e20db433693995283b1655b23
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/5A/5A5w-iMIDf_PaZpA7Xiv1G7ayjNNk0_PDAo3y8kcttfjx01V1c6b9Y4j8TTo9WhpK-SnPMNQf9K0WyZgqGaX
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/5g/5gFt7Pn_YMST0W5Tol9FRNO0bTgfMcrm8a0GiIfLtpCm-qWVjRi1RcnnIuzS80pfhoKXLf1-D3Cfl69IS-Yf
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/6f/6fxYmiEJjBRly_yTiNcNrGE2_YG4TqFIOTHjTcwfocSsHd64kuGl3m8F6GkQfJjPCVgsLpGkygE76OKlVJde
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/Da/DaatmgsMGLQMXyxKGL3zRmgJ2C-B35EMvLYyQ-WzsIZAS3Yrv3SyBhHxdeyYy9lS87FKSL_vc5WaQ5py58Ej
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/dc/dcQyx9WDa1ZZ-kpNDaypN2X1khhghdW-eQr7WMWJFe0IYd_eRuprCKIqDpS9ucd6VR4IKV2SZ2hq9DzAsHMX
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/GR/GRR5yf3LFgO1ixi_damzUt7pGKH9TZHb_Qwia3vWIYXQO2c5AnjNnBsOe3SOfLaltjefIFnVn5s7HSACyGIE
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/Jf/JfT9VompnLHFoMCAK3xSnzVVeRkK1TBG9oQGO81KlQkV9UA3v5FkuYesW-iEWKldcBKymxs0YI29mIQY5kUY
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/lT/lTiUvYsfjS0fInKGzGaedWDnzmvAYLSlvSHFQuH74Z_T_QGu4Lq0cq7RULebM6aHnZiyvbfrpYs1JhbbNhvF
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/MW/MWi5ZBmix8Y3AmWstzN6zS2riSZFgRMO-MENVzkFQDHFGJPQKIw6ouaEn4SIHDuz4yEJ02cHf4cvJnKZjvLT
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/oV/oV7WQcvnFM2FlScofY8U5dsjRIRGsP0S6glSrrxykKoABVJccFvuIDky4Y0WzkjhbwiQVZqQ4zWAh0C0S6gF
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/PJ/PJxYWrZIK4VXPFVCMu7RGyJSDkq4grCJA_6gc_Ryy8mfyjr_ZQqg2VjqDTEeae6GEj3_Drtvl14VkEOYW3n1
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/pv/pvE5tikUTkGg2aGcqVwxxsOuCc5VSPb_YRE36jyrRkAV2SOR0nwEl0TEGb-LyzuGkmvweXfG3XrQCTcmjewQ
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/TU/TUr9RWkhb3kV1kiCjhHjYnhevuoNyoCqHMlHUsYnLfujrN5E6RwogHlfLwdSBvez402db5nYnS9fa2leiles
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/wx/wxbM_PTDLnh7z8127pvz-9NAURuTxf2_DFgqIdV7mUXX-Qk7VmT6N10IUoFXbYiYa--NfEP4gW7lAebtv3TP
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/z-/z-tDwz90hAYuCCE1QONDB1a3RH8YMavc5nrpV5WXHJ1gdGHj1X90lFPefF1G0M2efzyOY8EyiP80tZ0IWLFz
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/z-/z-tDwz90hAYuCCE1QONDB1a3RH8YMavc5nrpV5WXHJbnygHPeEqABF-hPv1oTfceq3dUZ6-ouS3B5hWt0-ef
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/ZK/ZKrvUam9bV3JB8GS4GwKzi7ioBi9Vls7hJZ3fM2BnjvGYXvQcU7B4dgKLtcrzGnQGi2KBr-rB7BWGlpypM4P
-arquitectura/odoo19/clientes/integraiadev_19/log/odoo.log
-arquitectura/odoo19/secrets/postgres_password.txt
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/4c/4c2b06a6ce5b43a71a2aa91d1ac34ce7220f7a58
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/75/75ed2991a3e3ccec3a2ebe178b67a6b13dce8725
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/89/89dbdd62f68342b0d8cf65851dd4c3b715a6e435
-arquitectura/odoo19/clientes/integraiadev_19/data/filestore/dbintegraiadev_19/checklist/4c/4c2b06a6ce5b43a71a2aa91d1ac34ce7220f7a58
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/5A/5A5w-iMIDf_PaZpA7Xiv1G7ayjNNk0_PDAo3y8kcttfjx01V1c6b9Y4j8TTo9WhpK-SnPMNQf9K0WyZgqGaX
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/5g/5gFt7Pn_YMST0W5Tol9FRNO0bTgfMcrm8a0GiIfLtpCm-qWVjRi1RcnnIuzS80pfhoKXLf1-D3Cfl69IS-Yf
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/6f/6fxYmiEJjBRly_yTiNcNrGE2_YG4TqFIOTHjTcwfocSsHd64kuGl3m8F6GkQfJjPCVgsLpGkygE76OKlVJde
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/Da/DaatmgsMGLQMXyxKGL3zRmgJ2C-B35EMvLYyQ-WzsIZAS3Yrv3SyBhHxdeyYy9lS87FKSL_vc5WaQ5py58Ej
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/dc/dcQyx9WDa1ZZ-kpNDaypN2X1khhghdW-eQr7WMWJFe0IYd_eRuprCKIqDpS9ucd6VR4IKV2SZ2hq9DzAsHMX
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/GR/GRR5yf3LFgO1ixi_damzUt7pGKH9TZHb_Qwia3vWIYXQO2c5AnjNnBsOe3SOfLaltjefIFnVn5s7HSACyGIE
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/lT/lTiUvYsfjS0fInKGzGaedWDnzmvAYLSlvSHFQuH74Z_T_QGu4Lq0cq7RULebM6aHnZiyvbfrpYs1JhbbNhvF
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/MW/MWi5ZBmix8Y3AmWstzN6zS2riSZFgRMO-MENVzkFQDHFGJPQKIw6ouaEn4SIHDuz4yEJ02cHf4cvJnKZjvLT
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/pv/pvE5tikUTkGg2aGcqVwxxsOuCc5VSPb_YRE36jyrRkAV2SOR0nwEl0TEGb-LyzuGkmvweXfG3XrQCTcmjewQ
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/wx/wxbM_PTDLnh7z8127pvz-9NAURuTxf2_DFgqIdV7mUXX-Qk7VmT6N10IUoFXbYiYa--NfEP4gW7lAebtv3TP
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/z-/z-tDwz90hAYuCCE1QONDB1a3RH8YMavc5nrpV5WXHJ1gdGHj1X90lFPefF1G0M2efzyOY8EyiP80tZ0IWLFz
-arquitectura/odoo19/clientes/integraiadev_19/data/sessions/z-/z-tDwz90hAYuCCE1QONDB1a3RH8YMavc5nrpV5WXHJbnygHPeEqABF-hPv1oTfceq3dUZ6-ouS3B5hWt0-ef
-arquitectura/odoo19/clientes/integraiadev_19/log/odoo.log
-arquitectura/odoo19/secrets/postgres_password.txt
-arquitectura/odoo19/secrets/postgres_password.txt
+!/arquitectura/odoo19/clientes/integraiadev_19/log/.gitkeep
+
+# =======================================
+# Archivos específicos generados (react, etc.)
+# =======================================
+/arquitectura/odoo*/clientes/cliente1/extra-addons/extra/react-odoo/generated/
+!/arquitectura/odoo*/clientes/cliente1/extra-addons/extra/react-odoo/generated/.gitkeep
+
+# =======================================
+# Archivos de Python compilados y temporales
+# =======================================
+**/__pycache__/
+**/*.pyc
+*.log
+*.pid
+*.lock
+
+# =======================================
+# Secretos y contraseñas
+# =======================================
+/arquitectura/odoo*/secrets/*.txt
+/arquitectura/odoo*/secrets/*.key
