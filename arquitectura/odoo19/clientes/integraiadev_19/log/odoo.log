@@ -569,3 +569,51 @@ odoo.exceptions.UserError: Some orders are not in a state requiring confirmation
 2026-05-13 14:07:31,741 3434873 DEBUG dbintegraiadev_19 odoo.service.server: on_close call <function _kick_all at 0x7b0ded0119e0> 
 2026-05-13 14:07:31,741 3434873 INFO dbintegraiadev_19 odoo.service.server: Stopping workers gracefully 
 2026-05-13 14:07:31,743 3434873 INFO dbintegraiadev_19 odoo.service.server: Forced shutdown. 
+2026-05-13 21:21:00,982 3760784 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.request:INFO" 
+2026-05-13 21:21:00,983 3760784 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.response:INFO" 
+2026-05-13 21:21:00,983 3760784 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:21:00,984 3760784 DEBUG ? odoo.netsvc: logger level set: "odoo:DEBUG" 
+2026-05-13 21:21:00,984 3760784 DEBUG ? odoo.netsvc: logger level set: "odoo.sql_db:INFO" 
+2026-05-13 21:21:00,984 3760784 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:21:00,984 3760784 DEBUG ? odoo.netsvc: logger level set: "odoo.addons.base.models.ir_qweb:WARNING" 
+2026-05-13 21:21:00,984 3760784 INFO ? odoo: Odoo version 19.0 
+2026-05-13 21:21:00,984 3760784 INFO ? odoo: Using configuration file at /home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/conf/odoo.cfg 
+2026-05-13 21:21:00,984 3760784 INFO ? odoo: addons paths: _NamespacePath(['/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/odoo/addons', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/data/addons/19.0', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/addons', '/home/odoo/develop/modulos_odoo/shared/oca/19.0', '/home/odoo/develop/modulos_odoo/shared/extra/19.0']) 
+2026-05-13 21:21:00,985 3760784 INFO ? odoo: database: integraiadev_19@0.0.0.0:5432 
+2026-05-13 21:21:00,987 3760784 INFO ? odoo.sql_db: Connection to the database failed 
+2026-05-13 21:21:28,371 3761218 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.request:INFO" 
+2026-05-13 21:21:28,371 3761218 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.response:INFO" 
+2026-05-13 21:21:28,371 3761218 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:21:28,371 3761218 DEBUG ? odoo.netsvc: logger level set: "odoo:DEBUG" 
+2026-05-13 21:21:28,371 3761218 DEBUG ? odoo.netsvc: logger level set: "odoo.sql_db:INFO" 
+2026-05-13 21:21:28,371 3761218 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:21:28,371 3761218 DEBUG ? odoo.netsvc: logger level set: "odoo.addons.base.models.ir_qweb:WARNING" 
+2026-05-13 21:21:28,372 3761218 INFO ? odoo: Odoo version 19.0 
+2026-05-13 21:21:28,372 3761218 INFO ? odoo: Using configuration file at /home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/conf/odoo.cfg 
+2026-05-13 21:21:28,372 3761218 INFO ? odoo: addons paths: _NamespacePath(['/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/odoo/addons', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/data/addons/19.0', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/addons', '/home/odoo/develop/modulos_odoo/shared/oca/19.0', '/home/odoo/develop/modulos_odoo/shared/extra/19.0']) 
+2026-05-13 21:21:28,372 3761218 INFO ? odoo: database: integraiadev_19@0.0.0.0:5432 
+2026-05-13 21:21:28,373 3761218 INFO ? odoo.sql_db: Connection to the database failed 
+2026-05-13 21:22:37,706 3762210 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.request:INFO" 
+2026-05-13 21:22:37,707 3762210 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.response:INFO" 
+2026-05-13 21:22:37,707 3762210 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:22:37,707 3762210 DEBUG ? odoo.netsvc: logger level set: "odoo:DEBUG" 
+2026-05-13 21:22:37,707 3762210 DEBUG ? odoo.netsvc: logger level set: "odoo.sql_db:INFO" 
+2026-05-13 21:22:37,707 3762210 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:22:37,707 3762210 DEBUG ? odoo.netsvc: logger level set: "odoo.addons.base.models.ir_qweb:WARNING" 
+2026-05-13 21:22:37,708 3762210 INFO ? odoo: Odoo version 19.0 
+2026-05-13 21:22:37,708 3762210 INFO ? odoo: Using configuration file at /home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/conf/odoo.cfg 
+2026-05-13 21:22:37,708 3762210 INFO ? odoo: addons paths: _NamespacePath(['/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/odoo/addons', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/data/addons/19.0', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/addons', '/home/odoo/develop/modulos_odoo/shared/oca/19.0', '/home/odoo/develop/modulos_odoo/shared/extra/19.0']) 
+2026-05-13 21:22:37,709 3762210 INFO ? odoo: database: integraiadev_19@0.0.0.0:5432 
+2026-05-13 21:22:37,711 3762210 INFO ? odoo.sql_db: Connection to the database failed 
+2026-05-13 21:23:05,862 3762678 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.request:INFO" 
+2026-05-13 21:23:05,862 3762678 DEBUG ? odoo.netsvc: logger level set: "odoo.http.rpc.response:INFO" 
+2026-05-13 21:23:05,862 3762678 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:23:05,862 3762678 DEBUG ? odoo.netsvc: logger level set: "odoo:DEBUG" 
+2026-05-13 21:23:05,863 3762678 DEBUG ? odoo.netsvc: logger level set: "odoo.sql_db:INFO" 
+2026-05-13 21:23:05,863 3762678 DEBUG ? odoo.netsvc: logger level set: ":INFO" 
+2026-05-13 21:23:05,863 3762678 DEBUG ? odoo.netsvc: logger level set: "odoo.addons.base.models.ir_qweb:WARNING" 
+2026-05-13 21:23:05,863 3762678 INFO ? odoo: Odoo version 19.0 
+2026-05-13 21:23:05,863 3762678 INFO ? odoo: Using configuration file at /home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/conf/odoo.cfg 
+2026-05-13 21:23:05,863 3762678 INFO ? odoo: addons paths: _NamespacePath(['/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/odoo/addons', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/integraiadev_19/data/addons/19.0', '/home/odoo/develop/odoo-from-13-to-18/arquitectura/odoo19/odoo/addons', '/home/odoo/develop/modulos_odoo/shared/oca/19.0', '/home/odoo/develop/modulos_odoo/shared/extra/19.0']) 
+2026-05-13 21:23:05,863 3762678 INFO ? odoo: database: integraiadev_19@0.0.0.0:5432 
+2026-05-13 21:23:05,864 3762678 INFO ? odoo.sql_db: Connection to the database failed 
