@@ -50,6 +50,8 @@ uv pip install pandas xmltodict gtts lxml pycryptodome pydub python-magic
 
 # Herramientas de desarrollo
 uv pip install ptvsd inotify watchdog
+# lo usa scraping para la tasa de cambio currency_rate_update_base , 
+uv pip install beautifulsoup4
 
 # LIBRERÍAS CRÍTICAS PARA MÓDULOS DE IA
 uv pip install "pydantic>=2.0" openai httpx python-dotenv
@@ -127,7 +129,10 @@ source .venv/bin/activate
 ### Actualización de Módulos Específicos
 ```bash
 # Actualizar módulos de IA
-./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all -u chat_bot_n8n_ia,chat_bot_integra --stop-after-init
+
+
+./odoo/odoo-bin -c clientes/integraiadev_19/conf/odoo.cfg -d dbintegraiadev_19 -u currency_rate_update_base,bcv_rate_update_venezuela --stop-after-init
+
 ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all -u chat_bot_integra --stop-after-init
 ```
 
