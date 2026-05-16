@@ -116,7 +116,8 @@ sudo ufw allow 8888/tcp
 ```
 
 ```bash
-./odoo/odoo-bin -c clientes/integraiadev_19/conf/odoo.cfg -d dbintegraiadev_19 -i bcv_rate_update_venezuela --test-enable --stop-after-init
+./odoo/odoo-bin -c clientes/integraiadev_19/conf/odoo.cfg -d dbintegraiadev_19 -u bcv_rate_update_venezuela,currency_rate_update_base --stop-after-init
+
 ```
 
 
