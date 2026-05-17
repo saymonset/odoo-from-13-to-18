@@ -68,3 +68,4 @@
 /arquitectura/odoo*/secrets/*.key
 arquitectura/odoo18/debugpy_bootstrap.py
 arquitectura/odoo19/clientes/integraiadev_19/log/odoo.log
+arquitectura/odoo19/clientes/integraiadev_19/log/odoo.log
