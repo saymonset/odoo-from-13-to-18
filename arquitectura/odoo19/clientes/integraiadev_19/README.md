@@ -35,6 +35,8 @@ git clone -b 19.0 --single-branch --depth 1 https://github.com/odoo/odoo.git odo
 # Configurar Python 3.11 y Entorno Virtual
 uv python install 3.11
 uv venv --python 3.11
+uv pip install setuptools
+uv pip install --force-reinstall gevent
 source .venv/bin/activate
 ```
 
