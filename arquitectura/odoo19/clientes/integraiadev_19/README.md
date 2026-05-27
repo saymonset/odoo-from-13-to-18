@@ -137,7 +137,7 @@ source .venv/bin/activate
 # Actualizar módulos de IA
 
 
-./odoo/odoo-bin -c clientes/integraiadev_19/conf/odoo.cfg -d dbintegraiadev_19 -u currency_rate_update_base,bcv_rate_update_venezuela --stop-after-init
+./odoo/odoo-bin -c clientes/integraiadev_19/conf/odoo.cfg -d dbintegraiadev_19 -u whatsapp_cloud_integration --stop-after-init
 
 ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --dev=all -u chat_bot_integra --stop-after-init
 ```
