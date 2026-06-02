@@ -26,7 +26,10 @@ sudo snap install astral-uv --classic
 
 ## 2. Descarga de Fuentes y Entorno Python
 
-Ubícate en la ruta de trabajo deseada (ej. `~/develop/odoo-from-13-to-18/arquitectura/odoo19`).
+Ubícate en la ruta de trabajo deseada (ej.
+```bash
+ ~/develop/odoo-from-13-to-18/arquitectura/odoo19
+ ```
 
 ```bash
 # Bajar fuentes de Odoo 19
@@ -68,7 +71,7 @@ uv pip install -r odoo/requirements.txt
 ```bash
 psql -U postgres -d postgres
 # Crear rol de usuario
-CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
+CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
 ```
 
 ### Opción B: En Docker
@@ -76,11 +79,13 @@ CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
 # Acceder al contenedor
 docker exec -it odoo-db19-n8n bash
 psql -U odoo -d postgres
-psql -U integraiadev_19 -d postgres
+
 
 \
 # Crear base de datos y usuario
-CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD '123456' CREATEDB SUPERUSER;
+CREATE ROLE integraiadev_19 WITH LOGIN PASSWORD 'odoo' CREATEDB SUPERUSER;
+exit
+psql -U integraiadev_19 -d postgres
 CREATE DATABASE dbintegraiadev_19 OWNER integraiadev_19;
 DROP DATABASE dbintegraiadev_19;
 ```
