@@ -130,6 +130,9 @@ sudo ufw allow 8888/tcp
 ### Si es bloqueadso
 ```bash 
 source .venv/bin/activate
+uv pip install setuptools
+uv pip uninstall gevent
+uv pip install gevent
 ./odoo/odoo-bin -d dbintegraiadev_19 -c clientes/integraiadev_19/conf/odoo.cfg --update=nombre_modulo --stop-after-init
 ```
 ### Actualización de Módulos Específicos
