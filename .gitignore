@@ -5,6 +5,7 @@
 /arquitectura/odoo*/clientes/*/data/
 /arquitectura/odoo*/clientes/*/respaldo_odoo/
 /arquitectura/odoo*/backup/out/
+/arquitectura/odoo*/backup/out_odoo/
 
 # =======================================
 # Ignorar directorios de pruebas y PostgreSQL (evita "Permission denied")

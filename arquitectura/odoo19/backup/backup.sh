@@ -3,7 +3,7 @@ set -e
 
 # Configuración - Usando Docker para PostgreSQL
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKUP_BASE_DIR="$SCRIPT_DIR/out"
+BACKUP_BASE_DIR="$SCRIPT_DIR/out_odoo"
 DB_CONTAINER="odoo-db19-n8n"  # Tu contenedor de PostgreSQL
 SUPERUSER="odoo"  # El superuser en tu contenedor es 'odoo'
 
@@ -16,7 +16,7 @@ ODOO_CONF="$CLIENT_DIR/conf/odoo.cfg"
 if [ ! -f "$ODOO_CONF" ]; then
     echo "❌ Cliente no encontrado: $CLIENT_NAME"
     echo "Clientes disponibles:"
-    ls -1 "$HOME/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19/clientes/"
+    ls -1 "$HOME/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/"
     exit 1
 fi
 
@@ -62,7 +62,7 @@ usage() {
     echo "Uso: $0 [cliente] [opciones]"
     echo ""
     echo "Clientes disponibles:"
-    ls -1 "$HOME/opt/odoo/odoo-from-13-to-18/arquitectura/odoo19/clientes/" | sed 's/^/  - /'
+    ls -1 "$HOME/develop/odoo-from-13-to-18/arquitectura/odoo19/clientes/" | sed 's/^/  - /'
     echo ""
     echo "Opciones:"
     echo "  --no-filestore      No incluir filestore en el backup"
