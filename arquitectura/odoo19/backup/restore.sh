@@ -108,7 +108,7 @@ if [ -z "$DATA_DIR" ]; then
     DATA_DIR="$CLIENT_DIR/data"
 fi
 
-BACKUP_DATE=$(basename "$BACKUP_DIR" | sed 's/backup_//')
+BACKUP_DATE=$(basename "$BACKUP_DIR" | sed 's/^[a-z_]*//')
 DB_DUMP="$BACKUP_DIR/odoo_db_${BACKUP_DATE}.dump"
 ADDONS_TAR="$BACKUP_DIR/odoo_addons_${BACKUP_DATE}.tar.gz"
 FILESTORE_TAR="$BACKUP_DIR/odoo_filestore_${BACKUP_DATE}.tar.gz"
